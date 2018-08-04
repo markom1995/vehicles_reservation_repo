@@ -1,8 +1,30 @@
 package ba.telegroup.vehicles_reservation.model;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Date;
 
+@SqlResultSetMapping(
+        name = "UserMapping",
+        classes = @ConstructorResult(
+                targetClass = User.class,
+                columns = {
+                        @ColumnResult(name="id"),
+                        @ColumnResult(name="email"),
+                        @ColumnResult(name="username"),
+                        @ColumnResult(name="password"),
+                        @ColumnResult(name="first_name"),
+                        @ColumnResult(name="last_name"),
+                        @ColumnResult(name="photo"),
+                        @ColumnResult(name="active"),
+                        @ColumnResult(name="token"),
+                        @ColumnResult(name="token_time", type = Date.class),
+                        @ColumnResult(name="company_id"),
+                        @ColumnResult(name="role_id")
+                }
+        )
+)
 @Entity
 public class User {
     private Integer id;
@@ -13,8 +35,26 @@ public class User {
     private String lastName;
     private byte[] photo;
     private Byte active;
+    private String token;
+    private Timestamp tokenTime;
     private Integer companyId;
     private Integer roleId;
+
+    public User() {}
+    public User(Integer id, String email, String username, String password, String first_name, String last_name, byte[] photo, Byte active, String token, Date token_time, Integer company_id, Integer role_id) {
+        this.id = id;
+        this.email = email;
+        this.username = username;
+        this.password = password;
+        this.firstName = first_name;
+        this.lastName = last_name;
+        this.photo = photo;
+        this.active = active;
+        this.token = token;
+        this.companyId = company_id;
+        this.roleId = role_id;
+        setTokenTime(token_time==null ? null:new Timestamp(token_time.getTime()));
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -98,7 +138,27 @@ public class User {
     }
 
     @Basic
-    @Column(name = "company_id", nullable = false)
+    @Column(name = "token", nullable = true, length = 16)
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    @Basic
+    @Column(name = "token_time", nullable = true)
+    public Timestamp getTokenTime() {
+        return tokenTime;
+    }
+
+    public void setTokenTime(Timestamp tokenTime) {
+        this.tokenTime = tokenTime;
+    }
+
+    @Basic
+    @Column(name = "company_id", nullable = true)
     public Integer getCompanyId() {
         return companyId;
     }

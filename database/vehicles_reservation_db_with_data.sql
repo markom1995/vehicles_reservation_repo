@@ -2,7 +2,7 @@
 -- Host:                         127.0.0.1
 -- Server version:               10.3.8-MariaDB - mariadb.org binary distribution
 -- Server OS:                    Win64
--- HeidiSQL Version:             9.4.0.5125
+-- HeidiSQL Version:             9.5.0.5196
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `company` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
--- Dumping data for table vehicles_reservation_db.company: ~0 rows (approximately)
+-- Dumping data for table vehicles_reservation_db.company: ~1 rows (approximately)
 /*!40000 ALTER TABLE `company` DISABLE KEYS */;
 INSERT INTO `company` (`id`, `name`, `deleted`) VALUES
 	(1, 'Telegroup', 0);
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `logger` (
   `action_type` varchar(128) NOT NULL,
   `action_details` text NOT NULL,
   `table_name` varchar(128) NOT NULL,
-  `created` datetime NOT NULL,
+  `created` datetime NOT NULL DEFAULT current_timestamp(),
   `user_id` int(11) NOT NULL,
   `atomic` tinyint(4) NOT NULL,
   `company_id` int(11) NOT NULL,
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS `logger` (
   KEY `FK_logger_company` (`company_id`),
   CONSTRAINT `FK_logger_company` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
   CONSTRAINT `FK_logger_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table vehicles_reservation_db.logger: ~0 rows (approximately)
 /*!40000 ALTER TABLE `logger` DISABLE KEYS */;
@@ -101,10 +101,14 @@ CREATE TABLE IF NOT EXISTS `role` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(128) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
--- Dumping data for table vehicles_reservation_db.role: ~0 rows (approximately)
+-- Dumping data for table vehicles_reservation_db.role: ~3 rows (approximately)
 /*!40000 ALTER TABLE `role` DISABLE KEYS */;
+INSERT INTO `role` (`id`, `name`) VALUES
+	(1, 'superadmin'),
+	(2, 'admin'),
+	(3, 'user');
 /*!40000 ALTER TABLE `role` ENABLE KEYS */;
 
 -- Dumping structure for table vehicles_reservation_db.user
@@ -117,17 +121,21 @@ CREATE TABLE IF NOT EXISTS `user` (
   `last_name` varchar(128) DEFAULT NULL,
   `photo` longblob DEFAULT NULL,
   `active` tinyint(4) NOT NULL,
-  `company_id` int(11) NOT NULL,
+  `token` char(16) DEFAULT NULL,
+  `token_time` datetime DEFAULT NULL,
+  `company_id` int(11) DEFAULT NULL,
   `role_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_user_company` (`company_id`),
   KEY `FK_user_role` (`role_id`),
   CONSTRAINT `FK_user_company` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
   CONSTRAINT `FK_user_role` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 
--- Dumping data for table vehicles_reservation_db.user: ~0 rows (approximately)
+-- Dumping data for table vehicles_reservation_db.user: ~1 rows (approximately)
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
+INSERT INTO `user` (`id`, `email`, `username`, `password`, `first_name`, `last_name`, `photo`, `active`, `token`, `token_time`, `company_id`, `role_id`) VALUES
+	(1, 'superadmin@mail.com', 'superadmin', '0f1cbf02510b6714c483462190f2059666d6a024693072e610f99eae63572f671a1427dab7ab1400ec727520cecf6e38f0dfafdd21548a0050d362c833af2be9', 'Marko', 'Markovic', NULL, 1, NULL, NULL, 1, 2);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 
 -- Dumping structure for table vehicles_reservation_db.vehicle
