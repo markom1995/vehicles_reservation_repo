@@ -171,6 +171,7 @@ public class UserController extends GenericController<User, Integer> {
                 newUser.setLastName(null);
                 newUser.setPhoto(null);
                 newUser.setActive((byte) 0);
+                newUser.setDeleted((byte) 0);
                 newUser.setToken(randomToken);
                 newUser.setTokenTime(new Timestamp(System.currentTimeMillis()));
                 newUser.setCompanyId(user.getCompanyId());

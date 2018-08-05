@@ -6,6 +6,7 @@ import javax.persistence.*;
 public class Company {
     private Integer id;
     private String name;
+    private byte[] logo;
     private Byte deleted;
 
     @Id
@@ -27,6 +28,16 @@ public class Company {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Basic
+    @Column(name = "logo",nullable = false)
+    public byte[] getLogo() {
+        return logo;
+    }
+
+    public void setLogo(byte[] logo) {
+        this.logo = logo;
     }
 
     @Basic

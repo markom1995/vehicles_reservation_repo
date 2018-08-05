@@ -18,6 +18,7 @@ import java.util.Date;
                         @ColumnResult(name="last_name"),
                         @ColumnResult(name="photo"),
                         @ColumnResult(name="active"),
+                        @ColumnResult(name="deleted"),
                         @ColumnResult(name="token"),
                         @ColumnResult(name="token_time", type = Date.class),
                         @ColumnResult(name="company_id"),
@@ -35,13 +36,14 @@ public class User {
     private String lastName;
     private byte[] photo;
     private Byte active;
+    private Byte deleted;
     private String token;
     private Timestamp tokenTime;
     private Integer companyId;
     private Integer roleId;
 
     public User() {}
-    public User(Integer id, String email, String username, String password, String first_name, String last_name, byte[] photo, Byte active, String token, Date token_time, Integer company_id, Integer role_id) {
+    public User(Integer id, String email, String username, String password, String first_name, String last_name, byte[] photo, Byte active, Byte deleted, String token, Date token_time, Integer company_id, Integer role_id) {
         this.id = id;
         this.email = email;
         this.username = username;
@@ -50,6 +52,7 @@ public class User {
         this.lastName = last_name;
         this.photo = photo;
         this.active = active;
+        this.deleted = deleted;
         this.token = token;
         this.companyId = company_id;
         this.roleId = role_id;
@@ -135,6 +138,16 @@ public class User {
 
     public void setActive(Byte active) {
         this.active = active;
+    }
+
+    @Basic
+    @Column(name = "deleted", nullable = false)
+    public Byte getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Byte deleted) {
+        this.deleted = deleted;
     }
 
     @Basic

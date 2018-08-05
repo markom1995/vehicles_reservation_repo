@@ -10,7 +10,7 @@ import java.util.List;
 
 public class UserRepositoryImpl implements UserRepositoryCustom {
 
-    private static final String SQL_LOGIN = "SELECT DISTINCT u.id, u.email, u.username, u.password, u.first_name, u.last_name, u.photo, u.active, u.token, u.token_time, u.company_id, u.role_id FROM user u JOIN company c ON IF(u.role_id=1, true, u.company_id=c.id) WHERE u.username=? AND u.password=SHA2(?, 512) AND IF(u.role_id=1, u.company_id IS NULL, c.name=?)";
+    private static final String SQL_LOGIN = "SELECT DISTINCT u.id, u.email, u.username, u.password, u.first_name, u.last_name, u.photo, u.active, u.deleted, u.token, u.token_time, u.company_id, u.role_id FROM user u JOIN company c ON IF(u.role_id=1, true, u.company_id=c.id) WHERE u.active=1 AND u.deleted=0 AND u.username=? AND u.password=SHA2(?, 512) AND IF(u.role_id=1, u.company_id IS NULL, c.name=?)";
 
     @PersistenceContext
     private EntityManager entityManager;

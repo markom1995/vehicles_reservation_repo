@@ -21,14 +21,15 @@ USE `vehicles_reservation_db`;
 CREATE TABLE IF NOT EXISTS `company` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(128) NOT NULL,
+  `logo` longblob NOT NULL,
   `deleted` tinyint(4) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table vehicles_reservation_db.company: ~1 rows (approximately)
 /*!40000 ALTER TABLE `company` DISABLE KEYS */;
-INSERT INTO `company` (`id`, `name`, `deleted`) VALUES
-	(1, 'Telegroup', 0);
+INSERT INTO `company` (`id`, `name`, `logo`, `deleted`) VALUES
+	(1, 'Telegroup', _binary '', 0);
 /*!40000 ALTER TABLE `company` ENABLE KEYS */;
 
 -- Dumping structure for table vehicles_reservation_db.location
@@ -64,7 +65,7 @@ CREATE TABLE IF NOT EXISTS `logger` (
   KEY `FK_logger_company` (`company_id`),
   CONSTRAINT `FK_logger_company` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
   CONSTRAINT `FK_logger_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table vehicles_reservation_db.logger: ~0 rows (approximately)
 /*!40000 ALTER TABLE `logger` DISABLE KEYS */;
@@ -103,7 +104,7 @@ CREATE TABLE IF NOT EXISTS `role` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
--- Dumping data for table vehicles_reservation_db.role: ~3 rows (approximately)
+-- Dumping data for table vehicles_reservation_db.role: ~2 rows (approximately)
 /*!40000 ALTER TABLE `role` DISABLE KEYS */;
 INSERT INTO `role` (`id`, `name`) VALUES
 	(1, 'superadmin'),
@@ -121,6 +122,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `last_name` varchar(128) DEFAULT NULL,
   `photo` longblob DEFAULT NULL,
   `active` tinyint(4) NOT NULL,
+  `deleted` tinyint(4) NOT NULL DEFAULT 0,
   `token` char(16) DEFAULT NULL,
   `token_time` datetime DEFAULT NULL,
   `company_id` int(11) DEFAULT NULL,
@@ -130,12 +132,12 @@ CREATE TABLE IF NOT EXISTS `user` (
   KEY `FK_user_role` (`role_id`),
   CONSTRAINT `FK_user_company` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
   CONSTRAINT `FK_user_role` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table vehicles_reservation_db.user: ~1 rows (approximately)
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` (`id`, `email`, `username`, `password`, `first_name`, `last_name`, `photo`, `active`, `token`, `token_time`, `company_id`, `role_id`) VALUES
-	(1, 'superadmin@mail.com', 'superadmin', '0f1cbf02510b6714c483462190f2059666d6a024693072e610f99eae63572f671a1427dab7ab1400ec727520cecf6e38f0dfafdd21548a0050d362c833af2be9', 'Marko', 'Markovic', NULL, 1, NULL, NULL, 1, 2);
+INSERT INTO `user` (`id`, `email`, `username`, `password`, `first_name`, `last_name`, `photo`, `active`, `deleted`, `token`, `token_time`, `company_id`, `role_id`) VALUES
+	(1, 'superadmin@mail.com', 'superadmin', '0f1cbf02510b6714c483462190f2059666d6a024693072e610f99eae63572f671a1427dab7ab1400ec727520cecf6e38f0dfafdd21548a0050d362c833af2be9', 'Marko', 'Markovic', NULL, 1, 0, NULL, NULL, 1, 2);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 
 -- Dumping structure for table vehicles_reservation_db.vehicle
