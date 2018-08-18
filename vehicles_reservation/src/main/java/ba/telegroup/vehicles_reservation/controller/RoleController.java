@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@RequestMapping(value = "/role")
+@RequestMapping(value = "/hub/role")
 @Controller
 @Scope("request")
 public class RoleController extends GenericController<Role, Integer> {

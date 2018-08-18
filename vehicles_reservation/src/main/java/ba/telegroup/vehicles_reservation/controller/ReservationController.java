@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@RequestMapping(value = "/reservation")
+@RequestMapping(value = "/hub/reservation")
 @Controller
 @Scope("request")
 public class ReservationController extends GenericController<Reservation, Integer> {

@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@RequestMapping(value = "/vehicleMaintenanceType")
+@RequestMapping(value = "/hub/vehicleMaintenanceType")
 @Controller
 @Scope("request")
 public class VehicleMaintenanceTypeController extends GenericController<VehicleMaintenanceType, Integer> {

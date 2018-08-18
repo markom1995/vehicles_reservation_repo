@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
 
-@RequestMapping(value = "/user")
+@RequestMapping(value = "/hub/user")
 @Controller
 @Scope("request")
 public class UserController extends GenericController<User, Integer> {

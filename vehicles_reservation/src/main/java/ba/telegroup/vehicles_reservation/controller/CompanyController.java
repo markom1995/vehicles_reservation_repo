@@ -24,7 +24,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 
-@RequestMapping(value = "/company")
+@RequestMapping(value = "/hub/company")
 @Controller
 @Scope("request")
 public class CompanyController extends GenericController<Company, Integer> {
