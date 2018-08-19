@@ -1,9 +1,11 @@
 package ba.telegroup.vehicles_reservation.model;
 
+import ba.telegroup.vehicles_reservation.common.interfaces.Deletable;
+
 import javax.persistence.*;
 
 @Entity
-public class Company {
+public class Company implements Deletable {
     private Integer id;
     private String name;
     private byte[] logo;

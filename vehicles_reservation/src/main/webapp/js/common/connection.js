@@ -163,214 +163,175 @@ var connection = {
         });
 
         $$(dtId).attachEvent("onBeforeEditStop", function (state, editor, ignore) {
-                if (ignore) {
-                    this.editCancel();
-                    return;
-                }
+            if (ignore) {
+                this.editCancel();
+                return;
+            }
 
-                var column = editor.column;
-                var id = editor.row;
+            var column = editor.column;
+            var id = editor.row;
 
-                var newValue = state.value;
-                var oldValue = state.old;
+            var newValue = state.value;
+            var oldValue = state.old;
 
-                if (newValue == oldValue) return;
-                var editLink = "";
-                if (typeof customInsert !== 'undefined' && customInsert === true) {
-                    editLink = link + "/custom/" + id;
-                } else {
-                    editLink = link + "/" + id;
-                }
-                var data = $$(dtId).getItem(id);
-                data[column] = newValue;
-                if(data.deleted==null) data.deleted=0;
+            if (newValue == oldValue) return;
+            var editLink = "";
+            if (typeof customInsert !== 'undefined' && customInsert === true) {
+                editLink = link + "/custom/" + id;
+            } else {
+                editLink = link + "/" + id;
+            }
+            var data = $$(dtId).getItem(id);
+            data[column] = newValue;
+            if(data.deleted==null) data.deleted=0;
 
-                var commitEdit = function () {
-                    util.preloader.inc();
-                    webix.ajax().headers({
-                        "Content-type": "application/json"
-                    }).put(editLink, JSON.stringify(data), {
-                        error: function (text, data, xhr) {
-                            if (xhr.status == 401) {
-                                if (connection.showSEM) {
-                                    util.messages.showSessionExpiredError();
-                                    connection.showSEM = false;
-                                }
-                                connection.reload();
-                            } else {
-                                util.messages.showErrorMessage(text);
-                                data[column] = oldValue;
-                                try {
-                                    $$(dtId).updateItem(id, data);
-                                } catch (ex) {
-                                }
+            var commitEdit = function () {
+                util.preloader.inc();
+                webix.ajax().headers({
+                    "Content-type": "application/json"
+                }).put(editLink, JSON.stringify(data), {
+                    error: function (text, data, xhr) {
+                        if (xhr.status == 401) {
+                            if (connection.showSEM) {
+                                util.messages.showSessionExpiredError();
+                                connection.showSEM = false;
                             }
-                            util.preloader.dec();
-                        }, success: function (text, data) {
-                            //if (!data.json()) {
-                            if(text!="Success")
-                            {  util.messages.showErrorMessage("Greška pri izmjeni podataka!");
-                                data[column] = oldValue;
-                                try {
-                                    $$(dtId).updateItem(id, data);
-                                } catch (ex) {
-                                }
+                            connection.reload();
+                        } else {
+                            util.messages.showErrorMessage(text);
+                            data[column] = oldValue;
+                            try {
+                                $$(dtId).updateItem(id, data);
+                            } catch (ex) {
                             }
-
-                            util.preloader.dec();
                         }
-                    });
-                };
-
-                if (typeof editValidationRules !== 'undefined') {
-                    for (var i = 0; i < editValidationRules.length; i++) {
-
-                        if (editValidationRules[i].column == editor.column) {
-
-                            if (editValidationRules[i].rule == "canChange") {
-
-                                var url = editValidationRules[i].validateUrl.replace("{id}", id).replace("{value}", newValue);
-
-                                var editError = function () {
-                                    util.messages.showErrorMessage("Unesena vrednost već postoji!");
-                                    data[column] = oldValue;
-                                    $$(dtId).updateItem(id, data);
-                                };
-
-
-                                connection.sendAjax("GET", url,
-                                    function (text, data, xhr) {
-                                        if (text != "true") editError();
-                                        else {
-                                            commitEdit();
-                                        }
-                                    }, function () {
-                                        editError();
-                                    });
-
-                                return true;
-
-                            } else if (editValidationRules[i].rule == "isEmpty") {
-                                if (/^\s*$/.test(state.value)) {
-                                    state.value = state.old;
-                                    data[column] = state.old;
-                                    util.messages.showErrorMessage("Polje je obavezno za unos.")
-                                }
+                        util.preloader.dec();
+                    }, success: function (text, data) {
+                        //if (!data.json()) {
+                        if(text!="Success")
+                        {  util.messages.showErrorMessage("Greška pri izmjeni podataka!");
+                            data[column] = oldValue;
+                            try {
+                                $$(dtId).updateItem(id, data);
+                            } catch (ex) {
                             }
-                            else if (editValidationRules[i].rule == "isValidMac") {
-                                if (!util.validation.checkMacAddress(state.value)) {
-                                    state.value = state.old;
-                                    data[column] = state.old;
-                                    util.messages.showErrorMessage("Unesite validnu MAC adresu za uređaj.")
-                                }
-                            }
-                            else if (editValidationRules[i].rule == "isValidNumber") {
-                                if (!util.validation.checkPhoneNumber(state.value)) {
-                                    state.value = state.old;
-                                    data[column] = state.old;
-                                    util.messages.showErrorMessage("Unesite validan broj telefona.")
-                                }
-                            }
-                            else if(editValidationRules[i].rule == "checkLength") {
-                                var length;
-                                if(editor.column == "name")
-                                    length = 100;
-                                else if(editor.column == "description")
-                                    length = 500;
-                                if(!util.validation.checkLength(state.value, length)) {
-                                    state.value = state.old;
-                                    data[column] = state.old;
-                                    util.messages.showErrorMessage("Maksimalan broj karaktera je " + length + "!");
-                                }
-                            }
-                            else if(editValidationRules[i].rule == "isInteger") {
-                                if(!util.validation.isInteger(state.value)) {
-                                    state.value = state.old;
-                                    data[column] = state.old;
-                                    util.messages.showErrorMessage("Broj spratova mora biti cijeli broj!")
-                                }
-                            }
-                            else if(editValidationRules[i].rule == "isPositiveInteger") {
-                                if(!util.validation.isInteger(state.value) || state.value < 1) {
-                                    state.value = state.old;
-                                    data[column] = state.old;
-                                    util.messages.showErrorMessage("Kapacitet sale mora biti pozitivan cijeli broj!");
-                                }
-                            }
+                        }
 
-                            else if (util.validation.validateUponEdit(editor, editValidationRules[i].rule)) break;
-                            else {
-                                setTimeout(function () {
-                                    data[column] = oldValue;
-                                    $$(dtId).updateItem(id, data);
-                                }, 0);
-                                return true;
+                        util.preloader.dec();
+                    }
+                });
+            };
+
+            if (typeof editValidationRules !== 'undefined') {
+                for (var i = 0; i < editValidationRules.length; i++) {
+
+                    if (editValidationRules[i].column == editor.column) {
+
+                        if (editValidationRules[i].rule == "canChange") {
+
+                            var url = editValidationRules[i].validateUrl.replace("{id}", id).replace("{value}", newValue);
+
+                            var editError = function () {
+                                util.messages.showErrorMessage("Unesena vrednost već postoji!");
+                                data[column] = oldValue;
+                                $$(dtId).updateItem(id, data);
+                            };
+
+
+                            connection.sendAjax("GET", url,
+                                function (text, data, xhr) {
+                                    if (text != "true") editError();
+                                    else {
+                                        commitEdit();
+                                    }
+                                }, function () {
+                                    editError();
+                                });
+
+                            return true;
+
+                        } else if (editValidationRules[i].rule == "isEmpty") {
+                            if (/^\s*$/.test(state.value)) {
+                                state.value = state.old;
+                                data[column] = state.old;
+                                util.messages.showErrorMessage("Polje je obavezno za unos.")
                             }
+                        }
+                        else if (editValidationRules[i].rule == "isValidMac") {
+                            if (!util.validation.checkMacAddress(state.value)) {
+                                state.value = state.old;
+                                data[column] = state.old;
+                                util.messages.showErrorMessage("Unesite validnu MAC adresu za uređaj.")
+                            }
+                        }
+                        else if (editValidationRules[i].rule == "isValidNumber") {
+                            if (!util.validation.checkPhoneNumber(state.value)) {
+                                state.value = state.old;
+                                data[column] = state.old;
+                                util.messages.showErrorMessage("Unesite validan broj telefona.")
+                            }
+                        }
+                        else if(editValidationRules[i].rule == "checkLength") {
+                            var length;
+                            if(editor.column == "name")
+                                length = 100;
+                            else if(editor.column == "description")
+                                length = 500;
+                            if(!util.validation.checkLength(state.value, length)) {
+                                state.value = state.old;
+                                data[column] = state.old;
+                                util.messages.showErrorMessage("Maksimalan broj karaktera je " + length + "!");
+                            }
+                        }
+                        else if(editValidationRules[i].rule == "isInteger") {
+                            if(!util.validation.isInteger(state.value)) {
+                                state.value = state.old;
+                                data[column] = state.old;
+                                util.messages.showErrorMessage("Broj spratova mora biti cijeli broj!")
+                            }
+                        }
+                        else if(editValidationRules[i].rule == "isPositiveInteger") {
+                            if(!util.validation.isInteger(state.value) || state.value < 1) {
+                                state.value = state.old;
+                                data[column] = state.old;
+                                util.messages.showErrorMessage("Kapacitet sale mora biti pozitivan cijeli broj!");
+                            }
+                        }
+
+                        else if (util.validation.validateUponEdit(editor, editValidationRules[i].rule)) break;
+                        else {
+                            setTimeout(function () {
+                                data[column] = oldValue;
+                                $$(dtId).updateItem(id, data);
+                            }, 0);
+                            return true;
                         }
                     }
                 }
-
-                commitEdit();
-                return true;
             }
-        );
+
+            commitEdit();
+            return true;
+        });
 
         $$(dtId).attachEvent("onBeforeDelete", function (id) {
-
-            var forDelete = webix.storage.local.get("for_delete");
-
-            if (forDelete.indexOf(id) > -1) {
-
-                var index = forDelete.indexOf(id);
-                if (index > -1) {
-                    forDelete.splice(index, 1);
-                }
-                webix.storage.local.put("for_delete", forDelete);
-
-                return true;
-            }
-
-            forDelete.push(id);
-            webix.storage.local.put("for_delete", forDelete);
-
             var deleteLink = link + "/" + id;
-
             util.preloader.inc();
-            webix.ajax().headers({
-                "Content-type": "application/json"
-            }).del(deleteLink, {
-                error: function (text, data, xhr) {
-                    if (xhr.status == 401) {
-                        if (connection.showSEM) {
-                            util.messages.showSessionExpiredError();
-                            connection.showSEM = false;
-                        }
-                        connection.reload();
-                    } else {
-                        util.messages.showErrorMessage("Greška pri brisanju podataka");
-                        var forDelete = webix.storage.local.get("for_delete");
-                        var index = forDelete.indexOf(id);
-                        if (index > -1) {
-                            forDelete.splice(index, 1);
-                        }
-                        webix.storage.local.put("for_delete", forDelete);
-                    }
-                    util.preloader.dec();
-                },
-                success: function (text, data, xhr) {
-                    try {
-                        $$(dtId).remove(id);
-                    } catch (ex) {
-                    }
-                    util.preloader.dec();
-                }
+            webix.ajax().del(deleteLink).then(function (result) {
+                util.messages.showMessage("Uspješno brisanje!");
+            }).fail(function (err) {
+                util.messages.showErrorMessage(err.responseText);
+                return false;
+
             });
-
-            return false;
-
         });
     },
 
+    dettachAjaxEvents: function(dtId){
+        $$(dtId).detachEvent("onBeforeEdit");
+        $$(dtId).detachEvent("onBeforeAdd");
+        $$(dtId).detachEvent("onBeforeDelete");
+    },
     fetchPaginationSettings: function (viewId, name) {
         util.preloader.inc();
 

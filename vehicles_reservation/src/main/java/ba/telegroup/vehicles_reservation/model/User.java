@@ -1,5 +1,8 @@
 package ba.telegroup.vehicles_reservation.model;
 
+import ba.telegroup.vehicles_reservation.common.interfaces.Deletable;
+import ba.telegroup.vehicles_reservation.common.interfaces.HasCompanyId;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -27,7 +30,8 @@ import java.util.Date;
         )
 )
 @Entity
-public class User {
+@Inheritance(strategy = InheritanceType.JOINED)
+public class User implements Deletable, HasCompanyId {
     private Integer id;
     private String email;
     private String username;

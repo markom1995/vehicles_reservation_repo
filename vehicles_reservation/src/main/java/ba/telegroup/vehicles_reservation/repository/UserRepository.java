@@ -1,10 +1,13 @@
 package ba.telegroup.vehicles_reservation.repository;
 
+import ba.telegroup.vehicles_reservation.common.interfaces.HasCompanyIdAndDeletableRepository;
 import ba.telegroup.vehicles_reservation.model.User;
 import ba.telegroup.vehicles_reservation.repository.repositoryCustom.UserRepositoryCustom;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<User, Integer>, UserRepositoryCustom {
+import java.util.List;
+
+public interface UserRepository extends JpaRepository<User, Integer>, UserRepositoryCustom, HasCompanyIdAndDeletableRepository<User> {
 
     User getByUsername(String username);
     User getByUsernameAndCompanyId(String username, Integer companyId);

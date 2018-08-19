@@ -1,9 +1,12 @@
 package ba.telegroup.vehicles_reservation.model;
 
+import ba.telegroup.vehicles_reservation.common.interfaces.Deletable;
+import ba.telegroup.vehicles_reservation.common.interfaces.HasCompanyId;
+
 import javax.persistence.*;
 
 @Entity
-public class Vehicle {
+public class Vehicle implements Deletable, HasCompanyId {
     private Integer id;
     private Integer vehicleManufacturerId;
     private Integer vehicleModelId;

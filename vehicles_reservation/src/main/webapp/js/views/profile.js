@@ -47,7 +47,7 @@ var profileView = {
                                     name: "photo",
                                     width: 200,
                                     height: 200,
-                                    "template": "<img src='#src#' class='photo-alignment'/>",
+                                    template: "<img src='#src#' class='photo-alignment'/>",
                                     onClick: {
                                         "photo-alignment": function (e, id, trg) {
                                             $$("uploadAPI").fileDialog();
@@ -148,7 +148,7 @@ var profileView = {
                                     if (!value) {
                                         return false;
                                     }
-                                    if (value.length > 100) {
+                                    if (value.length > 128) {
                                         $$('profileForm').elements.firstname.config.invalidMessage = 'Maksimalan broj karaktera je 128.';
                                         return false;
                                     }
@@ -158,8 +158,8 @@ var profileView = {
                                     if (!value) {
                                         return false;
                                     }
-                                    if (value.length > 100) {
-                                        $$('profileForm').elements.lastname.config.invalidMessage = 'Maksimalan broj karaktera je 128.';
+                                    if (value.length > 128) {
+                                        $$('profileForm').elements.lastName.config.invalidMessage = 'Maksimalan broj karaktera je 128.';
                                         return false;
                                     }
                                     return true;

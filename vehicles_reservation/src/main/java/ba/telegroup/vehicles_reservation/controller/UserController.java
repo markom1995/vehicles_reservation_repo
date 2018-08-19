@@ -3,8 +3,10 @@ package ba.telegroup.vehicles_reservation.controller;
 import ba.telegroup.vehicles_reservation.common.exceptions.BadRequestException;
 import ba.telegroup.vehicles_reservation.common.exceptions.ForbiddenException;
 import ba.telegroup.vehicles_reservation.controller.genericController.GenericController;
+import ba.telegroup.vehicles_reservation.controller.genericController.GenericHasCompanyIdAndDeletableController;
 import ba.telegroup.vehicles_reservation.model.Company;
 import ba.telegroup.vehicles_reservation.model.User;
+import ba.telegroup.vehicles_reservation.model.modelCustom.UserRole;
 import ba.telegroup.vehicles_reservation.repository.CompanyRepository;
 import ba.telegroup.vehicles_reservation.repository.UserRepository;
 import ba.telegroup.vehicles_reservation.util.*;
@@ -21,11 +23,12 @@ import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
+import java.util.List;
 
 @RequestMapping(value = "/hub/user")
 @Controller
 @Scope("request")
-public class UserController extends GenericController<User, Integer> {
+public class UserController extends GenericHasCompanyIdAndDeletableController<User, Integer> {
 
     private final UserRepository userRepository;
     private final CompanyRepository companyRepository;
@@ -108,7 +111,7 @@ public class UserController extends GenericController<User, Integer> {
                 if (Validator.stringMaxLength(user.getLastName(), 128)) {
                     if(Validator.binaryMaxLength(user.getPhoto(), longblobLength)){
                         User userTemp = userRepository.findById(id).orElse(null);
-                        User oldUser = cloner.deepClone(repo.findById(id).orElse(null));
+                        User oldUser = cloner.deepClone(userRepository.findById(id).orElse(null));
 
                         userTemp.setFirstName(user.getFirstName());
                         userTemp.setLastName(user.getLastName());
@@ -124,6 +127,13 @@ public class UserController extends GenericController<User, Integer> {
             throw new BadRequestException(badRequestStringMaxLength.replace("{tekst}", "imena").replace("{broj}", String.valueOf(128)));
         }
         throw new BadRequestException(badRequestUpdate);
+    }
+
+    @Transactional
+    @RequestMapping(value = "/companyUsers/{companyId}", method = RequestMethod.GET)
+    public @ResponseBody
+    List<UserRole> getByCompanyIdAndDeleted(@PathVariable Integer companyId) throws BadRequestException {
+        return userRepository.getByCompanyIdAndDeleted(companyId, (byte)0);
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -176,7 +186,7 @@ public class UserController extends GenericController<User, Integer> {
                 newUser.setTokenTime(new Timestamp(System.currentTimeMillis()));
                 newUser.setCompanyId(user.getCompanyId());
                 newUser.setRoleId(user.getRoleId());
-                if(repo.saveAndFlush(newUser) != null){
+                if(userRepository.saveAndFlush(newUser) != null){
                     entityManager.refresh(newUser);
                     logCreateAction(newUser);
                     Notification.sendRegistrationLink(user.getEmail().trim(), randomToken);
@@ -214,7 +224,7 @@ public class UserController extends GenericController<User, Integer> {
                 if(passwordInformation.getNewPassword() != null && Validator.passwordChecking(passwordInformation.getNewPassword())){
                     if(passwordInformation.getRepeatedNewPassword() != null && passwordInformation.getNewPassword().trim().equals(passwordInformation.getRepeatedNewPassword().trim())){
                         user.setPassword(Util.hashPassword(passwordInformation.getNewPassword()));
-                        if(repo.saveAndFlush(user) != null){
+                        if(userRepository.saveAndFlush(user) != null){
                             return "Success";
                         }
                         throw new BadRequestException(badRequestUpdate);
@@ -238,7 +248,7 @@ public class UserController extends GenericController<User, Integer> {
                 User user = userRepository.findById(userTemp.getId()).orElse(null);
                 String newPassword = Util.randomString(randomStringLength);
                 user.setPassword(Util.hashPassword(newPassword));
-                if(repo.saveAndFlush(user) != null){
+                if(userRepository.saveAndFlush(user) != null){
                     Notification.sendNewPassword(user.getEmail().trim(), newPassword);
 
                     return "Success";
@@ -256,7 +266,7 @@ public class UserController extends GenericController<User, Integer> {
         User user = userRepository.findById(id).orElse(null);
         if(user != null && userBean.getUser().getRoleId().equals(admin) && !user.getRoleId().equals(superAdmin) && userBean.getUser().getCompanyId().equals(user.getCompanyId()) && userBean.getUser().getRoleId().compareTo(user.getRoleId()) < 0){
             user.setActive((byte)0);
-            if(repo.saveAndFlush(user) != null){
+            if(userRepository.saveAndFlush(user) != null){
                 return "Success";
             }
             throw new BadRequestException(badRequestDeactivateUser);
@@ -285,7 +295,7 @@ public class UserController extends GenericController<User, Integer> {
                                 user.setPhoto(newUser.getPhoto());
                                 user.setActive((byte) 1);
 
-                                if(repo.saveAndFlush(user) != null){
+                                if(userRepository.saveAndFlush(user) != null){
                                     return "Success";
                                 }
                                 throw new BadRequestException(badRequestRegistration);

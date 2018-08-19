@@ -1,6 +1,7 @@
 package ba.telegroup.vehicles_reservation.controller;
 
 import ba.telegroup.vehicles_reservation.controller.genericController.GenericController;
+import ba.telegroup.vehicles_reservation.controller.genericController.GenericHasCompanyIdAndDeletableController;
 import ba.telegroup.vehicles_reservation.model.Location;
 import ba.telegroup.vehicles_reservation.repository.LocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(value = "/hub/location")
 @Controller
 @Scope("request")
-public class LocationController extends GenericController<Location, Integer> {
+public class LocationController extends GenericHasCompanyIdAndDeletableController<Location, Integer> {
 
     private final LocationRepository locationRepository;
 

@@ -1,10 +1,12 @@
 package ba.telegroup.vehicles_reservation.model;
 
+import ba.telegroup.vehicles_reservation.common.interfaces.HasCompanyId;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-public class Logger {
+public class Logger implements HasCompanyId {
     private Integer id;
     private String actionType;
     private String actionDetails;

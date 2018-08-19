@@ -1,10 +1,13 @@
 package ba.telegroup.vehicles_reservation.model;
 
+import ba.telegroup.vehicles_reservation.common.interfaces.Deletable;
+import ba.telegroup.vehicles_reservation.common.interfaces.HasCompanyId;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-public class Reservation {
+public class Reservation implements Deletable, HasCompanyId {
     private Integer id;
     private String name;
     private Timestamp startTime;
@@ -12,7 +15,7 @@ public class Reservation {
     private Integer startKm;
     private Integer endKm;
     private String direction;
-    private Byte active;
+    private Byte deleted;
     private Integer userId;
     private Integer vehicleId;
     private Integer companyId;
@@ -89,13 +92,13 @@ public class Reservation {
     }
 
     @Basic
-    @Column(name = "active", nullable = false)
-    public Byte getActive() {
-        return active;
+    @Column(name = "deleted", nullable = false)
+    public Byte getDeleted() {
+        return deleted;
     }
 
-    public void setActive(Byte active) {
-        this.active = active;
+    public void setDeleted(Byte deleted) {
+        this.deleted = deleted;
     }
 
     @Basic
@@ -142,7 +145,7 @@ public class Reservation {
         if (startKm != null ? !startKm.equals(that.startKm) : that.startKm != null) return false;
         if (endKm != null ? !endKm.equals(that.endKm) : that.endKm != null) return false;
         if (direction != null ? !direction.equals(that.direction) : that.direction != null) return false;
-        if (active != null ? !active.equals(that.active) : that.active != null) return false;
+        if (deleted != null ? !deleted.equals(that.deleted) : that.deleted != null) return false;
         if (userId != null ? !userId.equals(that.userId) : that.userId != null) return false;
         if (vehicleId != null ? !vehicleId.equals(that.vehicleId) : that.vehicleId != null) return false;
         if (companyId != null ? !companyId.equals(that.companyId) : that.companyId != null) return false;
@@ -159,7 +162,7 @@ public class Reservation {
         result = 31 * result + (startKm != null ? startKm.hashCode() : 0);
         result = 31 * result + (endKm != null ? endKm.hashCode() : 0);
         result = 31 * result + (direction != null ? direction.hashCode() : 0);
-        result = 31 * result + (active != null ? active.hashCode() : 0);
+        result = 31 * result + (deleted != null ? deleted.hashCode() : 0);
         result = 31 * result + (userId != null ? userId.hashCode() : 0);
         result = 31 * result + (vehicleId != null ? vehicleId.hashCode() : 0);
         result = 31 * result + (companyId != null ? companyId.hashCode() : 0);
