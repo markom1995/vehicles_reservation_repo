@@ -14,6 +14,9 @@ var menuActions = function (id) {
         case "company":
             companyView.selectPanel();
             break;
+        case "logger":
+            loggerView.selectPanel();
+            break;
     }
 };
 
@@ -22,14 +25,19 @@ var menuSuperAdmin = [
         id: "company",
         value: "Kompanije",
         icon: "briefcase"
+    },
+    {
+        id: "logger",
+        value: "Loger korisničkih akcija",
+        icon: "history"
     }
 ];
 
 var menuAdmin = [
     {
-        id: "company",
-        value: "Kompanije",
-        icon: "briefcase"
+        id: "logger",
+        value: "Loger korisničkih akcija",
+        icon: "history"
     }
 ];
 
@@ -87,7 +95,7 @@ var init = function () {
                         });
                     } else {
                         showApp();
-                        $$("userInfo").setHTML("<p style='display: table-cell; line-height: 13px; vertical-align: text-top; horizontal-align:right;font-size: 14px; margin-left: auto;margin-right: 0;}'>" + userData.firstName + " " + userData.lastName + "<br>Super administrator</p>");
+                        $$("userInfo").setHTML("<p style='display: table-cell; line-height: 13px; vertical-align: text-top; horizontal-align:right;font-size: 14px; margin-left: auto;margin-right: 0;}'>" + userData.firstName + " " + userData.lastName + "<br>Administrator sistema</p>");
                     }
                 }
                 else {

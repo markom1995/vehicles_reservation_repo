@@ -133,7 +133,7 @@ public class UserController extends GenericHasCompanyIdAndDeletableController<Us
     @RequestMapping(value = "/companyUsers/{companyId}", method = RequestMethod.GET)
     public @ResponseBody
     List<UserRole> getByCompanyIdAndDeleted(@PathVariable Integer companyId) throws BadRequestException {
-        return userRepository.getByCompanyIdAndDeleted(companyId, (byte)0);
+        return userRepository.getByCompanyIdAndDeletedAndActive(companyId, (byte)0, (byte)1);
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -170,7 +170,7 @@ public class UserController extends GenericHasCompanyIdAndDeletableController<Us
     @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody
     User insert(@RequestBody User user) throws BadRequestException {
-        if(userRepository.countAllByCompanyIdAndEmail(userBean.getUser().getCompanyId(), user.getEmail()).compareTo(Integer.valueOf(0)) == 0){
+        if(userRepository.countAllByCompanyIdAndEmail(user.getCompanyId(), user.getEmail()).compareTo(Integer.valueOf(0)) == 0){
             if(Validator.validateEmail(user.getEmail())){
                 String randomToken = Util.randomString(randomStringLength);
                 User newUser = new User();
@@ -264,7 +264,7 @@ public class UserController extends GenericHasCompanyIdAndDeletableController<Us
     public @ResponseBody
     String deactivate(@PathVariable Integer id) throws BadRequestException {
         User user = userRepository.findById(id).orElse(null);
-        if(user != null && userBean.getUser().getRoleId().equals(admin) && !user.getRoleId().equals(superAdmin) && userBean.getUser().getCompanyId().equals(user.getCompanyId()) && userBean.getUser().getRoleId().compareTo(user.getRoleId()) < 0){
+        if(user != null && userBean.getUser().getRoleId().equals(superAdmin) && !user.getRoleId().equals(superAdmin)){
             user.setActive((byte)0);
             if(userRepository.saveAndFlush(user) != null){
                 return "Success";

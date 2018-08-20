@@ -9,5 +9,5 @@ import java.util.List;
 public interface UserRepositoryCustom {
 
     User login(UserInformation userInformation);
-    List<UserRole> getByCompanyIdAndDeleted(Integer companyId, byte id);
+    List<UserRole> getByCompanyIdAndDeletedAndActive(Integer companyId, byte deleted, byte active);
 }

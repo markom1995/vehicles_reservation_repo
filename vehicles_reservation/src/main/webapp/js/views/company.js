@@ -15,6 +15,15 @@ var companyView = {
                     },
                     {},
                     {
+                        id: "addSuperAdminBtn",
+                        view: "button",
+                        type: "iconButton",
+                        label: "Dodajte novog administratora sistema",
+                        icon: "user",
+                        click: 'userView.showAddSuperAdminDialog',
+                        autowidth: true
+                    },
+                    {
                         id: "addCompanyBtn",
                         view: "button",
                         type: "iconButton",
@@ -72,7 +81,7 @@ var companyView = {
                             this.select(item.row);
                         },
                         onItemDblClick: function (id) {
-                            companyView.showCompanyUsersDialog(id);
+                            userView.showCompanyUsersDialog(id);
                         }
                     }
             }
@@ -91,7 +100,7 @@ var companyView = {
         webix.ui({
             view: "contextmenu",
             id: "companyContextMenu",
-            width: 200,
+            width: 235,
             data: [
                 {
                     id: "1",
@@ -99,12 +108,17 @@ var companyView = {
                     icon: "pencil-square-o"
                 },
                 {
-                    $template: "Separator"
-                },
-                {
                     id: "2",
                     value: "Obrišite",
                     icon: "trash"
+                },
+                {
+                    $template: "Separator"
+                },
+                {
+                    id: "3",
+                    value: "Dodavanje novog korisnika",
+                    icon: "user"
                 }
             ],
             master: $$("companyTable"),
@@ -124,57 +138,13 @@ var companyView = {
                             };
                             webix.confirm(delBox);
                             break;
+                        case "3":
+                            userView.showAddCompanyUserDialog($$("companyTable").getItem(context.id.row));
+                            break;
                     }
                 }
             }
         });
-    },
-
-    companyUsersDialog: {
-        view: "popup",
-        id: "companyUsersDialog",
-        modal: true,
-        position: "center",
-        body: {
-            id: "addCompanyInside",
-            rows: [
-                {
-                    view: "toolbar",
-                    cols: [
-                        {
-                            view: "label",
-                            label: "<span class='webix_icon fa-user'></span> Korisnici kompanije",
-                            width: 400
-                        },
-                        {},
-                        {
-                            hotkey: 'esc',
-                            view: "icon",
-                            icon: "close",
-                            align: "right",
-                            click: "util.dismissDialog('companyUsersDialog');"
-                        }
-                    ]
-                },
-                {
-                    id: "usersList",
-                    view: "list",
-                    width: 400,
-                    height: 300,
-                    dynamic: true,
-                    template: "#firstName# #lastName# - #roleName#",
-                    select: true
-                }
-            ]
-        }
-    },
-
-    showCompanyUsersDialog: function (id) {
-        if (util.popupIsntAlreadyOpened("companyUsersDialog")) {
-            var object = $$("companyTable").getItem(id.row);
-            webix.ui(webix.copy(companyView.companyUsersDialog)).show();
-            $$("usersList").load("hub/user/companyUsers/" + object.id);
-        }
     },
 
     addDialog: {

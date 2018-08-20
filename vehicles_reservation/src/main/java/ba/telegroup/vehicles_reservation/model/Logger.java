@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Logger implements HasCompanyId {
     private Integer id;
     private String actionType;

@@ -91,6 +91,11 @@
     right: 5px !important;
 }
 
+.delete-user{
+    position: absolute !important;
+    right: 15px !important;
+}
+
 .relative{
     position: relative !important;
 }
