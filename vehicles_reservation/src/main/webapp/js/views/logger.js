@@ -239,5 +239,10 @@ var loggerView = {
 
         $$("main").addView(webix.copy(panelCopy));
         connection.attachAjaxEvents("loggerTable", "/hub/logger", true);
+
+        if(userData.roleId === 2){
+            $$("loggerTable").hideColumn("companyName");
+            $$("loggerTable").refresh();
+        }
     }
 };

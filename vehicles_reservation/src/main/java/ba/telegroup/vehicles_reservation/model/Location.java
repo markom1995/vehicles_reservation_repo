@@ -9,6 +9,7 @@ import javax.persistence.*;
 public class Location implements Deletable, HasCompanyId {
     private Integer id;
     private String name;
+    private String address;
     private Double longitude;
     private Double latitude;
     private String description;
@@ -24,6 +25,16 @@ public class Location implements Deletable, HasCompanyId {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    @Basic
+    @Column(name = "address", nullable = false, length = 128)
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     @Basic

@@ -548,8 +548,13 @@ var companyView = {
 
             webix.ajax().header({"Content-type": "application/json"})
                 .put("hub/company/" + newCompany.id, newCompany).then(function (data) {
-                util.messages.showMessage("Kompanija uspješno izmjenjena.");
-                $$("companyTable").updateItem(newCompany.id, newCompany);
+                    if(data.text() === "Success"){
+                        util.messages.showMessage("Kompanija uspješno izmjenjena.");
+                        $$("companyTable").updateItem(newCompany.id, newCompany);
+                    }
+                    else{
+                        util.messages.showMessage("Kompanija neuspješno izmjenjena.");
+                    }
             }).fail(function (error) {
                 util.messages.showErrorMessage(error.responseText);
             });

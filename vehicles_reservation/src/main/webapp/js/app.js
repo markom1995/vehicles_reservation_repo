@@ -17,6 +17,9 @@ var menuActions = function (id) {
         case "logger":
             loggerView.selectPanel();
             break;
+        case "location":
+            locationView.selectPanel();
+            break;
     }
 };
 
@@ -35,6 +38,11 @@ var menuSuperAdmin = [
 
 var menuAdmin = [
     {
+        id: "location",
+        value: "Lokacije vozila",
+        icon: "map"
+    },
+    {
         id: "logger",
         value: "Loger korisničkih akcija",
         icon: "history"
@@ -43,9 +51,9 @@ var menuAdmin = [
 
 var menuUser = [
     {
-        id: "company",
-        value: "Kompanije",
-        icon: "briefcase"
+        id: "location",
+        value: "Lokacije vozila",
+        icon: "map"
     }
 ];
 
@@ -125,7 +133,7 @@ var showApp = function () {
     webix.ui(main, panel);
     panel = $$("app");
     if (companyData != null)
-        document.getElementById("appLogo").src = "data:image/jpg;base64," + companyData.companyLogo;
+        document.getElementById("appLogo").src = "data:image/jpg;base64," + companyData.logo;
     var localMenuData = null;
     if (userData != null) {
         switch (userData.roleId) {
@@ -174,8 +182,8 @@ var showApp = function () {
             companyView.selectPanel();
             $$("mainMenu").select("company");
         } else {
-            dashboardView.selectPanel();
-            $$("mainMenu").select("dashboard");
+            //dashboardView.selectPanel();
+            //$$("mainMenu").select("dashboard");
         }
     }
     else if (userForRegistration != null) {
