@@ -20,6 +20,9 @@ var menuActions = function (id) {
         case "location":
             locationView.selectPanel();
             break;
+        case "vehicle":
+            vehicleView.selectPanel();
+            break;
     }
 };
 
@@ -43,6 +46,11 @@ var menuAdmin = [
         icon: "map"
     },
     {
+        id: "vehicle",
+        value: "Vozila",
+        icon: "car"
+    },
+    {
         id: "logger",
         value: "Loger korisničkih akcija",
         icon: "history"
@@ -54,6 +62,11 @@ var menuUser = [
         id: "location",
         value: "Lokacije vozila",
         icon: "map"
+    },
+    {
+        id: "vehicle",
+        value: "Vozila",
+        icon: "car"
     }
 ];
 

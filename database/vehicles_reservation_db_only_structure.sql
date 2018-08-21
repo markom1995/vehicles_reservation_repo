@@ -24,13 +24,14 @@ CREATE TABLE IF NOT EXISTS `company` (
   `logo` longblob NOT NULL,
   `deleted` tinyint(4) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- Data exporting was unselected.
 -- Dumping structure for table vehicles_reservation_db.location
 CREATE TABLE IF NOT EXISTS `location` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(128) NOT NULL,
+  `address` varchar(128) NOT NULL,
   `longitude` float(10,6) NOT NULL,
   `latitude` float(10,6) NOT NULL,
   `description` text DEFAULT NULL,
@@ -39,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `location` (
   PRIMARY KEY (`id`),
   KEY `FK_location_company` (`company_id`),
   CONSTRAINT `FK_location_company` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- Data exporting was unselected.
 -- Dumping structure for table vehicles_reservation_db.logger
@@ -51,13 +52,13 @@ CREATE TABLE IF NOT EXISTS `logger` (
   `created` datetime NOT NULL DEFAULT current_timestamp(),
   `user_id` int(11) NOT NULL,
   `atomic` tinyint(4) NOT NULL,
-  `company_id` int(11) NOT NULL,
+  `company_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_logger_user` (`user_id`),
   KEY `FK_logger_company` (`company_id`),
   CONSTRAINT `FK_logger_company` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
   CONSTRAINT `FK_logger_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8;
 
 -- Data exporting was unselected.
 -- Dumping structure for table vehicles_reservation_db.reservation
@@ -69,7 +70,7 @@ CREATE TABLE IF NOT EXISTS `reservation` (
   `start_km` int(11) NOT NULL,
   `end_km` int(11) DEFAULT NULL,
   `direction` text NOT NULL,
-  `active` tinyint(4) NOT NULL,
+  `deleted` tinyint(4) NOT NULL,
   `user_id` int(11) NOT NULL,
   `vehicle_id` int(11) NOT NULL,
   `company_id` int(11) NOT NULL,
@@ -111,30 +112,29 @@ CREATE TABLE IF NOT EXISTS `user` (
   KEY `FK_user_role` (`role_id`),
   CONSTRAINT `FK_user_company` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
   CONSTRAINT `FK_user_role` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
 
 -- Data exporting was unselected.
 -- Dumping structure for table vehicles_reservation_db.vehicle
 CREATE TABLE IF NOT EXISTS `vehicle` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `vehicle_manufacturer_id` int(11) NOT NULL,
+  `license_plate` varchar(128) NOT NULL,
   `vehicle_model_id` int(11) NOT NULL,
   `year` int(11) NOT NULL,
   `engine` varchar(128) NOT NULL,
   `fuel` varchar(128) NOT NULL,
+  `photo` longblob DEFAULT NULL,
   `deleted` tinyint(4) NOT NULL DEFAULT 0,
   `location_id` int(11) NOT NULL,
   `company_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `FK_vehicle_vehicle_manufacturer` (`vehicle_manufacturer_id`),
   KEY `FK_vehicle_vehicle_model` (`vehicle_model_id`),
   KEY `FK_vehicle_location` (`location_id`),
   KEY `FK_vehicle_company` (`company_id`),
   CONSTRAINT `FK_vehicle_company` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
   CONSTRAINT `FK_vehicle_location` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`),
-  CONSTRAINT `FK_vehicle_vehicle_manufacturer` FOREIGN KEY (`vehicle_manufacturer_id`) REFERENCES `vehicle_manufacturer` (`id`),
   CONSTRAINT `FK_vehicle_vehicle_model` FOREIGN KEY (`vehicle_model_id`) REFERENCES `vehicle_model` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 -- Data exporting was unselected.
 -- Dumping structure for table vehicles_reservation_db.vehicle_maintenance
@@ -168,8 +168,11 @@ CREATE TABLE IF NOT EXISTS `vehicle_maintenance_type` (
 CREATE TABLE IF NOT EXISTS `vehicle_manufacturer` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(128) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `company_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_vehicle_manufacturer_company` (`company_id`),
+  CONSTRAINT `FK_vehicle_manufacturer_company` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 -- Data exporting was unselected.
 -- Dumping structure for table vehicles_reservation_db.vehicle_model
@@ -180,7 +183,7 @@ CREATE TABLE IF NOT EXISTS `vehicle_model` (
   PRIMARY KEY (`id`),
   KEY `FK_vehicle_model_vehicle_manufacturer` (`vehicle_manufacturer_id`),
   CONSTRAINT `FK_vehicle_model_vehicle_manufacturer` FOREIGN KEY (`vehicle_manufacturer_id`) REFERENCES `vehicle_manufacturer` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 -- Data exporting was unselected.
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

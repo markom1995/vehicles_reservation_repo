@@ -129,7 +129,6 @@ public class UserController extends GenericHasCompanyIdAndDeletableController<Us
         throw new BadRequestException(badRequestUpdate);
     }
 
-    @Transactional
     @RequestMapping(value = "/companyUsers/{companyId}", method = RequestMethod.GET)
     public @ResponseBody
     List<UserRole> getByCompanyIdAndDeleted(@PathVariable Integer companyId) throws BadRequestException {

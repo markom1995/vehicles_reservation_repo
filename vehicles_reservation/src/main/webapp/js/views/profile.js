@@ -171,6 +171,7 @@ var profileView = {
             ]
         }
     },
+
     saveChanges: function () {
         if ($$("profileForm").validate()) {
             var helpUser = userData;

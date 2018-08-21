@@ -1,11 +1,15 @@
 package ba.telegroup.vehicles_reservation.model;
 
+import ba.telegroup.vehicles_reservation.common.interfaces.HasCompanyId;
+
 import javax.persistence.*;
 
 @Entity
-public class VehicleManufacturer {
+@Table(name = "vehicle_manufacturer", schema = "vehicles_reservation_db", catalog = "")
+public class VehicleManufacturer implements HasCompanyId {
     private Integer id;
     private String name;
+    private Integer companyId;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +32,16 @@ public class VehicleManufacturer {
         this.name = name;
     }
 
+    @Basic
+    @Column(name = "company_id", nullable = false)
+    public Integer getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Integer companyId) {
+        this.companyId = companyId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -37,6 +51,7 @@ public class VehicleManufacturer {
 
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (companyId != null ? !companyId.equals(that.companyId) : that.companyId != null) return false;
 
         return true;
     }
@@ -45,6 +60,7 @@ public class VehicleManufacturer {
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (companyId != null ? companyId.hashCode() : 0);
         return result;
     }
 }

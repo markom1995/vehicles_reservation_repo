@@ -1,12 +1,33 @@
 package ba.telegroup.vehicles_reservation.model;
 
 import javax.persistence.*;
+import java.util.Date;
 
+@SqlResultSetMapping(
+        name = "VehicleModelMapping",
+        classes = @ConstructorResult(
+                targetClass = VehicleModel.class,
+                columns = {
+                        @ColumnResult(name="id"),
+                        @ColumnResult(name="name"),
+                        @ColumnResult(name="vehicle_manufacturer_id")
+                }
+        )
+)
 @Entity
 public class VehicleModel {
     private Integer id;
     private String name;
     private Integer vehicleManufacturerId;
+
+    public VehicleModel() {
+    }
+
+    public VehicleModel(Integer id, String name, Integer vehicleManufacturerId) {
+        this.id = id;
+        this.name = name;
+        this.vehicleManufacturerId = vehicleManufacturerId;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -4,15 +4,18 @@ import ba.telegroup.vehicles_reservation.common.interfaces.Deletable;
 import ba.telegroup.vehicles_reservation.common.interfaces.HasCompanyId;
 
 import javax.persistence.*;
+import java.util.Arrays;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Vehicle implements Deletable, HasCompanyId {
     private Integer id;
-    private Integer vehicleManufacturerId;
+    private String licensePlate;
     private Integer vehicleModelId;
     private Integer year;
     private String engine;
     private String fuel;
+    private byte[] photo;
     private Byte deleted;
     private Integer locationId;
     private Integer companyId;
@@ -29,13 +32,13 @@ public class Vehicle implements Deletable, HasCompanyId {
     }
 
     @Basic
-    @Column(name = "vehicle_manufacturer_id", nullable = false)
-    public Integer getVehicleManufacturerId() {
-        return vehicleManufacturerId;
+    @Column(name = "license_plate", nullable = false, length = 128)
+    public String getLicensePlate() {
+        return licensePlate;
     }
 
-    public void setVehicleManufacturerId(Integer vehicleManufacturerId) {
-        this.vehicleManufacturerId = vehicleManufacturerId;
+    public void setLicensePlate(String licensePlate) {
+        this.licensePlate = licensePlate;
     }
 
     @Basic
@@ -79,6 +82,16 @@ public class Vehicle implements Deletable, HasCompanyId {
     }
 
     @Basic
+    @Column(name = "photo", nullable = true)
+    public byte[] getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(byte[] photo) {
+        this.photo = photo;
+    }
+
+    @Basic
     @Column(name = "deleted", nullable = false)
     public Byte getDeleted() {
         return deleted;
@@ -116,13 +129,13 @@ public class Vehicle implements Deletable, HasCompanyId {
         Vehicle vehicle = (Vehicle) o;
 
         if (id != null ? !id.equals(vehicle.id) : vehicle.id != null) return false;
-        if (vehicleManufacturerId != null ? !vehicleManufacturerId.equals(vehicle.vehicleManufacturerId) : vehicle.vehicleManufacturerId != null)
-            return false;
+        if (licensePlate != null ? !licensePlate.equals(vehicle.licensePlate) : vehicle.licensePlate != null) return false;
         if (vehicleModelId != null ? !vehicleModelId.equals(vehicle.vehicleModelId) : vehicle.vehicleModelId != null)
             return false;
         if (year != null ? !year.equals(vehicle.year) : vehicle.year != null) return false;
         if (engine != null ? !engine.equals(vehicle.engine) : vehicle.engine != null) return false;
         if (fuel != null ? !fuel.equals(vehicle.fuel) : vehicle.fuel != null) return false;
+        if (!Arrays.equals(photo, vehicle.photo)) return false;
         if (deleted != null ? !deleted.equals(vehicle.deleted) : vehicle.deleted != null) return false;
         if (locationId != null ? !locationId.equals(vehicle.locationId) : vehicle.locationId != null) return false;
         if (companyId != null ? !companyId.equals(vehicle.companyId) : vehicle.companyId != null) return false;
@@ -133,11 +146,12 @@ public class Vehicle implements Deletable, HasCompanyId {
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (vehicleManufacturerId != null ? vehicleManufacturerId.hashCode() : 0);
+        result = 31 * result + (licensePlate != null ? licensePlate.hashCode() : 0);
         result = 31 * result + (vehicleModelId != null ? vehicleModelId.hashCode() : 0);
         result = 31 * result + (year != null ? year.hashCode() : 0);
         result = 31 * result + (engine != null ? engine.hashCode() : 0);
         result = 31 * result + (fuel != null ? fuel.hashCode() : 0);
+        result = 31 * result + Arrays.hashCode(photo);
         result = 31 * result + (deleted != null ? deleted.hashCode() : 0);
         result = 31 * result + (locationId != null ? locationId.hashCode() : 0);
         result = 31 * result + (companyId != null ? companyId.hashCode() : 0);

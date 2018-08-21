@@ -1,13 +1,26 @@
 package ba.telegroup.vehicles_reservation.controller;
 
+import ba.telegroup.vehicles_reservation.common.exceptions.BadRequestException;
 import ba.telegroup.vehicles_reservation.controller.genericController.GenericController;
 import ba.telegroup.vehicles_reservation.controller.genericController.GenericHasCompanyIdAndDeletableController;
 import ba.telegroup.vehicles_reservation.model.Vehicle;
+import ba.telegroup.vehicles_reservation.model.VehicleManufacturer;
+import ba.telegroup.vehicles_reservation.model.VehicleModel;
+import ba.telegroup.vehicles_reservation.model.modelCustom.UserRole;
+import ba.telegroup.vehicles_reservation.model.modelCustom.VehicleLocationVehicleModelVehicleManufacturer;
+import ba.telegroup.vehicles_reservation.repository.VehicleManufacturerRepository;
+import ba.telegroup.vehicles_reservation.repository.VehicleModelRepository;
 import ba.telegroup.vehicles_reservation.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.List;
 
 @RequestMapping(value = "/hub/vehicle")
 @Controller
@@ -15,10 +28,130 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class VehicleController extends GenericHasCompanyIdAndDeletableController<Vehicle, Integer> {
 
     private final VehicleRepository vehicleRepository;
+    private final VehicleManufacturerRepository vehicleManufacturerRepository;
+    private final VehicleModelRepository vehicleModelRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Value("${badRequest.insert}")
+    private String badRequestInsert;
+
+    @Value("${badRequest.update}")
+    private String badRequestUpdate;
+
+    @Value("${badRequest.noVehicle}")
+    private String badRequestNoVehicle;
 
     @Autowired
-    public VehicleController(VehicleRepository vehicleRepository){
+    public VehicleController(VehicleRepository vehicleRepository, VehicleManufacturerRepository vehicleManufacturerRepository, VehicleModelRepository vehicleModelRepository){
         super(vehicleRepository);
         this.vehicleRepository = vehicleRepository;
+        this.vehicleManufacturerRepository = vehicleManufacturerRepository;
+        this.vehicleModelRepository = vehicleModelRepository;
+    }
+
+    @Override
+    @Transactional
+    @RequestMapping(method = RequestMethod.GET)
+    public @ResponseBody
+    List getAll(){
+        return vehicleRepository.getAllExtendedByCompanyIdAndDeleted(userBean.getUser().getCompanyId(), (byte)0);
+    }
+
+    @Transactional
+    @RequestMapping(value = "/custom", method = RequestMethod.POST)
+    public @ResponseBody
+    VehicleLocationVehicleModelVehicleManufacturer insertExtended(@RequestBody VehicleLocationVehicleModelVehicleManufacturer vehicleLocationVehicleModelVehicleManufacturer) throws BadRequestException{
+        VehicleModel vehicleModel = getVehicleModel(vehicleLocationVehicleModelVehicleManufacturer);
+
+        Vehicle vehicle = new Vehicle();
+        vehicle.setLicensePlate(vehicleLocationVehicleModelVehicleManufacturer.getLicensePlate());
+        vehicle.setVehicleModelId(vehicleModel.getId());
+        vehicle.setYear(vehicleLocationVehicleModelVehicleManufacturer.getYear());
+        vehicle.setEngine(vehicleLocationVehicleModelVehicleManufacturer.getEngine());
+        vehicle.setFuel(vehicleLocationVehicleModelVehicleManufacturer.getFuel());
+        vehicle.setPhoto(vehicleLocationVehicleModelVehicleManufacturer.getPhoto());
+        vehicle.setDeleted((byte)0);
+        vehicle.setLocationId(vehicleLocationVehicleModelVehicleManufacturer.getLocationId());
+        vehicle.setCompanyId(userBean.getUser().getCompanyId());
+
+        if(vehicleRepository.saveAndFlush(vehicle) != null){
+            entityManager.refresh(vehicle);
+            logCreateAction(vehicle);
+
+            vehicleLocationVehicleModelVehicleManufacturer.setId(vehicle.getId());
+            vehicleLocationVehicleModelVehicleManufacturer.setVehicleModelId(vehicleModel.getId());
+
+            return vehicleLocationVehicleModelVehicleManufacturer;
+        }
+        else{
+            throw new BadRequestException(badRequestInsert);
+        }
+    }
+
+    @Transactional
+    @RequestMapping(value = "/custom/{id}", method = RequestMethod.PUT)
+    public @ResponseBody
+    String updateExtended(@PathVariable Integer id, @RequestBody VehicleLocationVehicleModelVehicleManufacturer vehicleLocationVehicleModelVehicleManufacturer) throws BadRequestException{
+        VehicleModel vehicleModel = getVehicleModel(vehicleLocationVehicleModelVehicleManufacturer);
+
+        Vehicle vehicle = vehicleRepository.findById(id).orElse(null);
+        if(vehicle != null){
+            Vehicle oldObject = vehicle;
+            vehicle.setLicensePlate(vehicleLocationVehicleModelVehicleManufacturer.getLicensePlate());
+            vehicle.setVehicleModelId(vehicleModel.getId());
+            vehicle.setYear(vehicleLocationVehicleModelVehicleManufacturer.getYear());
+            vehicle.setEngine(vehicleLocationVehicleModelVehicleManufacturer.getEngine());
+            vehicle.setFuel(vehicleLocationVehicleModelVehicleManufacturer.getFuel());
+            vehicle.setPhoto(vehicleLocationVehicleModelVehicleManufacturer.getPhoto());
+            vehicle.setDeleted((byte)0);
+            vehicle.setLocationId(vehicleLocationVehicleModelVehicleManufacturer.getLocationId());
+            vehicle.setCompanyId(userBean.getUser().getCompanyId());
+
+            if (vehicleRepository.saveAndFlush(vehicle) != null) {
+                logUpdateAction(vehicle, oldObject);
+                return "Success";
+            }
+            else{
+                throw new BadRequestException(badRequestUpdate);
+            }
+        }
+        else{
+            throw new BadRequestException(badRequestNoVehicle);
+        }
+    }
+
+    VehicleManufacturer getVehicleManufacturer(VehicleLocationVehicleModelVehicleManufacturer vehicleLocationVehicleModelVehicleManufacturer){
+        VehicleManufacturer vehicleManufacturer = vehicleManufacturerRepository.getByCompanyIdAndName(userBean.getUser().getCompanyId(), vehicleLocationVehicleModelVehicleManufacturer.getManufacturerName());
+
+        if(vehicleManufacturer == null){
+            vehicleManufacturer = new VehicleManufacturer();
+            vehicleManufacturer.setName(vehicleLocationVehicleModelVehicleManufacturer.getManufacturerName());
+            vehicleManufacturer.setCompanyId(userBean.getUser().getCompanyId());
+            if(vehicleManufacturerRepository.saveAndFlush(vehicleManufacturer) != null){
+                entityManager.refresh(vehicleManufacturer);
+                logSpecificAction("create", "Kreiran je novi entitet: " + vehicleManufacturer, "VehicleManufacturer");
+            }
+        }
+
+        return vehicleManufacturer;
+    }
+
+    VehicleModel getVehicleModel(VehicleLocationVehicleModelVehicleManufacturer vehicleLocationVehicleModelVehicleManufacturer){
+        VehicleManufacturer vehicleManufacturer = getVehicleManufacturer(vehicleLocationVehicleModelVehicleManufacturer);
+        VehicleModel vehicleModel = vehicleModelRepository.getByVehicleManufacturerIdAndName(vehicleManufacturer.getId(), vehicleLocationVehicleModelVehicleManufacturer.getModelName());
+
+        if(vehicleModel == null){
+            vehicleModel = new VehicleModel();
+            vehicleModel.setVehicleManufacturerId(vehicleManufacturer.getId());
+            vehicleModel.setName(vehicleLocationVehicleModelVehicleManufacturer.getModelName());
+            if(vehicleModelRepository.saveAndFlush(vehicleModel) != null){
+                entityManager.refresh(vehicleModel);
+                logSpecificAction("create", "Kreiran je novi entitet: " + vehicleModel, "VehicleModel");
+            }
+        }
+
+        return vehicleModel;
     }
 }

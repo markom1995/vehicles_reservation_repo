@@ -325,6 +325,21 @@ var locationView = {
         if(userData.roleId === 3){
             $$("addLocationBtn").define("hidden", true);
             $$("addLocationBtn").refresh();
+
+            $$("locationTable").define("editable", false);
+            $$("locationTable").refresh();
+
+            var userContextMenu = [
+                {
+                    id: "3",
+                    value: "Prikažite lokaciju na mapi",
+                    icon: "map-marker"
+                },
+            ];
+
+            $$("locationContextMenu").clearAll();
+            $$("locationContextMenu").define("data", userContextMenu);
+            $$("locationContextMenu").refresh();
         }
     },
 

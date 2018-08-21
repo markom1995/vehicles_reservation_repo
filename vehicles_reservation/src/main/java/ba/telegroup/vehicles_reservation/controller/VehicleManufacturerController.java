@@ -1,6 +1,7 @@
 package ba.telegroup.vehicles_reservation.controller;
 
 import ba.telegroup.vehicles_reservation.controller.genericController.GenericController;
+import ba.telegroup.vehicles_reservation.controller.genericController.GenericHasCompanyIdController;
 import ba.telegroup.vehicles_reservation.model.VehicleManufacturer;
 import ba.telegroup.vehicles_reservation.repository.VehicleManufacturerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(value = "/hub/vehicleManufacturer")
 @Controller
 @Scope("request")
-public class VehicleManufacturerController extends GenericController<VehicleManufacturer, Integer> {
+public class VehicleManufacturerController extends GenericHasCompanyIdController<VehicleManufacturer, Integer> {
 
     private final VehicleManufacturerRepository vehicleManufacturerRepository;
 
