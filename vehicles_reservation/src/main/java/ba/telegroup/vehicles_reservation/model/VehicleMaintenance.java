@@ -5,7 +5,6 @@ import ba.telegroup.vehicles_reservation.common.interfaces.HasCompanyId;
 
 import javax.persistence.*;
 import java.sql.Date;
-import java.sql.Timestamp;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -66,8 +65,8 @@ public class VehicleMaintenance implements Deletable, HasCompanyId {
         return date;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDate(java.util.Date date) {
+        this.date = new Date(date.getTime());
     }
 
     @Basic

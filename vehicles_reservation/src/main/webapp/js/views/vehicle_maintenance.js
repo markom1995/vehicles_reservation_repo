@@ -84,7 +84,7 @@ var vehicleMaintenanceView = {
                         header: [
                             "Cijena",
                             {
-                                content: "textFilter"
+                                content: "numberFilter"
                             }
                         ]
                     },
@@ -226,6 +226,21 @@ var vehicleMaintenanceView = {
                             label: "Registarske tablice:",
                             value: firstVehicle,
                             options: vehicles
+                        },
+                        {
+                            margin: 5,
+                            cols: [
+                                {},
+                                {
+                                    id: "saveVehicleMaintenance",
+                                    view: "button",
+                                    value: "Dodajte trošak",
+                                    type: "form",
+                                    click: "vehicleMaintenanceView.save",
+                                    hotkey: "enter",
+                                    width: 300
+                                }
+                            ]
                         }
                     ],
                     rules: {
@@ -257,19 +272,18 @@ var vehicleMaintenanceView = {
             webix.ui(webix.copy(vehicleMaintenanceView.addChangeVehicleMaintenanceDialog)).show();
             webix.UIManager.setFocus("vehicleMaintenanceTypeName");
 
+            $$("addChangeVehicleMaintenanceForm").elements.id.setValue(item.id);
             $$("addChangeVehicleMaintenanceForm").elements.vehicleMaintenanceTypeName.setValue(item.vehicleMaintenanceTypeId);
-            $$("addChangeVehicleForm").elements.vehicleModel.setValue(item.modelName);
-            $$("addChangeVehicleForm").elements.licensePlate.setValue(item.licensePlate);
-            $$("addChangeVehicleForm").elements.year.setValue(item.year);
-            $$("addChangeVehicleForm").elements.engine.setValue(item.engine);
-            $$("addChangeVehicleForm").elements.fuel.setValue(item.fuel);
-            $$("addChangeVehicleForm").elements.location.setValue(item.locationId);
-            $$("saveVehicle").define("value", "Sačuvajte izmjene");
-            $$("saveVehicle").define("click", "vehicleView.saveChanges");
-            $$("saveVehicle").refresh();
+            $$("addChangeVehicleMaintenanceForm").elements.description.setValue(item.description);
+            $$("addChangeVehicleMaintenanceForm").elements.price.setValue(item.price);
+            $$("addChangeVehicleMaintenanceForm").elements.date.setValue(item.date);
+            $$("addChangeVehicleMaintenanceForm").elements.licensePlate.setValue(item.vehicleId);
+            $$("saveVehicleMaintenance").define("value", "Sačuvajte izmjene");
+            $$("saveVehicleMaintenance").define("click", "vehicleMaintenanceView.saveChanges");
+            $$("saveVehicleMaintenance").refresh();
 
-            $$("addChangeVehicleDialog").show();
-            webix.UIManager.setFocus("vehicleManufacturer");
+            $$("addChangeVehicleMaintenanceDialog").show();
+            webix.UIManager.setFocus("vehicleMaintenanceTypeName");
         }
     },
 
@@ -277,56 +291,43 @@ var vehicleMaintenanceView = {
         if ($$("addChangeVehicleMaintenanceForm").validate()) {
             var newItem = {
                 id: null,
-                licensePlate: $$("addChangeVehicleForm").getValues().licensePlate,
-                year: $$("addChangeVehicleForm").getValues().year,
-                engine: $$("addChangeVehicleForm").getValues().engine,
-                fuel: $$("addChangeVehicleForm").getValues().fuel,
-                photo: $$("photo").getValues()['src'].split("base64,")[1],
+                vehicleMaintenanceTypeId: $$("addChangeVehicleMaintenanceForm").getValues().vehicleMaintenanceTypeName,
+                description: $$("addChangeVehicleMaintenanceForm").getValues().description,
+                price: $$("addChangeVehicleMaintenanceForm").getValues().price,
+                date: $$("addChangeVehicleMaintenanceForm").getValues().date + ":00",
                 deleted: 0,
-                locationId: $$("addChangeVehicleForm").getValues().location,
-                companyId: companyData.id,
-                manufacturerName: $$("addChangeVehicleForm").getValues().vehicleManufacturer,
-                modelName: $$("addChangeVehicleForm").getValues().vehicleModel
+                vehicleId: $$("addChangeVehicleMaintenanceForm").getValues().licensePlate,
+                companyId: companyData.id
             };
 
-            webix.ajax().header({"Content-type": "application/json"})
-                .post("hub/vehicle/custom", newItem).then(function (data) {
-                $$("vehicleDataView").add(data.json());
-                $$("vehicleDataView").refresh();
-                util.messages.showMessage("Uspješno dodavanje novog vozila.");
-            }).fail(function (error) {
-                util.messages.showErrorMessage(error.responseText);
-            });
-
-            util.dismissDialog('addChangeVehicleDialog');
+            $$("vehicleMaintenanceTable").add(newItem);
+            util.messages.showMessage("Uspješno dodavanje nove lokacije.");
+            util.dismissDialog('addChangeVehicleMaintenanceDialog');
         }
     },
 
     saveChanges: function () {
-        if ($$("addChangeVehicleForm").validate()) {
+        if ($$("addChangeVehicleMaintenanceForm").validate()) {
             var newItem = {
-                id: selectedVehicleId,
-                licensePlate: $$("addChangeVehicleForm").getValues().licensePlate,
-                year: $$("addChangeVehicleForm").getValues().year,
-                engine: $$("addChangeVehicleForm").getValues().engine,
-                fuel: $$("addChangeVehicleForm").getValues().fuel,
-                photo: $$("photo").getValues()['src'].split("base64,")[1],
+                id: $$("addChangeVehicleMaintenanceForm").getValues().id,
+                vehicleMaintenanceTypeId: $$("addChangeVehicleMaintenanceForm").getValues().vehicleMaintenanceTypeName,
+                description: $$("addChangeVehicleMaintenanceForm").getValues().description,
+                price: $$("addChangeVehicleMaintenanceForm").getValues().price,
+                date: $$("addChangeVehicleMaintenanceForm").getValues().date + ":00",
                 deleted: 0,
-                locationId: $$("addChangeVehicleForm").getValues().location,
-                companyId: companyData.id,
-                manufacturerName: $$("addChangeVehicleForm").getValues().vehicleManufacturer,
-                modelName: $$("addChangeVehicleForm").getValues().vehicleModel
+                vehicleId: $$("addChangeVehicleMaintenanceForm").getValues().licensePlate,
+                companyId: companyData.id
             };
 
             webix.ajax().header({"Content-type": "application/json"})
-                .put("hub/vehicle/custom/" + selectedVehicleId, newItem).then(function (data) {
+                .put("hub/vehicleMaintenance/" + newItem.id, newItem).then(function (data) {
                 if (data.text() === "Success") {
-                    $$("vehicleDataView").updateItem(selectedVehicleId, newItem);
-                    $$("vehicleDataView").refresh();
+                    $$("vehicleMaintenanceTable").updateItem(newItem.id, newItem);
+                    $$("vehicleMaintenanceTable").refresh();
 
-                    util.messages.showMessage("Vozilo uspješno izmjenjeno.");
+                    util.messages.showMessage("Trošak uspješno izmijenjen.");
                 } else {
-                    util.messages.showErrorMessage("Vozilo neuspješno izmjenjeno.");
+                    util.messages.showErrorMessage("Trošak neuspješno izmijenjen.");
                 }
 
             }).fail(function (error) {
@@ -344,7 +345,7 @@ var vehicleMaintenanceView = {
         var panelCopy = webix.copy(this.panel);
 
         $$("main").addView(webix.copy(panelCopy));
-        connection.attachAjaxEvents("vehicleMaintenanceTable", "hub/vehicleMaintenance", true);
+        connection.attachAjaxEvents("vehicleMaintenanceTable", "hub/vehicleMaintenance", false);
         vehicleMaintenanceView.loadVehicle();
         webix.ui({
             view: "contextmenu",

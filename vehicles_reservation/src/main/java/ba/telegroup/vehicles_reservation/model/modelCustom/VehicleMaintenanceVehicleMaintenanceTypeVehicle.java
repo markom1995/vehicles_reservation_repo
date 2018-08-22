@@ -38,7 +38,7 @@ public class VehicleMaintenanceVehicleMaintenanceTypeVehicle extends VehicleMain
         setVehicleMaintenanceTypeId(vehicleMaintenanceTypeId);
         setDescription(description);
         setPrice(price);
-        setDate(new java.sql.Date(date.getTime()));
+        setDate(date);
         setDeleted(deleted);
         setVehicleId(vehicleId);
         setCompanyId(companyId);
