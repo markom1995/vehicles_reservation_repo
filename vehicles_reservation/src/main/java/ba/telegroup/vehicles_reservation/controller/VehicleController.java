@@ -1,12 +1,10 @@
 package ba.telegroup.vehicles_reservation.controller;
 
 import ba.telegroup.vehicles_reservation.common.exceptions.BadRequestException;
-import ba.telegroup.vehicles_reservation.controller.genericController.GenericController;
 import ba.telegroup.vehicles_reservation.controller.genericController.GenericHasCompanyIdAndDeletableController;
 import ba.telegroup.vehicles_reservation.model.Vehicle;
 import ba.telegroup.vehicles_reservation.model.VehicleManufacturer;
 import ba.telegroup.vehicles_reservation.model.VehicleModel;
-import ba.telegroup.vehicles_reservation.model.modelCustom.UserRole;
 import ba.telegroup.vehicles_reservation.model.modelCustom.VehicleLocationVehicleModelVehicleManufacturer;
 import ba.telegroup.vehicles_reservation.repository.VehicleManufacturerRepository;
 import ba.telegroup.vehicles_reservation.repository.VehicleModelRepository;
@@ -57,6 +55,13 @@ public class VehicleController extends GenericHasCompanyIdAndDeletableController
     public @ResponseBody
     List getAll(){
         return vehicleRepository.getAllExtendedByCompanyIdAndDeleted(userBean.getUser().getCompanyId(), (byte)0);
+    }
+
+    @Transactional
+    @RequestMapping(value = "/custom/{locationId}", method = RequestMethod.GET)
+    public @ResponseBody
+    List getAllExtendedByLocationId(@PathVariable Integer locationId){
+        return vehicleRepository.getAllExtendedByCompanyIdAndDeletedAndLocationId(userBean.getUser().getCompanyId(), (byte)0, locationId);
     }
 
     @Transactional

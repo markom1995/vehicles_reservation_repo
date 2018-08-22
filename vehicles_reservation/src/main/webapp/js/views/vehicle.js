@@ -64,7 +64,7 @@ var vehicleView = {
                 template: "<div><div style='height: 13px'></div><div align='center'><img src='data:image/png;base64, #photo#' alt='Nema slike' width='300' height='300' align='center'/></div><br/>" +
                     "<div style='height: 1px' align='center'>Proizvođač: #manufacturerName#</div><br/>" +
                     "<div style='height: 1px' align='center'>Model: #modelName#</div><br/>" +
-                    "<div style='height: 1px' align='center'>Tablice: #licensePlate#</div><br/>" +
+                    "<div style='height: 1px' align='center'>Registarske tablice: #licensePlate#</div><br/>" +
                     "<div style='height: 1px' align='center'>Godina proizvodnje: #year#</div><br/>" +
                     "<div style='height: 1px' align='center'>Motor: #engine#</div><br/>" +
                     "<div style='height: 1px' align='center'>Gorivo: #fuel#</div><br/>" +
@@ -123,6 +123,7 @@ var vehicleView = {
                                     webix.ajax().del("hub/vehicle/" + newItem.id).then(function (data) {
                                         if (data.text() === "Success") {
                                             util.messages.showMessage("Uspješno brisanje vozila.");
+                                            $$("vehicleDataView").remove(newItem.id);
                                         }
                                         else {
                                             util.messages.showErrorMessage("Neuspješno brisanje vozila.");
@@ -130,8 +131,6 @@ var vehicleView = {
                                     }).fail(function (error) {
                                         util.messages.showErrorMessage(error.responseText);
                                     });
-
-                                    $$("vehicleDataView").remove(newItem.id);
                                 }
                             };
                             webix.confirm(delBox);
@@ -352,11 +351,6 @@ var vehicleView = {
                                 },
                                 "year": function (value) {
                                     var regex = /[0-9]{4}/;
-
-                                    if (value.length > 128) {
-                                        $$('addChangeVehicleForm').elements.year.config.invalidMessage = 'Maksimalan broj karaktera je 128.';
-                                        return false;
-                                    }
                                     if (!regex.test(value)) {
                                         $$('addChangeVehicleForm').elements.year.config.invalidMessage = 'Godina nije pravilno unijeta.';
                                         return false;
@@ -485,7 +479,7 @@ var vehicleView = {
 
     preloadDependencies: function () {
         webix.ajax().get("hub/vehicleManufacturer").then(function (data) {
-            manufacturers = [];
+            manufacturers.length = 0;
             var manufacturersTemp = data.json();
             manufacturersTemp.forEach(function (obj) {
                 manufacturers.push(obj.name);
@@ -495,6 +489,7 @@ var vehicleView = {
         });
 
         webix.ajax().get("hub/location").then(function (data) {
+            locations.length = 0;
             var locationsTemp = data.json();
             firstLocation = locationsTemp[0].id;
             locationsTemp.forEach(function (obj) {
@@ -508,7 +503,7 @@ var vehicleView = {
     loadModels: function (manufacturer) {
         if (manufacturer !== "undefined") {
             webix.ajax().get("hub/vehicleModel/manufacturerModels/" + manufacturer).then(function (data) {
-                models = [];
+                models .length = 0;
                 var modelsTemp = data.json();
                 modelsTemp.forEach(function (obj) {
                     models.push(obj.name);

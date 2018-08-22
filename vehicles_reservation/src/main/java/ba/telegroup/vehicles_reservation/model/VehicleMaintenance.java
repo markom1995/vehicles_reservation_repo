@@ -4,14 +4,17 @@ import ba.telegroup.vehicles_reservation.common.interfaces.Deletable;
 import ba.telegroup.vehicles_reservation.common.interfaces.HasCompanyId;
 
 import javax.persistence.*;
+import java.sql.Date;
 import java.sql.Timestamp;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class VehicleMaintenance implements Deletable, HasCompanyId {
     private Integer id;
     private Integer vehicleMaintenanceTypeId;
+    private String description;
     private Double price;
-    private Timestamp date;
+    private Date date;
     private Byte deleted;
     private Integer vehicleId;
     private Integer companyId;
@@ -38,6 +41,16 @@ public class VehicleMaintenance implements Deletable, HasCompanyId {
     }
 
     @Basic
+    @Column(name = "description", nullable = true, length = -1)
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @Basic
     @Column(name = "price", nullable = false, precision = 2)
     public Double getPrice() {
         return price;
@@ -49,11 +62,11 @@ public class VehicleMaintenance implements Deletable, HasCompanyId {
 
     @Basic
     @Column(name = "date", nullable = false)
-    public Timestamp getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(Timestamp date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 
@@ -97,6 +110,8 @@ public class VehicleMaintenance implements Deletable, HasCompanyId {
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (vehicleMaintenanceTypeId != null ? !vehicleMaintenanceTypeId.equals(that.vehicleMaintenanceTypeId) : that.vehicleMaintenanceTypeId != null)
             return false;
+        if (description != null ? !description.equals(that.description) : that.description != null)
+            return false;
         if (price != null ? !price.equals(that.price) : that.price != null) return false;
         if (date != null ? !date.equals(that.date) : that.date != null) return false;
         if (deleted != null ? !deleted.equals(that.deleted) : that.deleted != null) return false;
@@ -110,6 +125,7 @@ public class VehicleMaintenance implements Deletable, HasCompanyId {
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (vehicleMaintenanceTypeId != null ? vehicleMaintenanceTypeId.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (price != null ? price.hashCode() : 0);
         result = 31 * result + (date != null ? date.hashCode() : 0);
         result = 31 * result + (deleted != null ? deleted.hashCode() : 0);

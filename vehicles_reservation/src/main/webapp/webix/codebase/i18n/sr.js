@@ -11,7 +11,7 @@ webix.i18n.locales["sr-SP"]={
 	am:["am","AM"],
 	pm:["pm","PM"],
 
-	price:"${obj}",
+	price:"{obj}KM",
 	priceSettings:{
         groupDelimiter:",",
         groupSize:3,

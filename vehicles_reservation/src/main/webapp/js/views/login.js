@@ -3,7 +3,6 @@ var loginLayout = {
     width: "auto",
     height: "auto",
     rows: [
-
         {
             cols: [
                 {},

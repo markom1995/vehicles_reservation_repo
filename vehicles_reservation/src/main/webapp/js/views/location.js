@@ -362,7 +362,7 @@ var locationView = {
 
     showChangeLocationDialog: function (location) {
         if (util.popupIsntAlreadyOpened("changeNoteDialog")) {
-            var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + location.latitude + "," + location.longitude + "+&key=AIzaSyBExEHqJmRKJoRhWOT6Ok3fLR5QMGIZ_eg&language=hr";
+            var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + location.latitude + "," + location.longitude + "&language=hr";
             fetch(url).then(function (result) {
                 if (result.ok) {
                     return result.json();
@@ -568,7 +568,7 @@ var locationView = {
                     ]
                 },
                 {
-                    key: "AIzaSyBExEHqJmRKJoRhWOT6Ok3fLR5QMGIZ_eg",
+                    key: "",
                     view: "google-map",
                     id: "map",
                     zoom: 15,
@@ -596,7 +596,7 @@ var locationView = {
     },
 
     saveLocation: function () {
-        var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat + "," + lng + "+&key=AIzaSyBExEHqJmRKJoRhWOT6Ok3fLR5QMGIZ_eg&language=hr";
+        var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat + "," + lng + "+&language=hr";
         fetch(url).then(function (result) {
             if (result.ok) {
                 return result.json();
@@ -659,7 +659,7 @@ var locationView = {
         var city = $$("city").getValue();
         city = city.replace(/ /g, "+");
         var query = res + "+" + city + "+" + country;
-        var url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + query + "&key=AIzaSyBExEHqJmRKJoRhWOT6Ok3fLR5QMGIZ_eg&language=hr";
+        var url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + query + "&language=hr";
         fetch(url).then(function (result) {
             if (result.ok) {
                 return result.json();
@@ -683,7 +683,7 @@ var locationView = {
             $$("map").attachEvent("onAfterDrop", function (id, item) {
                 lat = item.lat;
                 lng = item.lng;
-                var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat + "," + lng + "+&key=AIzaSyBExEHqJmRKJoRhWOT6Ok3fLR5QMGIZ_eg&language=hr";
+                var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat + "," + lng + "+&language=hr";
                 fetch(url).then(function (result) {
                     if (result.ok) {
                         return result.json();
@@ -736,7 +736,7 @@ var locationView = {
             var city = $$("city").getValue();
             city = city.replace(/ /g, "+");
             var query = res + "+" + city + "+" + country;
-            var url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + query + "&key=AIzaSyBExEHqJmRKJoRhWOT6Ok3fLR5QMGIZ_eg&language=hr";
+            var url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + query + "&language=hr";
             fetch(url).then(function (result) {
                 if (result.ok) {
                     return result.json();
@@ -789,7 +789,7 @@ var locationView = {
             var city = $$("city").getValue();
             city = city.replace(/ /g, "+");
             var query = res + "+" + city + "+" + country;
-            var url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + query + "&key=AIzaSyBExEHqJmRKJoRhWOT6Ok3fLR5QMGIZ_eg&language=hr";
+            var url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + query + "&language=hr";
             fetch(url).then(function (result) {
                 if (result.ok) {
                     return result.json();

@@ -23,6 +23,12 @@ var menuActions = function (id) {
         case "vehicle":
             vehicleView.selectPanel();
             break;
+        case "home":
+            homeView.selectPanel();
+            break;
+        case "vehicle_maintenance":
+            vehicleMaintenanceView.selectPanel();
+            break;
     }
 };
 
@@ -41,6 +47,11 @@ var menuSuperAdmin = [
 
 var menuAdmin = [
     {
+        id: "home",
+        value: "Početna strana",
+        icon: "home"
+    },
+    {
         id: "location",
         value: "Lokacije vozila",
         icon: "map"
@@ -51,6 +62,11 @@ var menuAdmin = [
         icon: "car"
     },
     {
+        id: "vehicle_maintenance",
+        value: "Troškovi",
+        icon: "wrench"
+    },
+    {
         id: "logger",
         value: "Loger korisničkih akcija",
         icon: "history"
@@ -58,6 +74,11 @@ var menuAdmin = [
 ];
 
 var menuUser = [
+    {
+        id: "home",
+        value: "Početna strana",
+        icon: "home"
+    },
     {
         id: "location",
         value: "Lokacije vozila",
@@ -74,6 +95,7 @@ var panel = {id: "empty"};
 var rightPanel = null;
 
 var init = function () {
+    preloadDependencies();
     if (!webix.env.touch && webix.ui.scrollSize) webix.CustomScroll.init();
     webix.i18n.setLocale("sr-SP");
     webix.Date.startOnMonday = true;
@@ -195,8 +217,8 @@ var showApp = function () {
             companyView.selectPanel();
             $$("mainMenu").select("company");
         } else {
-            //dashboardView.selectPanel();
-            //$$("mainMenu").select("dashboard");
+            homeView.selectPanel();
+            $$("mainMenu").select("home");
         }
     }
     else if (userForRegistration != null) {
@@ -298,6 +320,22 @@ var generatePassword = function () {
         });
         util.dismissDialog("forgottenPasswordPopup");
     }
+};
+
+var preloadDependencies = function(){
+    webix.ajax().get("hub/vehicleMaintenanceType").then(function (data) {
+
+        var vehicleMaintenancesTypeTemp = data.json();
+        firstVehicleMaintenancesType = vehicleMaintenancesTypeTemp[0].id;
+        vehicleMaintenancesTypeTemp.forEach(function (obj) {
+           vehicleMaintenancesType.push({
+               id: obj.id,
+               value: obj.name
+           });
+        });
+    }).fail(function (error) {
+       util.messages.showErrorMessage("Neuspješno dobavljanje vrsta troškova");
+    });
 };
 
 //main call
