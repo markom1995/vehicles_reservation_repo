@@ -46,6 +46,11 @@ var vehicleMaintenanceView = {
                         fillspace: true,
                     },
                     {
+                        id: "vehicleMaintenanceTypeId",
+                        hidden: true,
+                        fillspace: true,
+                    },
+                    {
                         id: "description",
                         fillspace: true,
                         editor: "text",
@@ -62,10 +67,8 @@ var vehicleMaintenanceView = {
                     {
                         id: "vehicleMaintenanceTypeName",
                         fillspace: true,
-                        editor: "select",
-                        options: vehicleMaintenancesType,
                         sort: "text",
-                        editable: true,
+                        editable: false,
                         header: [
                             "Vrsta",
                             {
@@ -91,12 +94,7 @@ var vehicleMaintenanceView = {
                     {
                         id: "date",
                         fillspace: true,
-                        editor: "date",
-                        template: function format(value) {
-                            var date = new Date(value.date);
-                            var format = webix.Date.dateToStr("%d.%m.%Y");
-                            return format(date);
-                        },
+                        editable: false,
                         sort: "date",
                         header: [
                             "Datum",
@@ -207,7 +205,9 @@ var vehicleMaintenanceView = {
                             id: "date",
                             name: "date",
                             label: "Datum:",
+                            stringResult: true,
                             type: "date",
+                            format: "%d/%m/%y",
                             suggest: {
                                 type: "calendar",
                                 body: {
@@ -308,12 +308,13 @@ var vehicleMaintenanceView = {
 
     saveChanges: function () {
         if ($$("addChangeVehicleMaintenanceForm").validate()) {
+            var formatDate = $$("addChangeVehicleMaintenanceForm").getValues().date.split(" ")[0];
             var newItem = {
                 id: $$("addChangeVehicleMaintenanceForm").getValues().id,
                 vehicleMaintenanceTypeId: $$("addChangeVehicleMaintenanceForm").getValues().vehicleMaintenanceTypeName,
                 description: $$("addChangeVehicleMaintenanceForm").getValues().description,
                 price: $$("addChangeVehicleMaintenanceForm").getValues().price,
-                date: $$("addChangeVehicleMaintenanceForm").getValues().date + ":00",
+                date: formatDate,
                 deleted: 0,
                 vehicleId: $$("addChangeVehicleMaintenanceForm").getValues().licensePlate,
                 companyId: companyData.id
@@ -334,7 +335,7 @@ var vehicleMaintenanceView = {
                 util.messages.showErrorMessage(error.responseText);
             });
 
-            util.dismissDialog('addChangeVehicleDialog');
+            util.dismissDialog('addChangeVehicleMaintenanceDialog');
         }
     },
 

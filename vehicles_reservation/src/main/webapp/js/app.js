@@ -221,9 +221,6 @@ var showApp = function () {
             $$("mainMenu").select("home");
         }
     }
-    else if (userForRegistration != null) {
-        $$("mainMenu").select("registration");
-    }
 };
 
 var showForgottenPasswordPopup = function () {

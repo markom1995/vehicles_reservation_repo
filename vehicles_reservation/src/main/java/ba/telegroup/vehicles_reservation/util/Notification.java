@@ -1,6 +1,9 @@
 package ba.telegroup.vehicles_reservation.util;
 
 import ba.telegroup.vehicles_reservation.common.exceptions.BadRequestException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -10,39 +13,48 @@ import java.util.Properties;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
+@Component
 public class Notification {
 
-    private static final String SENDER_MAIL;
-    private static final String PASSWORD;
+    @Value("${mail.sender}")
+    private String mailSender;
 
-    static {
-        ResourceBundle propertyResourceBundle = PropertyResourceBundle.getBundle("mail");
-        SENDER_MAIL = propertyResourceBundle.getString("SENDER_MAIL");
-        PASSWORD = propertyResourceBundle.getString("PASSWORD");
-    }
+    @Value("${mail.password}")
+    private String mailPassword;
 
-    private static Properties getTLSSetProperty() {
+    @Value("${mail.host}")
+    private String mailHost;
+
+    @Value("${mail.port}")
+    private String mailPort;
+
+    @Value("${mail.auth}")
+    private String mailAuth;
+
+    @Value("${mail.socketFactory.port}")
+    private String mailSocketFactoryPort;
+
+    @Value("${mail.socketFactory.class}")
+    private String mailSocketFactoryClass;
+
+    @Async
+    public void notify(String recipientMail, String messageText) throws BadRequestException {
         Properties properties = new Properties();
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
-        properties.put("mail.smtp.host", "smtp.gmail.com");
-        properties.put("mail.smtp.port", "587");
-        return properties;
-    }
-
-    public static void notify(String recipientMail, String messageText) throws BadRequestException {
-
-        Properties properties = getTLSSetProperty();
+        properties.put("mail.smtp.host", mailHost);
+        properties.put("mail.smtp.port", mailPort);
+        properties.put("mail.smtp.auth", mailAuth);
+        properties.put("mail.smtp.socketFactory.port", mailSocketFactoryPort);
+        properties.put("mail.smtp.socketFactory.class", mailSocketFactoryClass);
 
         Session session = Session.getDefaultInstance(properties, new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(SENDER_MAIL, PASSWORD);
+                return new PasswordAuthentication(mailSender, mailPassword);
             }
         });
 
         try {
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(SENDER_MAIL, "TeleGroup ScheduleUp"));
+            message.setFrom(new InternetAddress(mailSender, "Vehicle Reservation System"));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientMail));
             message.setSubject("Notification");
             message.setText(messageText);
@@ -54,18 +66,24 @@ public class Notification {
         }
     }
 
-    public static void sendRegistrationLink(String recipientMail, String registrationToken) throws BadRequestException {
-        Properties properties = getTLSSetProperty();
+    @Async
+    public void sendRegistrationLink(String recipientMail, String registrationToken) throws BadRequestException {
+        Properties properties = new Properties();
+        properties.put("mail.smtp.host", mailHost);
+        properties.put("mail.smtp.port", mailPort);
+        properties.put("mail.smtp.auth", mailAuth);
+        properties.put("mail.smtp.socketFactory.port", mailSocketFactoryPort);
+        properties.put("mail.smtp.socketFactory.class", mailSocketFactoryClass);
 
         Session session = Session.getDefaultInstance(properties, new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(SENDER_MAIL, PASSWORD);
+                return new PasswordAuthentication(mailSender, mailPassword);
             }
         });
 
         try {
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(SENDER_MAIL, "TeleGroup ScheduleUp"));
+            message.setFrom(new InternetAddress(mailSender, "Vehicle Reservation System"));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientMail));
             message.setSubject("Registration");
             message.setText("Registraciju možete izvršiti na slijedećem linku http://localhost:8030 klikom na dugme registraciju. Vaš token je " + registrationToken + ".");
@@ -77,18 +95,24 @@ public class Notification {
         }
     }
 
-    public static void sendNewPassword(String recipientMail, String newPassword) throws BadRequestException {
-        Properties properties = getTLSSetProperty();
+    @Async
+    public void sendNewPassword(String recipientMail, String newPassword) throws BadRequestException {
+        Properties properties = new Properties();
+        properties.put("mail.smtp.host", mailHost);
+        properties.put("mail.smtp.port", mailPort);
+        properties.put("mail.smtp.auth", mailAuth);
+        properties.put("mail.smtp.socketFactory.port", mailSocketFactoryPort);
+        properties.put("mail.smtp.socketFactory.class", mailSocketFactoryClass);
 
         Session session = Session.getDefaultInstance(properties, new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(SENDER_MAIL, PASSWORD);
+                return new PasswordAuthentication(mailSender, mailPassword);
             }
         });
 
         try {
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(SENDER_MAIL, "TeleGroup ScheduleUp"));
+            message.setFrom(new InternetAddress(mailSender, "Vehicle Reservation System"));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientMail));
             message.setSubject("Registration");
             message.setText("Vaša nova lozinka je " + newPassword + ". Molimo Vas da odmah poslije prvog prijavljivanja na sistem promijenite lozinku.");

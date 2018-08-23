@@ -118,53 +118,70 @@ var tokenLayout = {
     rows: [
         {
             cols: [
+                {},
                 {
                     height: 50,
                     view: "label",
                     label: "Vehicles Reservation System",
                     css: "company-name-size",
                     align: "center"
-                }
+                },
+                {}
             ]
         },
         {
             cols: [
                 {},
                 {
-                    view: "form",
-                    id: "tokenForm",
-                    width: 400,
-                    elementsConfig: {
-                        labelWidth: 150,
-                        bottomPadding: 20
-                    },
-                    elements: [
+                    rows: [
                         {
-                            id: "token",
-                            name: "token",
-                            view: "text",
-                            label: "Token",
-                            invalidMessage: "Molimo Vas da unesete token.",
-                            required: true
+                            height: 170
                         },
                         {
-                            margin: 5,
-                            cols: [
-                                {},
+                            view: "form",
+                            id: "tokenForm",
+                            borderless: true,
+                            width: 400,
+                            elementsConfig: {
+                                labelWidth: 150,
+                                bottomPadding: 20
+                            },
+                            elements: [
                                 {
-                                    id: "tokenVerifyBtn",
-                                    view: "button",
-                                    type: "form",
-                                    value: "Provjera validnosti tokena",
-                                    click: "tokenConfirm",
-                                    hotkey: "enter",
-                                    align: "center",
-                                    autowidth: true
+                                    id: "token",
+                                    name: "token",
+                                    view: "text",
+                                    label: "Token",
+                                    invalidMessage: "Molimo Vas da unesete token.",
+                                    required: true
                                 },
-                                {}
-                            ]
-                        }
+                                {
+                                    margin: 5,
+                                    cols: [
+                                        {},
+                                        {
+                                            id: "tokenVerifyBtn",
+                                            view: "button",
+                                            type: "form",
+                                            value: "Provjera validnosti tokena",
+                                            click: "tokenConfirm",
+                                            hotkey: "enter",
+                                            align: "center",
+                                            width: 200
+                                        },
+                                        {}
+                                    ]
+                                }
+                            ],
+                        },
+                        {}
                     ]
+                },
+                {
+                    borderless: true,
+                    view: "template",
+                    width: 500,
+                    template: "<img src='img/logo.png'/>"
                 },
                 {}
             ]
@@ -179,160 +196,170 @@ var registrationLayout = {
     rows: [
         {
             cols: [
+                {},
                 {
                     height: 50,
                     view: "label",
                     label: "Vehicles Reservation System",
                     css: "company-name-size",
                     align: "center"
-                }
+                },
+                {}
             ]
         },
         {
             cols: [
                 {},
                 {
-                    view: "form",
-                    id: "registrationForm",
-                    width: 400,
-                    elementsConfig: {
-                        labelWidth: 150,
-                        bottomPadding: 20
-                    },
-                    elements: [
+                    rows: [
                         {
-                            id: "username",
-                            name: "username",
-                            view: "text",
-                            label: "Korisničko ime:",
-                            invalidMessage: "Molimo Vas da unesete korisničko ime.",
-                            required: true
+                            height: 115
                         },
                         {
-                            id: "password",
-                            name: "password",
-                            view: "text",
-                            type: "password",
-                            label: "Lozinka:",
-                            invalidMessage: "Molimo Vas da unesete lozinku.",
-                            required: true
-                        },
-                        {
-                            id: "firstName",
-                            name: "firstName",
-                            view: "text",
-                            label: "Ime:",
-                            invalidMessage: "Molimo Vas da unesete ime.",
-                            required: true
-                        },
-                        {
-                            id: "lastName",
-                            name: "lastName",
-                            view: "text",
-                            label: "Prezime:",
-                            invalidMessage: "Molimo Vas da unesete prezime.",
-                            required: true
-                        },
-                        {
-                            view: "uploader",
-                            value: "Fotografija",
-                            accept: "image/jpeg, image/png",
-                            autosend: false,
-                            width: 200,
-                            align: "center",
-                            multiple: false,
-                            on: {
-                                onBeforeFileAdd: function (upload) {
-                                    var file = upload.file;
-                                    var reader = new FileReader();
-                                    reader.onload = function (event) {
-                                        $$("tmpWin").show();
-                                        $$("tmp").setValues({src: event.target.result});
-                                        var form = $$("registrationForm");
-                                        form.elements.base64ImageUser.setValue(event.target.result.split("base64,")[1]);
+                            view: "form",
+                            id: "registrationForm",
+                            borderless: true,
+                            width: 400,
+                            elementsConfig: {
+                                labelWidth: 150,
+                                bottomPadding: 20
+                            },
+                            elements: [
+                                {
+                                    id: "username",
+                                    name: "username",
+                                    view: "text",
+                                    label: "Korisničko ime:",
+                                    invalidMessage: "Molimo Vas da unesete korisničko ime.",
+                                    required: true
+                                },
+                                {
+                                    id: "password",
+                                    name: "password",
+                                    view: "text",
+                                    type: "password",
+                                    label: "Lozinka:",
+                                    invalidMessage: "Molimo Vas da unesete lozinku.",
+                                    required: true
+                                },
+                                {
+                                    id: "firstName",
+                                    name: "firstName",
+                                    view: "text",
+                                    label: "Ime:",
+                                    invalidMessage: "Molimo Vas da unesete ime.",
+                                    required: true
+                                },
+                                {
+                                    id: "lastName",
+                                    name: "lastName",
+                                    view: "text",
+                                    label: "Prezime:",
+                                    invalidMessage: "Molimo Vas da unesete prezime.",
+                                    required: true
+                                },
+                                {
+                                    view: "uploader",
+                                    id:"uploaderPhoto",
+                                    value: "Fotografija",
+                                    accept: "image/jpeg, image/png",
+                                    autosend: false,
+                                    width: 200,
+                                    align: "center",
+                                    multiple: false,
+                                    on: {
+                                        onBeforeFileAdd: function (upload) {
+                                            var file = upload.file;
+                                            var reader = new FileReader();
+                                            reader.onload = function (event) {
+                                                $$("tmpWin").show();
+                                                $$("tmp").setValues({src: event.target.result});
+                                                var form = $$("registrationForm");
+                                                form.elements.base64ImageUser.setValue(event.target.result.split("base64,")[1]);
 
-                                    };
-                                    reader.readAsDataURL(file)
-                                    return false;
+                                            };
+                                            reader.readAsDataURL(file);
+
+                                            return false;
+                                        }
+                                    }
+                                },
+                                {
+                                    margin: 5,
+                                    id: "newUser",
+                                    view: "button",
+                                    align: "center",
+                                    value: "Registracija na sistem",
+                                    type: "form",
+                                    click: "saveUser",
+                                    hotkey: "enter",
+                                    width: 200,
+                                }
+                            ],
+                            rules: {
+                                uploaderPhoto: webix.rules.isNotEmpty,
+                                "username": function (value) {
+                                    if (value.length > 128) {
+                                        $$('registrationForm').elements.username.config.invalidMessage = 'Maksimalan broj karaktera je 128.';
+                                        return false;
+                                    }
+
+                                    return true;
+                                },
+                                "password": function (value) {
+                                    var regex1 = /[0-9]/;
+                                    var regex2 = /[a-z]/;
+                                    var regex3 = /[A-Z]/;
+                                    var regex4 = /[@#$%^&+=]/;
+
+                                    if (value.length < 8) {
+                                        $$('registrationForm').elements.password.config.invalidMessage = 'Lozinka mora da ima više od 8 karaktera.';
+                                        return false;
+                                    }
+                                    if (!regex1.test(value)) {
+                                        $$('registrationForm').elements.password.config.invalidMessage = 'Lozinka mora da sadrži bar jedan broj.';
+                                        return false;
+                                    }
+                                    if (!regex2.test(value)) {
+                                        $$('registrationForm').elements.password.config.invalidMessage = 'Lozinka mora da sadrži bar jedno malo slovo.';
+                                        return false;
+                                    }
+                                    if (!regex3.test(value)) {
+                                        $$('registrationForm').elements.password.config.invalidMessage = 'Lozinka mora da sadrži bar jedno veliko slovo.';
+                                        return false;
+                                    }
+                                    if (!regex4.test(value)) {
+                                        $$('registrationForm').elements.password.config.invalidMessage = 'Lozinka mora da sadrži specijalni karakter: (@ # $ % ^ & + =) !';
+                                        return false;
+                                    }
+
+                                    return true;
+                                },
+                                "firstname": function (value) {
+                                    if (value.length > 128) {
+                                        $$('registrationForm').elements.firstname.config.invalidMessage = 'Maksimalan broj karaktera je 128.';
+                                        return false;
+                                    }
+                                    return true;
+                                },
+                                "lastname": function (value) {
+                                    if (value.length > 128) {
+                                        $$('registrationForm').elements.lastname.config.invalidMessage = 'Maksimalan broj karaktera je 128.';
+                                        return false;
+                                    }
+
+                                    return true;
                                 }
                             }
                         },
-                        {
-                            margin: 5,
-                            id: "newUser",
-                            view: "button",
-                            align: "center",
-                            value: "Registracija na sistem",
-                            type: "form",
-                            click: "saveUser",
-                            hotkey: "enter",
-                            width: 200,
-                        }
-                    ],
-                    rules: {
-                        "username": function (value) {
-                            if (!value) {
-                                return false;
-                            }
-                            if (value.length > 128) {
-                                $$('registrationForm').elements.username.config.invalidMessage = 'Maksimalan broj karaktera je 128.';
-                                return false;
-                            }
-                            return true;
-                        },
-                        "password": function (value) {
-                            var regex1 = /[0-9]/;
-                            var regex2 = /[a-z]/;
-                            var regex3 = /[A-Z]/;
-                            var regex4 = /[@#$%^&+=]/;
-
-                            if (!value) {
-                                return false;
-                            }
-                            if (value.length < 8) {
-                                $$('registrationForm').elements.password.config.invalidMessage = 'Lozinka mora da ima više od 8 karaktera.';
-                                return false;
-                            }
-                            if (!regex1.test(value)) {
-                                $$('registrationForm').elements.password.config.invalidMessage = 'Lozinka mora da sadrži bar jedan broj.';
-                                return false;
-                            }
-                            if (!regex2.test(value)) {
-                                $$('registrationForm').elements.password.config.invalidMessage = 'Lozinka mora da sadrži bar jedno malo slovo.';
-                                return false;
-                            }
-                            if (!regex3.test(value)) {
-                                $$('registrationForm').elements.password.config.invalidMessage = 'Lozinka mora da sadrži bar jedno veliko slovo.';
-                                return false;
-                            }
-                            if (!regex4.test(value)) {
-                                $$('registrationForm').elements.password.config.invalidMessage = 'Lozinka mora da sadrži specijalni karakter: (@ # $ % ^ & + =) !';
-                                return false;
-                            }
-
-                            return true;
-                        },
-                        "firstname": function (value) {
-                            if (!value) {
-                                return false;
-                            }
-                            if (value.length > 128) {
-                                $$('registrationForm').elements.firstname.config.invalidMessage = 'Maksimalan broj karaktera je 128.';
-                                return false;
-                            }
-                            return true;
-                        },
-                        "lastname": function (value) {
-                            if (!value) {
-                                return false;
-                            }
-                            if (value.length > 128) {
-                                $$('registrationForm').elements.lastname.config.invalidMessage = 'Maksimalan broj karaktera je 128.';
-                                return false;
-                            }
-                            return true;
-                        }
-                    }
+                        {}
+                    ]
+                },
+                {
+                    borderless: true,
+                    view: "template",
+                    width: 500,
+                    template: "<img src='img/logo.png'/>"
                 },
                 {}
             ]
@@ -341,7 +368,7 @@ var registrationLayout = {
 };
 
 function saveUser() {
-    if ($$("registrationForm").validate()) {
+    if($$("registrationForm").validate()){
         userForRegistration.firstName = $$("registrationForm").getValues().firstName;
         userForRegistration.lastName = $$("registrationForm").getValues().lastName;
         userForRegistration.username = $$("registrationForm").getValues().username;
@@ -349,16 +376,20 @@ function saveUser() {
         userForRegistration.photo = $$("registrationForm").getValues().base64ImageUser;
 
         webix.ajax().header({"Content-type": "application/json"})
-            .post("hub/user/registration", JSON.stringify(userForRegistration)).then(function (data) {
+            .post("hub/user/registration", userForRegistration).then(function (data) {
             if (data.text() === "Success") {
                 util.messages.showMessage("Uspješna registracija.");
-                userForRegistration = null;
-                userData = null;
-                companyData = null;
-                connection.reload();
             }
+            else{
+                util.messages.showMessage("Neuspješna registracija.");
+            }
+
+            userForRegistration = null;
+            userData = null;
+            companyData = null;
+            connection.reload();
         }).fail(function (error) {
-            util.messages.showMessage(error.responseText);
+            util.messages.showErrorMessage(error.responseText);
         });
     }
 }
@@ -368,6 +399,12 @@ function tokenCheck() {
     webix.ui(register, panel);
     panel = $$("tokenVerify");
 };
+
+var showRegistration = function () {
+    var registration = webix.copy(registrationLayout);
+    webix.ui(registration, panel);
+    panel = $$("registration");
+}
 
 function login() {
     var form = $$("loginForm");
@@ -412,31 +449,33 @@ function login() {
 };
 
 function tokenConfirm() {
-    var token = ($$("tokenForm")).getValues().token;
-    webix.ajax().get("hub/user/registration/" + token).then(function (data) {
-        userForRegistration = data.json();
+    if($$("tokenForm").validate()){
+        var token = ($$("tokenForm")).getValues().token;
+        webix.ajax().get("hub/user/registration/" + token).then(function (data) {
+            userForRegistration = data.json();
 
-        if (userForRegistration == null) {
-            util.messages.showErrorMessage("Neispravan ili istekao token.")
-        } else {
-            webix.ajax().get("company/" + userForRegistration.companyId).then(function (data) {
-                var company = data.json();
-                if (company != null) {
-                    companyData = company;
-                    companyData.deleted = 0;
-                    showApp();
-                } else {
-                    userForRegistration = null;
+            if (userForRegistration == null) {
+                util.messages.showErrorMessage("Neispravan ili istekao token.")
+            } else {
+                webix.ajax().get("hub/company/" + userForRegistration.companyId).then(function (data) {
+                    var company = data.json();
+                    if (company != null) {
+                        companyData = company;
+                        companyData.deleted = 0;
+                        showRegistration();
+                    } else {
+                        userForRegistration = null;
+                        showLogin();
+                    }
+                }).fail(function (error) {
+                    userData = null;
                     showLogin();
-                }
-            }).fail(function (error) {
-                userData = null;
-                showLogin();
-            });
-        }
-    }).fail(function (error) {
-        util.messages.showErrorMessage(error.responseText);
-    });
+                });
+            }
+        }).fail(function (error) {
+            util.messages.showErrorMessage(error.responseText);
+        });
+    }
 };
 
 function hide() {

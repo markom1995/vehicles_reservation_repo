@@ -26,11 +26,12 @@ var vehicleView = {
                         id: "locationFilter",
                         name: "locationFilter",
                         view: "select",
-                        //value: firstLocation,
+                        value: firstLocation,
                         options: locations,
                         on: {
-                            onChange: function () {
-                                $$("vehicleDataView").filter("#location#", $$("locationFilter").value);
+                            onChange: function (newv, oldv) {
+                                console.log(oldv + " " + newv);
+                                $$("vehicleDataView").filter("#locationId#", newv);
                             }
                         }
                     },
@@ -61,14 +62,28 @@ var vehicleView = {
                     height: 520,
                     width: 330
                 },
-                template: "<div><div style='height: 13px'></div><div align='center'><img src='data:image/png;base64, #photo#' alt='Nema slike' width='300' height='300' align='center'/></div><br/>" +
-                    "<div style='height: 1px' align='center'>Proizvođač: #manufacturerName#</div><br/>" +
-                    "<div style='height: 1px' align='center'>Model: #modelName#</div><br/>" +
-                    "<div style='height: 1px' align='center'>Registarske tablice: #licensePlate#</div><br/>" +
-                    "<div style='height: 1px' align='center'>Godina proizvodnje: #year#</div><br/>" +
-                    "<div style='height: 1px' align='center'>Motor: #engine#</div><br/>" +
-                    "<div style='height: 1px' align='center'>Gorivo: #fuel#</div><br/>" +
-                    "</div>"
+                template: function(obj) {
+                    return(obj.id==3?"<div style='height: 13px'></div><div style='border: 3px solid green' align='center'><img src='data:image/png;base64, "+ obj.photo +"' alt='Nema slike' width='300' height='300' align='center'/></div><br/>" +
+                        "<div style='height: 1px' align='center'>Proizvođač: " + obj.manufacturerName + "</div><br/>" +
+                        "<div style='height: 1px' align='center'>Model: " + obj.modelName +"</div><br/>" +
+                        "<div style='height: 1px' align='center'>Registarske tablice: " + obj.licensePlate + "</div><br/>" +
+                        "<div style='height: 1px' align='center'>Godina proizvodnje: " + obj.year + "</div><br/>" +
+                        "<div style='height: 1px' align='center'>Motor: " + obj.engine + "</div><br/>" +
+                        "<div style='height: 1px' align='center'>Gorivo: " + obj.fuel + "</div><br/>" +
+                        "<div style='display: none;'>" + obj.locationId + "</div>":"<div style='height: 13px'></div><div style='border: 3px solid red' align='center'><img src='data:image/png;base64, "+ obj.photo +"' alt='Nema slike' width='300' height='300' align='center'/></div><br/>" +
+                        "<div style='height: 1px' align='center'>Proizvođač: " + obj.manufacturerName + "</div><br/>" +
+                        "<div style='height: 1px' align='center'>Model: " + obj.modelName +"</div><br/>" +
+                        "<div style='height: 1px' align='center'>Registarske tablice: " + obj.licensePlate + "</div><br/>" +
+                        "<div style='height: 1px' align='center'>Godina proizvodnje: " + obj.year + "</div><br/>" +
+                        "<div style='height: 1px' align='center'>Motor: " + obj.engine + "</div><br/>" +
+                        "<div style='height: 1px' align='center'>Gorivo: " + obj.fuel + "</div><br/>" +
+                        "<div style='display: none;'>" + obj.locationId + "</div>")
+                },
+                on: {
+                    onItemDblClick: function (id) {
+                        vehicleView.showVehicleDetailsDialog($$("vehicleDataView").getSelectedItem().id);
+                    }
+                }
             }
         ]
     },
@@ -477,6 +492,92 @@ var vehicleView = {
         }
     },
 
+    vehicleDetailsDialog: {
+        view: "popup",
+        id: "vehicleDetailDialog",
+        modal: true,
+        position: "center",
+        width: 1008,
+        height: 586,
+        body: {
+            id: "vehicleDetailInside",
+            rows: [
+                {
+                    view: "toolbar",
+                    cols: [
+                        {
+                            id: "vehicleDetailLabel",
+                            view: "label",
+                            label: "<span class='webix_icon fa fa-info'></span> Pregled detalja",
+                            width: 900
+                        },
+                        {},
+                        {
+                            hotkey: 'esc',
+                            view: "icon",
+                            icon: "close",
+                            align: "right",
+                            click: "util.dismissDialog('vehicleDetailDialog');"
+                        }
+                    ]
+                },
+                {
+                    cols: [
+                        {
+                            container: "areaA",
+                            borderless: true,
+                            view: "tabview",
+                            cells: [
+                                {
+                                    header: "Rezervacije",
+                                    /*body: {
+                                        view: "list",
+                                        id: "listView",
+                                        template: "#rank#. #title# <div style='padding-left:18px'> Year:#year#, votes:#votes# </div>",
+                                        type: {
+                                            height: 60
+                                        },
+                                        on: {
+                                            onAfterSelect: function () {
+                                                $$("formView").show();
+                                            }
+                                        },
+                                        select: true,
+                                        data: big_film_set
+                                    }*/
+                                },
+                                {
+                                    header: "Troškovi",
+                                    body: {
+                                        view: "list",
+                                        id: "listViewTroskovi",
+                                        template: "<div><div style='display: inline; font-weight: bold; font-size: 18px'>#vehicleMaintenanceTypeName#</div> " +
+                                            "<div style='float: right'>Datum: #date#</div></div>" +
+                                            "<div style='padding-left:18px'>#description#</div>" +
+                                            "<div style='padding-left:18px'> Cijena: #price#</div>",
+                                        type: {
+                                            height: 90
+                                        },
+                                        select: false
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+
+    showVehicleDetailsDialog: function (vehicleId) {
+        if (util.popupIsntAlreadyOpened("vehicleDetailsDialog")) {
+            webix.ui(webix.copy(vehicleView.vehicleDetailsDialog)).show();
+            $$("listViewTroskovi").load("hub/vehicleMaintenance/custom/" + vehicleId).then(function () {
+                $$("vehicleDetailsDialog").show();
+            });
+        }
+    },
+
     preloadDependencies: function () {
         webix.ajax().get("hub/vehicleManufacturer").then(function (data) {
             manufacturers.length = 0;
@@ -503,7 +604,7 @@ var vehicleView = {
     loadModels: function (manufacturer) {
         if (manufacturer !== "undefined") {
             webix.ajax().get("hub/vehicleModel/manufacturerModels/" + manufacturer).then(function (data) {
-                models .length = 0;
+                models.length = 0;
                 var modelsTemp = data.json();
                 modelsTemp.forEach(function (obj) {
                     models.push(obj.name);

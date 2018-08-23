@@ -10,7 +10,7 @@ import java.util.List;
 public class VehicleMaintenanceRepositoryImpl implements VehicleMaintenanceRepositoryCustom {
 
     private static final String SQL_GET_ALL_EXTENDED = "SELECT vm.id, vm.vehicle_maintenance_type_id, vm.description, vm.price, vm.date, vm.deleted, vm.vehicle_id, vm.company_id, vmt.name as vehicle_maintenance_type_name, v.license_plate as license_plate FROM vehicle_maintenance vm JOIN vehicle_maintenance_type vmt ON vm.vehicle_maintenance_type_id=vmt.id JOIN vehicle v ON vm.vehicle_id=v.id WHERE vm.company_id=? AND vm.deleted=?";
-    private static final String SQL_GET_ALL_EXTENDED_BY_VEHICLE_ID = "SELECT vm.id, vm.vehicle_maintenance_type_id, vm.description, vm.price, vm.date, vm.deleted, vm.vehicle_id, vm.company_id, vmt.name as vehicle_maintenance_type_name, v.license_plate as license_plate FROM vehicle_maintenance vm JOIN vehicle_maintenance_type vmt ON vm.vehicle_maintenance_type_id=vmt.id JOIN vehicle v ON vm.vehicle_id=v.id WHERE vm.company_id=? AND vm.deleted=? AND v.id=?";
+    private static final String SQL_GET_ALL_EXTENDED_BY_VEHICLE_ID = "SELECT vm.id, vm.vehicle_maintenance_type_id, vm.description, vm.price, vm.date, vm.deleted, vm.vehicle_id, vm.company_id, vmt.name as vehicle_maintenance_type_name, v.license_plate as license_plate FROM vehicle_maintenance vm JOIN vehicle_maintenance_type vmt ON vm.vehicle_maintenance_type_id=vmt.id JOIN vehicle v ON vm.vehicle_id=v.id WHERE vm.company_id=? AND vm.deleted=? AND v.id=? ORDER BY vm.date DESC";
 
     @PersistenceContext
     private EntityManager entityManager;

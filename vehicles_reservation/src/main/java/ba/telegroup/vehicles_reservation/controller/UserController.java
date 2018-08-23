@@ -32,6 +32,7 @@ public class UserController extends GenericHasCompanyIdAndDeletableController<Us
 
     private final UserRepository userRepository;
     private final CompanyRepository companyRepository;
+    private final Notification notification;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -95,10 +96,11 @@ public class UserController extends GenericHasCompanyIdAndDeletableController<Us
     private String badRequestEmailExists;
 
     @Autowired
-    public UserController(UserRepository userRepository, CompanyRepository companyRepository){
+    public UserController(UserRepository userRepository, CompanyRepository companyRepository, Notification notification){
         super(userRepository);
         this.userRepository = userRepository;
         this.companyRepository = companyRepository;
+        this.notification = notification;
     }
 
     @Override
@@ -188,7 +190,7 @@ public class UserController extends GenericHasCompanyIdAndDeletableController<Us
                 if(userRepository.saveAndFlush(newUser) != null){
                     entityManager.refresh(newUser);
                     logCreateAction(newUser);
-                    Notification.sendRegistrationLink(user.getEmail().trim(), randomToken);
+                    notification.sendRegistrationLink(user.getEmail().trim(), randomToken);
 
                     return newUser;
                 }
@@ -248,7 +250,7 @@ public class UserController extends GenericHasCompanyIdAndDeletableController<Us
                 String newPassword = Util.randomString(randomStringLength);
                 user.setPassword(Util.hashPassword(newPassword));
                 if(userRepository.saveAndFlush(user) != null){
-                    Notification.sendNewPassword(user.getEmail().trim(), newPassword);
+                    notification.sendNewPassword(user.getEmail().trim(), newPassword);
 
                     return "Success";
                 }

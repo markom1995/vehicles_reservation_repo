@@ -215,7 +215,7 @@ var userView = {
 
             webix.ajax().header({"Content-type": "application/json"})
                 .post("hub/user", newUser).then(function (data) {
-                util.messages.showErrorMessage("Uspješno dodavanje novog korisnika.");
+                util.messages.showMessage("Uspješno dodavanje novog korisnika.");
             }).fail(function (error) {
                 util.messages.showErrorMessage(error.responseText);
             });
