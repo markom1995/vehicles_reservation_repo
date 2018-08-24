@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Reservation implements Deletable, HasCompanyId {
     private Integer id;
     private String name;
@@ -15,6 +16,7 @@ public class Reservation implements Deletable, HasCompanyId {
     private Integer startKm;
     private Integer endKm;
     private String direction;
+    private Integer reservationStatusId;
     private Byte deleted;
     private Integer userId;
     private Integer vehicleId;
@@ -62,7 +64,7 @@ public class Reservation implements Deletable, HasCompanyId {
     }
 
     @Basic
-    @Column(name = "start_km", nullable = false)
+    @Column(name = "start_km", nullable = true)
     public Integer getStartKm() {
         return startKm;
     }
@@ -89,6 +91,16 @@ public class Reservation implements Deletable, HasCompanyId {
 
     public void setDirection(String direction) {
         this.direction = direction;
+    }
+
+    @Basic
+    @Column(name = "reservation_status_id", nullable = false)
+    public Integer getReservationStatusId() {
+        return reservationStatusId;
+    }
+
+    public void setReservationStatusId(Integer reservationStatusId) {
+        this.reservationStatusId = reservationStatusId;
     }
 
     @Basic

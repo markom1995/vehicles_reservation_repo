@@ -29,6 +29,9 @@ var menuActions = function (id) {
         case "vehicle_maintenance":
             vehicleMaintenanceView.selectPanel();
             break;
+        case "reservation":
+            reservationView.selectPanel();
+            break;
     }
 };
 
@@ -88,6 +91,11 @@ var menuUser = [
         id: "vehicle",
         value: "Vozila",
         icon: "car"
+    },
+    {
+        id: "reservation",
+        value: "Rezervacije",
+        icon: "hand-pointer-o"
     }
 ];
 

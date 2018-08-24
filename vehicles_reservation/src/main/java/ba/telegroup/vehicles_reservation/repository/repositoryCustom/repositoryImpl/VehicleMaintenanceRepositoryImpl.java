@@ -18,12 +18,10 @@ public class VehicleMaintenanceRepositoryImpl implements VehicleMaintenanceRepos
     @Override
     public List<VehicleMaintenanceVehicleMaintenanceTypeVehicle> getAllExtendedByCompanyIdAndDeleted(Integer companyId, Byte deleted) {
         return entityManager.createNativeQuery(SQL_GET_ALL_EXTENDED, "VehicleMaintenanceVehicleMaintenanceTypeVehicleMapping").setParameter(1, companyId).setParameter(2, deleted).getResultList();
-
     }
 
     @Override
     public List<VehicleMaintenanceVehicleMaintenanceTypeVehicle> getAllExtendedByCompanyIdAndDeletedAndVehicleId(Integer companyId, Byte deleted, Integer vehicleId) {
         return entityManager.createNativeQuery(SQL_GET_ALL_EXTENDED_BY_VEHICLE_ID, "VehicleMaintenanceVehicleMaintenanceTypeVehicleMapping").setParameter(1, companyId).setParameter(2, deleted).setParameter(3, vehicleId).getResultList();
-
     }
 }

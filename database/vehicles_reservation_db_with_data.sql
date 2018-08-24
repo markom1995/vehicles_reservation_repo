@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `location` (
   CONSTRAINT `FK_location_company` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
--- Dumping data for table vehicles_reservation_db.location: ~2 rows (approximately)
+-- Dumping data for table vehicles_reservation_db.location: ~3 rows (approximately)
 /*!40000 ALTER TABLE `location` DISABLE KEYS */;
 INSERT INTO `location` (`id`, `name`, `address`, `longitude`, `latitude`, `description`, `deleted`, `company_id`) VALUES
 	(3, 'Parking kod zgrade vlade', 'Vladike Platona 6', 17.199558, 44.776028, '', 0, 1),
@@ -71,9 +71,9 @@ CREATE TABLE IF NOT EXISTS `logger` (
   KEY `FK_logger_company` (`company_id`),
   CONSTRAINT `FK_logger_company` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
   CONSTRAINT `FK_logger_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8;
 
--- Dumping data for table vehicles_reservation_db.logger: ~47 rows (approximately)
+-- Dumping data for table vehicles_reservation_db.logger: ~59 rows (approximately)
 /*!40000 ALTER TABLE `logger` DISABLE KEYS */;
 INSERT INTO `logger` (`id`, `action_type`, `action_details`, `table_name`, `created`, `user_id`, `atomic`, `company_id`) VALUES
 	(10, 'update', 'A&#x017E;uriran je entitet: ba.telegroup.vehicles_reservation.model.User@262baf1e na novu vrijednost: ba.telegroup.vehicles_reservation.model.User@84fd0213.', 'User', '2018-08-18 20:16:53', 1, 1, NULL),
@@ -129,7 +129,12 @@ INSERT INTO `logger` (`id`, `action_type`, `action_details`, `table_name`, `crea
 	(60, 'update', 'A&#x017E;uriran je entitet: ba.telegroup.vehicles_reservation.model.VehicleMaintenance@a3740103 na novu vrijednost: ba.telegroup.vehicles_reservation.model.VehicleMaintenance@ee602503.', 'VehicleMaintenance', '2018-08-23 11:37:48', 12, 1, 1),
 	(61, 'create', 'Kreiran je novi entitet: ba.telegroup.vehicles_reservation.model.User@8405ece.', 'User', '2018-08-23 11:59:25', 1, 1, NULL),
 	(62, 'create', 'Kreiran je novi entitet: ba.telegroup.vehicles_reservation.model.User@8e81f853.', 'User', '2018-08-23 16:59:55', 1, 1, NULL),
-	(63, 'create', 'Kreiran je novi entitet: ba.telegroup.vehicles_reservation.model.User@f0d3410b.', 'User', '2018-08-23 18:55:35', 1, 1, NULL);
+	(63, 'create', 'Kreiran je novi entitet: ba.telegroup.vehicles_reservation.model.User@f0d3410b.', 'User', '2018-08-23 18:55:35', 1, 1, NULL),
+	(64, 'create', 'Kreiran je novi entitet: ba.telegroup.vehicles_reservation.model.User@e51cb22b.', 'User', '2018-08-24 08:12:30', 1, 1, NULL),
+	(65, 'create', 'Kreiran je novi entitet: ba.telegroup.vehicles_reservation.model.User@d966234a.', 'User', '2018-08-24 08:28:45', 1, 1, NULL),
+	(66, 'create', 'Kreiran je novi entitet: ba.telegroup.vehicles_reservation.model.User@cdaf9469.', 'User', '2018-08-24 08:29:56', 1, 1, NULL),
+	(67, 'create', 'Kreiran je novi entitet: ba.telegroup.vehicles_reservation.model.User@c1f90588.', 'User', '2018-08-24 08:31:23', 1, 1, NULL),
+	(68, 'create', 'Kreiran je novi entitet: ba.telegroup.vehicles_reservation.model.User@b64276a7.', 'User', '2018-08-24 08:33:16', 1, 1, NULL);
 /*!40000 ALTER TABLE `logger` ENABLE KEYS */;
 
 -- Dumping structure for table vehicles_reservation_db.reservation
@@ -138,9 +143,10 @@ CREATE TABLE IF NOT EXISTS `reservation` (
   `name` varchar(128) NOT NULL,
   `start_time` datetime NOT NULL,
   `end_time` datetime NOT NULL,
-  `start_km` int(11) NOT NULL,
+  `start_km` int(11) DEFAULT NULL,
   `end_km` int(11) DEFAULT NULL,
   `direction` text NOT NULL,
+  `reservation_status_id` int(11) NOT NULL,
   `deleted` tinyint(4) NOT NULL,
   `user_id` int(11) NOT NULL,
   `vehicle_id` int(11) NOT NULL,
@@ -149,14 +155,34 @@ CREATE TABLE IF NOT EXISTS `reservation` (
   KEY `FK_reservation_user` (`user_id`),
   KEY `FK_reservation_vehicle` (`vehicle_id`),
   KEY `FK_reservation_company` (`company_id`),
+  KEY `FK?reservation_reservation_status` (`reservation_status_id`),
+  CONSTRAINT `FK?reservation_reservation_status` FOREIGN KEY (`reservation_status_id`) REFERENCES `reservation_status` (`id`),
   CONSTRAINT `FK_reservation_company` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
   CONSTRAINT `FK_reservation_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
   CONSTRAINT `FK_reservation_vehicle` FOREIGN KEY (`vehicle_id`) REFERENCES `vehicle` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table vehicles_reservation_db.reservation: ~0 rows (approximately)
 /*!40000 ALTER TABLE `reservation` DISABLE KEYS */;
+INSERT INTO `reservation` (`id`, `name`, `start_time`, `end_time`, `start_km`, `end_km`, `direction`, `reservation_status_id`, `deleted`, `user_id`, `vehicle_id`, `company_id`) VALUES
+	(1, 'Putovanje u Novi Sad', '2019-08-24 00:00:00', '2019-08-27 00:00:00', NULL, NULL, 'Banja Luka-Novi Sad-Banja Luka', 1, 0, 17, 3, 1),
+	(2, 'Putovanje u Zagreb', '2018-08-25 16:00:00', '2018-08-27 00:00:00', 32000, NULL, 'Banja Luka-Zagreb-Banja Luka', 2, 0, 17, 4, 1);
 /*!40000 ALTER TABLE `reservation` ENABLE KEYS */;
+
+-- Dumping structure for table vehicles_reservation_db.reservation_status
+CREATE TABLE IF NOT EXISTS `reservation_status` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(128) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+-- Dumping data for table vehicles_reservation_db.reservation_status: ~3 rows (approximately)
+/*!40000 ALTER TABLE `reservation_status` DISABLE KEYS */;
+INSERT INTO `reservation_status` (`id`, `name`) VALUES
+	(1, 'Rezervisano'),
+	(2, 'Rezervacija u toku'),
+	(3, 'Završena rezervacija');
+/*!40000 ALTER TABLE `reservation_status` ENABLE KEYS */;
 
 -- Dumping structure for table vehicles_reservation_db.role
 CREATE TABLE IF NOT EXISTS `role` (
@@ -193,7 +219,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   KEY `FK_user_role` (`role_id`),
   CONSTRAINT `FK_user_company` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
   CONSTRAINT `FK_user_role` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table vehicles_reservation_db.user: ~3 rows (approximately)
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;

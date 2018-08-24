@@ -13,6 +13,7 @@
         <class>ba.telegroup.vehicles_reservation.model.VehicleMaintenanceType</class>
         <class>ba.telegroup.vehicles_reservation.model.VehicleManufacturer</class>
         <class>ba.telegroup.vehicles_reservation.model.VehicleModel</class>
+        <class>ba.telegroup.vehicles_reservation.model.ReservationStatus</class>
         <properties>
             <property name="hibernate.connection.url" value="jdbc:mariadb://localhost:3307/vehicles_reservation_db"/>
             <property name="hibernate.connection.driver_class" value="org.mariadb.jdbc.Driver"/>

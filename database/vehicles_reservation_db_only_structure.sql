@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS `logger` (
   KEY `FK_logger_company` (`company_id`),
   CONSTRAINT `FK_logger_company` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
   CONSTRAINT `FK_logger_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8;
 
 -- Data exporting was unselected.
 -- Dumping structure for table vehicles_reservation_db.reservation
@@ -67,9 +67,10 @@ CREATE TABLE IF NOT EXISTS `reservation` (
   `name` varchar(128) NOT NULL,
   `start_time` datetime NOT NULL,
   `end_time` datetime NOT NULL,
-  `start_km` int(11) NOT NULL,
+  `start_km` int(11) DEFAULT NULL,
   `end_km` int(11) DEFAULT NULL,
   `direction` text NOT NULL,
+  `reservation_status_id` int(11) NOT NULL,
   `deleted` tinyint(4) NOT NULL,
   `user_id` int(11) NOT NULL,
   `vehicle_id` int(11) NOT NULL,
@@ -78,10 +79,20 @@ CREATE TABLE IF NOT EXISTS `reservation` (
   KEY `FK_reservation_user` (`user_id`),
   KEY `FK_reservation_vehicle` (`vehicle_id`),
   KEY `FK_reservation_company` (`company_id`),
+  KEY `FK?reservation_reservation_status` (`reservation_status_id`),
+  CONSTRAINT `FK?reservation_reservation_status` FOREIGN KEY (`reservation_status_id`) REFERENCES `reservation_status` (`id`),
   CONSTRAINT `FK_reservation_company` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
   CONSTRAINT `FK_reservation_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
   CONSTRAINT `FK_reservation_vehicle` FOREIGN KEY (`vehicle_id`) REFERENCES `vehicle` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+-- Data exporting was unselected.
+-- Dumping structure for table vehicles_reservation_db.reservation_status
+CREATE TABLE IF NOT EXISTS `reservation_status` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(128) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- Data exporting was unselected.
 -- Dumping structure for table vehicles_reservation_db.role
@@ -112,7 +123,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   KEY `FK_user_role` (`role_id`),
   CONSTRAINT `FK_user_company` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
   CONSTRAINT `FK_user_role` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
 
 -- Data exporting was unselected.
 -- Dumping structure for table vehicles_reservation_db.vehicle

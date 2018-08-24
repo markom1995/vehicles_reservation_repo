@@ -234,6 +234,11 @@ var registrationLayout = {
                                     required: true
                                 },
                                 {
+                                    view: "text",
+                                    name: "base64ImageUser",
+                                    hidden: true
+                                },
+                                {
                                     id: "password",
                                     name: "password",
                                     view: "text",
@@ -297,7 +302,6 @@ var registrationLayout = {
                                 }
                             ],
                             rules: {
-                                uploaderPhoto: webix.rules.isNotEmpty,
                                 "username": function (value) {
                                     if (value.length > 128) {
                                         $$('registrationForm').elements.username.config.invalidMessage = 'Maksimalan broj karaktera je 128.';
@@ -335,16 +339,16 @@ var registrationLayout = {
 
                                     return true;
                                 },
-                                "firstname": function (value) {
+                                "firstName": function (value) {
                                     if (value.length > 128) {
-                                        $$('registrationForm').elements.firstname.config.invalidMessage = 'Maksimalan broj karaktera je 128.';
+                                        $$('registrationForm').elements.firstName.config.invalidMessage = 'Maksimalan broj karaktera je 128.';
                                         return false;
                                     }
                                     return true;
                                 },
-                                "lastname": function (value) {
+                                "lastName": function (value) {
                                     if (value.length > 128) {
-                                        $$('registrationForm').elements.lastname.config.invalidMessage = 'Maksimalan broj karaktera je 128.';
+                                        $$('registrationForm').elements.lastName.config.invalidMessage = 'Maksimalan broj karaktera je 128.';
                                         return false;
                                     }
 
@@ -373,7 +377,7 @@ function saveUser() {
         userForRegistration.lastName = $$("registrationForm").getValues().lastName;
         userForRegistration.username = $$("registrationForm").getValues().username;
         userForRegistration.password = $$("registrationForm").getValues().password;
-        userForRegistration.photo = $$("registrationForm").getValues().base64ImageUser;
+        userForRegistration.photo = $$("registrationForm").getValues().base64ImageUser == "" ? null : $$("registrationForm").getValues().base64ImageUser;
 
         webix.ajax().header({"Content-type": "application/json"})
             .post("hub/user/registration", userForRegistration).then(function (data) {

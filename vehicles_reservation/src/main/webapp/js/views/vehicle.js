@@ -62,23 +62,14 @@ var vehicleView = {
                     height: 520,
                     width: 330
                 },
-                template: function(obj) {
-                    return(obj.id==3?"<div style='height: 13px'></div><div style='border: 3px solid green' align='center'><img src='data:image/png;base64, "+ obj.photo +"' alt='Nema slike' width='300' height='300' align='center'/></div><br/>" +
-                        "<div style='height: 1px' align='center'>Proizvođač: " + obj.manufacturerName + "</div><br/>" +
-                        "<div style='height: 1px' align='center'>Model: " + obj.modelName +"</div><br/>" +
-                        "<div style='height: 1px' align='center'>Registarske tablice: " + obj.licensePlate + "</div><br/>" +
-                        "<div style='height: 1px' align='center'>Godina proizvodnje: " + obj.year + "</div><br/>" +
-                        "<div style='height: 1px' align='center'>Motor: " + obj.engine + "</div><br/>" +
-                        "<div style='height: 1px' align='center'>Gorivo: " + obj.fuel + "</div><br/>" +
-                        "<div style='display: none;'>" + obj.locationId + "</div>":"<div style='height: 13px'></div><div style='border: 3px solid red' align='center'><img src='data:image/png;base64, "+ obj.photo +"' alt='Nema slike' width='300' height='300' align='center'/></div><br/>" +
-                        "<div style='height: 1px' align='center'>Proizvođač: " + obj.manufacturerName + "</div><br/>" +
-                        "<div style='height: 1px' align='center'>Model: " + obj.modelName +"</div><br/>" +
-                        "<div style='height: 1px' align='center'>Registarske tablice: " + obj.licensePlate + "</div><br/>" +
-                        "<div style='height: 1px' align='center'>Godina proizvodnje: " + obj.year + "</div><br/>" +
-                        "<div style='height: 1px' align='center'>Motor: " + obj.engine + "</div><br/>" +
-                        "<div style='height: 1px' align='center'>Gorivo: " + obj.fuel + "</div><br/>" +
-                        "<div style='display: none;'>" + obj.locationId + "</div>")
-                },
+                template: "<div><div style='height: 13px'></div><div align='center'><img src='data:image/png;base64, #photo#' alt='Nema slike' width='300' height='300' align='center'/></div><br/>" +
+                    "<div style='height: 1px' align='center'>Proizvođač: #manufacturerName#</div><br/>" +
+                    "<div style='height: 1px' align='center'>Model: #modelName#</div><br/>" +
+                    "<div style='height: 1px' align='center'>Registarske tablice: #licensePlate#</div><br/>" +
+                    "<div style='height: 1px' align='center'>Godina proizvodnje: #year#</div><br/>" +
+                    "<div style='height: 1px' align='center'>Motor: #engine#</div><br/>" +
+                    "<div style='height: 1px' align='center'>Gorivo: #fuel#</div><br/>" +
+                    "</div>",
                 on: {
                     onItemDblClick: function (id) {
                         vehicleView.showVehicleDetailsDialog($$("vehicleDataView").getSelectedItem().id);
@@ -151,7 +142,8 @@ var vehicleView = {
                             webix.confirm(delBox);
                             break;
                         case "3":
-                            vehicleView.showMapDetailsDialog($$("vehicleDataView").getSelectedItem());
+                            var item = $$("vehicleDataView").getSelectedItem();
+                            vehicleView.showMapDetailsDialog(item.latitude, item.longitude);
                             break;
                     }
                 }
@@ -176,21 +168,80 @@ var vehicleView = {
         }
     },
 
-    showMapDetailsDialog: function (vehicle) {
-        tableCenter[0] = vehicle.latitude;
-        tableCenter[1] = vehicle.longitude;
+    showMapDetailsDialog: function (latitude, longitude) {
+        if (util.popupIsntAlreadyOpened("showMapDialog")) {
+            webix.ui(webix.copy(vehicleView.showMapDialog));
 
-        var mapObject = {
-            id: 1,
-            lat: tableCenter[0],
-            lng: tableCenter[1]
-        };
+            $$("mapVehicle").getMap("waitMap").then(function(mapObj) {
+                var geocoder = new google.maps.Geocoder();
 
-        tableData[0] = mapObject;
-        webix.ui(webix.copy(locationView.showMapDialog));
-        $$("mapLabel").data.label = "<span class='webix_icon fa fa-map-marker'></span> Lokacija";
-        $$("saveMap").data.hidden = true;
-        $$("showMapDialog").show();
+                var latlng = {
+                    lat: parseFloat(latitude),
+                    lng: parseFloat(longitude)
+                };
+
+                var center = new google.maps.LatLng(latitude, longitude);
+                mapObj.panTo(center);
+
+                console.log(latlng);
+
+                geocoder.geocode({'location': latlng}, function(results, status) {
+                    if (status === 'OK') {
+                        if (results[0]) {
+                            var marker = new google.maps.Marker({
+                                position: latlng,
+                                map: mapObj,
+                            });
+                        } else {
+                            window.alert("Lokacija " + location.name + " ne može biti locirana.");
+                        }
+                    } else {
+                        window.alert("Lokacija " + location.name + " ne može biti locirana.");
+                    }
+                });
+            });
+
+            $$("showMapDialog").show();
+        }
+    },
+
+    showMapDialog: {
+        view: "popup",
+        id: "showMapDialog",
+        modal: true,
+        position: "center",
+        body: {
+            id: "showMapDialogInside",
+            rows: [
+                {
+                    view: "toolbar",
+                    cols: [
+                        {
+                            id: "mapLabel",
+                            view: "label",
+                            label: "<span class='webix_icon fa fa-map-marker '></span> Lokacija",
+                            width: 600,
+                        },
+                        {},
+                        {
+                            hotkey: 'esc',
+                            view: "icon",
+                            icon: "close",
+                            align: "right",
+                            click: "util.dismissDialog('showMapDialog');"
+                        }
+                    ]
+                },
+                {
+                    key: "",
+                    view: "google-map",
+                    id: "mapVehicle",
+                    zoom: 15,
+                    width: 600,
+                    height: 500
+                }
+            ]
+        }
     },
 
     addChangeVehicleDialog: {
