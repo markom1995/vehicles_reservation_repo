@@ -95,7 +95,7 @@ var menuUser = [
     {
         id: "reservation",
         value: "Rezervacije",
-        icon: "hand-pointer-o"
+        icon: "bookmark"
     }
 ];
 

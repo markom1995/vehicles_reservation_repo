@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.sql.Timestamp;
 import java.util.List;
 
 @RequestMapping(value = "/hub/vehicle")
@@ -55,6 +56,13 @@ public class VehicleController extends GenericHasCompanyIdAndDeletableController
     public @ResponseBody
     List getAll(){
         return vehicleRepository.getAllExtendedByCompanyIdAndDeleted(userBean.getUser().getCompanyId(), (byte)0);
+    }
+
+    @Transactional
+    @RequestMapping(value = "/custom/reservation/{startTime}/{endTime}", method = RequestMethod.GET)
+    public @ResponseBody
+    List getAllExtendedFreeByStartTimeAndEndTime(@PathVariable Timestamp startTime, @PathVariable Timestamp endTime){
+        return vehicleRepository.getAllExtendedFreeByCompanyIdAndDeletedAndStartTimeAndEndTime(userBean.getUser().getCompanyId(), (byte)0, startTime, endTime);
     }
 
     @Transactional

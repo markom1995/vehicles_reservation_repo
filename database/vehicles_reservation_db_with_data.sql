@@ -2,7 +2,7 @@
 -- Host:                         127.0.0.1
 -- Server version:               10.3.8-MariaDB - mariadb.org binary distribution
 -- Server OS:                    Win64
--- HeidiSQL Version:             9.5.0.5196
+-- HeidiSQL Version:             9.5.0.5289
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS `logger` (
   KEY `FK_logger_company` (`company_id`),
   CONSTRAINT `FK_logger_company` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
   CONSTRAINT `FK_logger_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table vehicles_reservation_db.logger: ~59 rows (approximately)
 /*!40000 ALTER TABLE `logger` DISABLE KEYS */;
@@ -134,7 +134,22 @@ INSERT INTO `logger` (`id`, `action_type`, `action_details`, `table_name`, `crea
 	(65, 'create', 'Kreiran je novi entitet: ba.telegroup.vehicles_reservation.model.User@d966234a.', 'User', '2018-08-24 08:28:45', 1, 1, NULL),
 	(66, 'create', 'Kreiran je novi entitet: ba.telegroup.vehicles_reservation.model.User@cdaf9469.', 'User', '2018-08-24 08:29:56', 1, 1, NULL),
 	(67, 'create', 'Kreiran je novi entitet: ba.telegroup.vehicles_reservation.model.User@c1f90588.', 'User', '2018-08-24 08:31:23', 1, 1, NULL),
-	(68, 'create', 'Kreiran je novi entitet: ba.telegroup.vehicles_reservation.model.User@b64276a7.', 'User', '2018-08-24 08:33:16', 1, 1, NULL);
+	(68, 'create', 'Kreiran je novi entitet: ba.telegroup.vehicles_reservation.model.User@b64276a7.', 'User', '2018-08-24 08:33:16', 1, 1, NULL),
+	(69, 'create', 'Kreiran je novi entitet: ba.telegroup.vehicles_reservation.model.Reservation@9eb307d4.', 'Reservation', '2018-08-25 17:56:13', 17, 1, 1),
+	(70, 'create', 'Kreiran je novi entitet: ba.telegroup.vehicles_reservation.model.Reservation@ca31d8ec.', 'Reservation', '2018-08-25 18:02:36', 17, 1, 1),
+	(71, 'delete', 'Obrisan je entitet: ba.telegroup.vehicles_reservation.model.Reservation@2ee4c0a0.', 'Reservation', '2018-08-25 19:28:55', 17, 1, 1),
+	(72, 'update', 'A&#x017E;uriran je entitet: ba.telegroup.vehicles_reservation.model.Reservation@2ee44c41 na novu vrijednost: ba.telegroup.vehicles_reservation.model.Reservation@e5440609.', 'Reservation', '2018-08-25 19:53:22', 17, 1, 1),
+	(73, 'update', 'A&#x017E;uriran je entitet: ba.telegroup.vehicles_reservation.model.Reservation@9eb307d4 na novu vrijednost: ba.telegroup.vehicles_reservation.model.Reservation@85c80f24.', 'Reservation', '2018-08-25 19:54:06', 17, 1, 1),
+	(74, 'update', 'A&#x017E;uriran je entitet: ba.telegroup.vehicles_reservation.model.Reservation@9eb307d4 na novu vrijednost: ba.telegroup.vehicles_reservation.model.Reservation@85c80f24.', 'Reservation', '2018-08-25 19:54:50', 17, 1, 1),
+	(75, 'update', 'A&#x017E;uriran je entitet: ba.telegroup.vehicles_reservation.model.Reservation@e5440609 na novu vrijednost: ba.telegroup.vehicles_reservation.model.Reservation@2f7e4d71.', 'Reservation', '2018-08-25 19:57:44', 17, 1, 1),
+	(76, 'update', 'A&#x017E;uriran je entitet: ba.telegroup.vehicles_reservation.model.Reservation@ca31d8ec na novu vrijednost: ba.telegroup.vehicles_reservation.model.Reservation@d248bdcb.', 'Reservation', '2018-08-25 20:51:53', 17, 1, 1),
+	(77, 'update', 'A&#x017E;uriran je entitet: ba.telegroup.vehicles_reservation.model.Reservation@ca31d8ec na novu vrijednost: ba.telegroup.vehicles_reservation.model.Reservation@8c4e850c.', 'Reservation', '2018-08-25 20:54:08', 17, 1, 1),
+	(78, 'update', 'A&#x017E;uriran je entitet: ba.telegroup.vehicles_reservation.model.Reservation@ca31d8ec na novu vrijednost: ba.telegroup.vehicles_reservation.model.Reservation@213337cd.', 'Reservation', '2018-08-25 20:57:24', 17, 1, 1),
+	(79, 'update', 'A&#x017E;uriran je entitet: ba.telegroup.vehicles_reservation.model.Reservation@ca31d8ec na novu vrijednost: ba.telegroup.vehicles_reservation.model.Reservation@f2bd1acf.', 'Reservation', '2018-08-25 21:00:51', 17, 1, 1),
+	(80, 'update', 'A&#x017E;uriran je entitet: ba.telegroup.vehicles_reservation.model.Reservation@ca31d8ec na novu vrijednost: ba.telegroup.vehicles_reservation.model.Reservation@87a1cd90.', 'Reservation', '2018-08-25 21:03:10', 17, 1, 1),
+	(81, 'update', 'A&#x017E;uriran je entitet: ba.telegroup.vehicles_reservation.model.Reservation@ca31d8ec na novu vrijednost: ba.telegroup.vehicles_reservation.model.Reservation@1c868051.', 'Reservation', '2018-08-25 21:03:16', 17, 1, 1),
+	(82, 'update', 'A&#x017E;uriran je entitet: ba.telegroup.vehicles_reservation.model.Reservation@ca31d8ec na novu vrijednost: ba.telegroup.vehicles_reservation.model.Reservation@9f2a4fcb.', 'Reservation', '2018-08-25 21:10:36', 17, 1, 1),
+	(83, 'update', 'A&#x017E;uriran je entitet: ba.telegroup.vehicles_reservation.model.Reservation@9f2a4fcb na novu vrijednost: ba.telegroup.vehicles_reservation.model.Reservation@62851f8a.', 'Reservation', '2018-08-25 21:11:44', 17, 1, 1);
 /*!40000 ALTER TABLE `logger` ENABLE KEYS */;
 
 -- Dumping structure for table vehicles_reservation_db.reservation
@@ -162,11 +177,13 @@ CREATE TABLE IF NOT EXISTS `reservation` (
   CONSTRAINT `FK_reservation_vehicle` FOREIGN KEY (`vehicle_id`) REFERENCES `vehicle` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
--- Dumping data for table vehicles_reservation_db.reservation: ~0 rows (approximately)
+-- Dumping data for table vehicles_reservation_db.reservation: ~2 rows (approximately)
 /*!40000 ALTER TABLE `reservation` DISABLE KEYS */;
 INSERT INTO `reservation` (`id`, `name`, `start_time`, `end_time`, `start_km`, `end_km`, `direction`, `reservation_status_id`, `deleted`, `user_id`, `vehicle_id`, `company_id`) VALUES
-	(1, 'Putovanje u Novi Sad', '2019-08-24 00:00:00', '2019-08-27 00:00:00', NULL, NULL, 'Banja Luka-Novi Sad-Banja Luka', 1, 0, 17, 3, 1),
-	(2, 'Putovanje u Zagreb', '2018-08-25 16:00:00', '2018-08-27 00:00:00', 32000, NULL, 'Banja Luka-Zagreb-Banja Luka', 2, 0, 17, 4, 1);
+	(1, 'Putovanje u Novi Sad', '2018-08-24 00:00:00', '2018-08-27 00:00:00', 45000, 47000, 'Banja Luka-Novi Sad-Banja Luka', 3, 0, 17, 3, 1),
+	(2, 'Putovanje u Zagreb', '2018-08-25 16:00:00', '2018-08-27 00:00:00', 32000, NULL, 'Banja Luka-Zagreb-Banja Luka', 2, 0, 17, 4, 1),
+	(3, 'Putovanje u Beograd', '0032-02-08 09:00:00', '0034-02-08 15:00:00', 50000, NULL, 'Banja Luka-Beograd-Banja Luka', 2, 0, 17, 5, 1),
+	(4, 'Putovanje u Bec', '0007-03-11 07:00:00', '0009-03-10 15:00:00', NULL, NULL, 'Banja Luka-Bec-Banja Luka', 1, 0, 17, 4, 1);
 /*!40000 ALTER TABLE `reservation` ENABLE KEYS */;
 
 -- Dumping structure for table vehicles_reservation_db.reservation_status
