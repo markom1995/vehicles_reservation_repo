@@ -1,6 +1,8 @@
 var freeVehicles = [];
 var firstFreeVehicle;
 var selectedReservation;
+var vehicleMaintenances = [];
+var endKmTemp;
 
 var reservationView = {
     panel: {
@@ -192,6 +194,7 @@ var reservationView = {
                             reservationView.showStartTripDialog();
                             break;
                         case "4":
+                            vehicleMaintenances.length = 0;
                             selectedReservation = $$("reservationDataView").getSelectedItem();
                             reservationView.showFinishTripDialog();
                             break;
@@ -706,7 +709,7 @@ var reservationView = {
                             view: "form",
                             id: "finishTripForm",
                             borderless: true,
-                            width: 400,
+                            width: 450,
                             elementsConfig: {
                                 labelWidth: 200,
                                 bottomPadding: 18
@@ -723,7 +726,6 @@ var reservationView = {
                                 {
                                     margin: 5,
                                     cols: [
-                                        {},
                                         {
                                             id: "saveFinishTrip",
                                             view: "button",
@@ -732,6 +734,14 @@ var reservationView = {
                                             click: "reservationView.finishTrip",
                                             hotkey: "enter",
                                             width: 170
+                                        },
+                                        {},
+                                        {
+                                            id: "addVehicleMaintenance",
+                                            view: "button",
+                                            value: "Dodajte troškove putovanja",
+                                            click: "reservationView.addVehicleMaintenance",
+                                            width: 200
                                         }
                                     ]
                                 }
@@ -779,16 +789,221 @@ var reservationView = {
                     $$("reservationDataView").refresh();
                     reservationView.selectPanel();
 
-                    util.messages.showMessage("Putovanje uspješno završeno.");
+                    util.messages.showMessage("Putovanje uspješno završeno")
                 } else {
-                    util.messages.showErrorMessage("Putovanje neuspješno zavrsšeno.");
+                    util.messages.showErrorMessage("Putovanje neuspješno završeno.");
                 }
-
             }).fail(function (error) {
                 util.messages.showErrorMessage(error.responseText);
             });
 
             util.dismissDialog('finishTripDialog');
+        }
+    },
+
+    addVehicleMaintenance:function(){
+        if ($$("finishTripForm").validate()) {
+            endKmTemp = $$("finishTripForm").getValues().endKm;
+            util.dismissDialog('finishTripDialog');
+
+            reservationView.showAddVehicleMaintenanceDialog();
+        }
+    },
+
+    addVehicleMaintenanceDialog: {
+        view: "popup",
+        id: "addVehicleMaintenanceDialog",
+        modal: true,
+        position: "center",
+        body: {
+            id: "addVehicleMaintenanceInside",
+            rows: [
+                {
+                    view: "toolbar",
+                    cols: [
+                        {
+                            view: "label",
+                            label: "<span class='webix_icon fa-wrench'></span> Dodavanje troška",
+                            width: 400
+                        },
+                        {},
+                        {
+                            view: "icon",
+                            icon: "close",
+                            align: "right",
+                            click: "util.dismissDialog('addVehicleMaintenanceDialog');"
+                        }
+                    ]
+                },
+                {
+                    view: "form",
+                    id: "addVehicleMaintenanceForm",
+                    width: 600,
+                    elementsConfig: {
+                        labelWidth: 200,
+                        bottomPadding: 18
+                    },
+                    elements: [
+                        {
+                            name: "id",
+                            view: "text",
+                            hidden: true
+                        },
+                        {
+                            view: "select",
+                            id: "vehicleMaintenanceTypeName",
+                            name: "vehicleMaintenanceTypeName",
+                            label: "Vrsta:",
+                            value: firstVehicleMaintenancesType,
+                            options: vehicleMaintenancesType
+                        },
+                        {
+                            view: "text",
+                            id: "description",
+                            name: "description",
+                            label: "Opis:",
+                            required: false
+                        },
+                        {
+                            view: "text",
+                            id: "price",
+                            name: "price",
+                            label: "Cijena u KM(xxx.xx):",
+                            format: webix.i18n.priceFormat,
+                            invalidMessage: "Molimo Vas da unesete cijenu.",
+                            required: true
+                        },
+                        {
+                            view: "datepicker",
+                            id: "date",
+                            name: "date",
+                            label: "Datum:",
+                            stringResult: true,
+                            type: "date",
+                            format: "%d/%m/%y",
+                            suggest: {
+                                type: "calendar",
+                                body: {
+                                    type: "date",
+                                    calendarDate: "%d/%m/%y",
+                                    maxDate: new Date(),
+                                }
+                            },
+                            invalidMessage: "Molimo Vas da unesete datum.",
+                            required: true
+                        },
+                        {
+                            view: "text",
+                            id: "vehicle",
+                            name: "vehicle",
+                            label: "Vozilo:",
+                            editable: false,
+                            value: ""
+                        },
+                        {
+                            margin: 5,
+                            cols: [
+                                {
+                                    id: "finishMaintenanceBtn",
+                                    view: "button",
+                                    value: "Završite dodavanje troškova",
+                                    click: "reservationView.finishMaintenance",
+                                    width: 200
+                                },
+                                {},
+                                {
+                                    id: "addMoreMaintenanceBtn",
+                                    view: "button",
+                                    value: "Dodajte još troškova",
+                                    type: "form",
+                                    click: "reservationView.addMaintenance",
+                                    hotkey: "enter",
+                                    width: 200
+                                }
+                            ]
+                        }
+                    ],
+                    rules: {
+                        "price": function (value) {
+                            var regex = /[0-9]{3}[.][0-9]{2}/;
+
+                            if (!regex.test(value)) {
+                                $$('addVehicleMaintenanceForm').elements.price.config.invalidMessage = 'Cijena nije u ispravnom formatu.';
+                                return false;
+                            }
+
+                            return true;
+                        }
+                    }
+                }
+            ]
+        }
+    },
+
+    showAddVehicleMaintenanceDialog: function () {
+        if (util.popupIsntAlreadyOpened("addVehicleMaintenanceDialog")) {
+            webix.ui(webix.copy(reservationView.addVehicleMaintenanceDialog)).show();
+
+            $$("addVehicleMaintenanceForm").elements.vehicle.setValue(selectedReservation.licensePlate + " - " + selectedReservation.manufacturerName + " " + selectedReservation.modelName);
+
+            $$("addVehicleMaintenanceDialog").show();
+            webix.UIManager.setFocus("vehicleMaintenanceTypeName");
+        }
+    },
+
+    finishMaintenance: function(){
+        if ($$("addVehicleMaintenanceForm").validate()) {
+            var formatDate = $$("addVehicleMaintenanceForm").getValues().date.split(" ")[0];
+            vehicleMaintenances.push({
+                id: null,
+                vehicleMaintenanceTypeId: $$("addVehicleMaintenanceForm").getValues().vehicleMaintenanceTypeName,
+                description: $$("addVehicleMaintenanceForm").getValues().description,
+                price: $$("addVehicleMaintenanceForm").getValues().price,
+                date: formatDate,
+                deleted: 0,
+                vehicleId: selectedReservation.vehicleId,
+                companyId: companyData.id
+            });
+
+            var reservationForUpdate = selectedReservation;
+            reservationForUpdate.endKm = endKmTemp;
+            reservationForUpdate.reservationStatusId = 3;
+
+            webix.ajax().header({"Content-type": "application/json"})
+                .put("hub/reservation/finishTrip/" + reservationForUpdate.id + "/" + endKmTemp, JSON.stringify(vehicleMaintenances)).then(function (data) {
+                if (data.text() === "Success") {
+                    $$("reservationDataView").updateItem(reservationForUpdate.id, reservationForUpdate);
+                    $$("reservationDataView").refresh();
+                    reservationView.selectPanel();
+
+                    util.messages.showMessage("Putovanje uspješno završeno")
+                } else {
+                    util.messages.showErrorMessage("Putovanje neuspješno završeno.");
+                }
+            }).fail(function (error) {
+                util.messages.showErrorMessage(error.responseText);
+            });
+
+            util.dismissDialog('addVehicleMaintenanceDialog');
+        }
+    },
+
+    addMaintenance: function(){
+        if ($$("addVehicleMaintenanceForm").validate()) {
+            var formatDate = $$("addVehicleMaintenanceForm").getValues().date.split(" ")[0];
+            vehicleMaintenances.push({
+                id: null,
+                vehicleMaintenanceTypeId: $$("addVehicleMaintenanceForm").getValues().vehicleMaintenanceTypeName,
+                description: $$("addVehicleMaintenanceForm").getValues().description,
+                price: $$("addVehicleMaintenanceForm").getValues().price,
+                date: formatDate,
+                deleted: 0,
+                vehicleId: selectedReservation.vehicleId,
+                companyId: companyData.id
+            });
+
+            util.dismissDialog('addVehicleMaintenanceDialog');
+            reservationView.showAddVehicleMaintenanceDialog();
         }
     },
 

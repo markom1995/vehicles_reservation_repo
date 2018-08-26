@@ -24,6 +24,8 @@ import java.util.Date;
                         @ColumnResult(name="deleted"),
                         @ColumnResult(name="token"),
                         @ColumnResult(name="token_time", type = Date.class),
+                        @ColumnResult(name="mail_status_id"),
+                        @ColumnResult(name="location_id"),
                         @ColumnResult(name="company_id"),
                         @ColumnResult(name="role_id")
                 }
@@ -43,11 +45,13 @@ public class User implements Deletable, HasCompanyId {
     private Byte deleted;
     private String token;
     private Timestamp tokenTime;
+    private Integer mailStatusId;
+    private Integer locationId;
     private Integer companyId;
     private Integer roleId;
 
     public User() {}
-    public User(Integer id, String email, String username, String password, String first_name, String last_name, byte[] photo, Byte active, Byte deleted, String token, Date token_time, Integer company_id, Integer role_id) {
+    public User(Integer id, String email, String username, String password, String first_name, String last_name, byte[] photo, Byte active, Byte deleted, String token, Date token_time, Integer mailStatusId, Integer locationId, Integer company_id, Integer role_id) {
         this.id = id;
         this.email = email;
         this.username = username;
@@ -58,9 +62,11 @@ public class User implements Deletable, HasCompanyId {
         this.active = active;
         this.deleted = deleted;
         this.token = token;
+        setTokenTime(token_time==null ? null:new Timestamp(token_time.getTime()));
+        this.mailStatusId = mailStatusId;
+        this.locationId = locationId;
         this.companyId = company_id;
         this.roleId = role_id;
-        setTokenTime(token_time==null ? null:new Timestamp(token_time.getTime()));
     }
 
     @Id
@@ -172,6 +178,26 @@ public class User implements Deletable, HasCompanyId {
 
     public void setTokenTime(Timestamp tokenTime) {
         this.tokenTime = tokenTime;
+    }
+
+    @Basic
+    @Column(name = "mail_status_id", nullable = true)
+    public Integer getMailStatusId() {
+        return mailStatusId;
+    }
+
+    public void setMailStatusId(Integer mailStatusId) {
+        this.mailStatusId = mailStatusId;
+    }
+
+    @Basic
+    @Column(name = "location_id", nullable = true)
+    public Integer getLocationId() {
+        return locationId;
+    }
+
+    public void setLocationId(Integer locationId) {
+        this.locationId = locationId;
     }
 
     @Basic

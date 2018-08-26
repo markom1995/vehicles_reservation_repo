@@ -314,6 +314,26 @@ public class UserController extends GenericHasCompanyIdAndDeletableController<Us
         throw new BadRequestException(badRequestUsernameExists);
     }
 
+    @RequestMapping(value = "/mailStatus/{id}", method = RequestMethod.POST)
+    @Transactional
+    public @ResponseBody
+    String updateMailStatus(@PathVariable Integer id, @RequestParam("status") Integer statusId) throws BadRequestException {
+        User user = userRepository.findById(id).orElse(null);
+        if(userBean.getUser().getId().equals(id) && user != null){
+            User oldObject = user;
+            user.setMailStatusId(statusId);
+            if (userRepository.saveAndFlush(user) != null) {
+                logUpdateAction(user, oldObject);
+                return "Success";
+            }
+            else{
+                throw new BadRequestException(badRequestUpdate);
+            }
+        }
+        else{
+            throw new BadRequestException(badRequestNoUser);
+        }
+    }
 
     @RequestMapping(value = {"/state"}, method = RequestMethod.GET)
     public @ResponseBody

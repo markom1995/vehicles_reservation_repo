@@ -332,9 +332,11 @@ var profileView = {
             ]
         }
     },
+
     hide: function () {
         $$("tmpUser").hide();
     },
+
     save: function () {
         var form = $$("changePasswordForm");
         if ($$("changePasswordForm").validate()) {
@@ -348,6 +350,104 @@ var profileView = {
                 util.messages.showMessage(error.responseText);
             });
         }
+    },
+
+    notificationSettingsDialog: {
+        id: "notificationSettingsDialog",
+        view: "popup",
+        modal: true,
+        position: "center",
+        body: {
+            id: "notificationSettingsInside",
+            rows: [
+                {
+                    view: "toolbar",
+                    cols: [
+                        {
+                            view: "label",
+                            label: "<span class='fa fa-bell'></span> Podešavanja notifikacija",
+                            width: 400
+                        },
+                        {},
+                        {
+                            hotkey: 'esc',
+                            view: "icon",
+                            icon: "close",
+                            align: "right",
+                            click: "util.dismissDialog('notificationSettingsDialog');"
+                        }]
+                }, {
+                    id: "notificationSettingsForm",
+                    view: "form",
+                    width: 800,
+                    elementsConfig: {
+                        labelWidth: 350,
+                        bottomPadding: 18
+                    },
+                    elements: [
+                        {
+                            id: "mailNotification",
+                            name: "mailNotification",
+                            view: "radio",
+                            label: "Kada želite da Vam notifikaciju stignu mail-om:",
+                            required: true,
+                            invalidMessage: "Molimo Vas da odaberete jednu opciju.",
+                            options: [
+                                {
+                                    id: 1,
+                                    value: "Kada neko izvrši ili otkaže rezervaciju sa Vaše lokacije",
+                                    newline: true
+                                },
+                                {
+                                    id: 2,
+                                    value: "Kada neko izvrši ili otkaže rezervaciju iz Vaše kompanije",
+                                    newline: true
+                                },
+                                {
+                                    id: 3,
+                                    value: "Želim da ugasim notifikacije",
+                                    newline: true
+                                }
+                            ]
+                        },
+                        {
+                            margin: 5,
+                            cols: [
+                                {},
+                                {
+                                    id: "saveNotificationSettings",
+                                    view: "button",
+                                    value: "Sačuvajte izmjene",
+                                    type: "form",
+                                    click: "profileView.saveNotificationSettings",
+                                    hotkey: "enter",
+                                    width: 150
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+
+    saveNotificationSettings:function () {
+        if ($$("notificationSettingsForm").validate()) {
+            var status = $$("notificationSettingsForm").getValues().mailNotification;
+            webix.ajax().header({"Content-type": "application/x-www-form-urlencoded"})
+                .post("hub/user/mailStatus/" + userData.id, "status=" + status).then(function (data) {
+                if (data.text() === "Success") {
+                    userData.mailStatusId = status;
+                    util.messages.showMessage("Podešavanja uspješno izmijenjena.")
+                } else {
+                    util.messages.showErrorMessage("Podešavanja neuspješno izmijenjena.");
+                }
+            }).fail(function (error) {
+                util.messages.showErrorMessage(error.responseText);
+            });
+        }
+
+        util.dismissDialog('notificationSettingsDialog');
     }
 };
 webix.ui(

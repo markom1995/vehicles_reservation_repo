@@ -32,6 +32,9 @@ var menuActions = function (id) {
         case "reservation":
             reservationView.selectPanel();
             break;
+        case "chart":
+            chartView.selectPanel();
+            break;
     }
 };
 
@@ -68,6 +71,11 @@ var menuAdmin = [
         id: "vehicle_maintenance",
         value: "Troškovi",
         icon: "wrench"
+    },
+    {
+        id: "chart",
+        value: "Grafikoni za troškove vozila",
+        icon: "percent"
     },
     {
         id: "logger",

@@ -38,7 +38,7 @@ public class Notification {
     private String mailSocketFactoryClass;
 
     @Async
-    public void notify(String recipientMail, String messageText) throws BadRequestException {
+    public void notify(String recipientMail, String vehicleDetails, String reservationName, String direction, String time, Boolean startReservation) throws BadRequestException {
         Properties properties = new Properties();
         properties.put("mail.smtp.host", mailHost);
         properties.put("mail.smtp.port", mailPort);
@@ -56,8 +56,13 @@ public class Notification {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(mailSender, "Vehicle Reservation System"));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientMail));
-            message.setSubject("Notification");
-            message.setText(messageText);
+            message.setSubject("Notifikacija za rezervaciju");
+            if(startReservation){
+                message.setText("Vozilo " + vehicleDetails + " je rezervisano za rezervaciju pod imenom \"" + reservationName + "\" za pravac puta " + direction + " u periodu " + time + ".");
+            }
+            else{
+                message.setText("Vozilo " + vehicleDetails + " je otkazano za rezervaciju pod imenom \"" + reservationName + "\" za pravac puta " + direction + " u periodu " + time + ".");
+            }
 
             Transport.send(message);
 
@@ -85,7 +90,7 @@ public class Notification {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(mailSender, "Vehicle Reservation System"));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientMail));
-            message.setSubject("Registration");
+            message.setSubject("Registracija");
             message.setText("Registraciju možete izvršiti na slijedećem linku http://localhost:8030 klikom na dugme registraciju. Vaš token je " + registrationToken + ".");
 
             Transport.send(message);
@@ -114,7 +119,7 @@ public class Notification {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(mailSender, "Vehicle Reservation System"));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientMail));
-            message.setSubject("Registration");
+            message.setSubject("Izmjena lozinke");
             message.setText("Vaša nova lozinka je " + newPassword + ". Molimo Vas da odmah poslije prvog prijavljivanja na sistem promijenite lozinku.");
 
             Transport.send(message);

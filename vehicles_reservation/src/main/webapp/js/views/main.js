@@ -43,7 +43,7 @@ var mainLayout = {
                                     id: "1",
                                     value: "",
                                     icon: "cog",
-                                    config: {width: 200},
+                                    config: {width: 250},
                                     submenu: [
                                         {
                                             value: "Izmjena profila",
@@ -52,7 +52,13 @@ var mainLayout = {
                                         },
                                         {
                                             value: "Izmjena lozinke",
-                                            icon: "key", width: 400
+                                            icon: "key",
+                                            width: 400
+                                        },
+                                        {
+                                            value: "Podešavanja notifikacija",
+                                            icon: "bell",
+                                            width: 400
                                         },
                                         {
                                             value: "Odjavite se",
@@ -71,6 +77,9 @@ var mainLayout = {
                                             break;
                                         case "Izmjena lozinke":
                                             clickPassword();
+                                            break;
+                                        case "Podešavanja notifikacija":
+                                            clickNotificationSettings();
                                             break;
                                         case "Odjavite se":
                                             logout();
@@ -132,6 +141,16 @@ function clickPassword(){
 
     setTimeout(function () {
         $$("changePasswordDialog").show();
+    }, 0);
+};
+
+function clickNotificationSettings(){
+    webix.ui(webix.copy(profileView.notificationSettingsDialog));
+
+    setTimeout(function () {
+        $$("notificationSettingsDialog").show();
+        $$("mailNotification").define("value", userData.mailStatusId);
+        $$("mailNotification").refresh();
     }, 0);
 };
 

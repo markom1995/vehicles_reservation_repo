@@ -58,7 +58,15 @@ CREATE TABLE IF NOT EXISTS `logger` (
   KEY `FK_logger_company` (`company_id`),
   CONSTRAINT `FK_logger_company` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
   CONSTRAINT `FK_logger_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=106 DEFAULT CHARSET=utf8;
+
+-- Data exporting was unselected.
+-- Dumping structure for table vehicles_reservation_db.mail_status
+CREATE TABLE IF NOT EXISTS `mail_status` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(128) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- Data exporting was unselected.
 -- Dumping structure for table vehicles_reservation_db.reservation
@@ -84,7 +92,7 @@ CREATE TABLE IF NOT EXISTS `reservation` (
   CONSTRAINT `FK_reservation_company` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
   CONSTRAINT `FK_reservation_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
   CONSTRAINT `FK_reservation_vehicle` FOREIGN KEY (`vehicle_id`) REFERENCES `vehicle` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
 
 -- Data exporting was unselected.
 -- Dumping structure for table vehicles_reservation_db.reservation_status
@@ -116,12 +124,18 @@ CREATE TABLE IF NOT EXISTS `user` (
   `deleted` tinyint(4) NOT NULL DEFAULT 0,
   `token` char(16) DEFAULT NULL,
   `token_time` datetime DEFAULT NULL,
+  `mail_status_id` int(11) DEFAULT NULL,
+  `location_id` int(11) DEFAULT NULL,
   `company_id` int(11) DEFAULT NULL,
   `role_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_user_company` (`company_id`),
   KEY `FK_user_role` (`role_id`),
+  KEY `FK_user_mail_status` (`mail_status_id`),
+  KEY `FK_user_location` (`location_id`),
   CONSTRAINT `FK_user_company` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
+  CONSTRAINT `FK_user_location` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`),
+  CONSTRAINT `FK_user_mail_status` FOREIGN KEY (`mail_status_id`) REFERENCES `mail_status` (`id`),
   CONSTRAINT `FK_user_role` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
 
@@ -165,7 +179,7 @@ CREATE TABLE IF NOT EXISTS `vehicle_maintenance` (
   CONSTRAINT `FK_vehicle_maintenance_company` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`),
   CONSTRAINT `FK_vehicle_maintenance_vehicle` FOREIGN KEY (`vehicle_id`) REFERENCES `vehicle` (`id`),
   CONSTRAINT `FK_vehicle_maintenance_vehicle_maintenance_type` FOREIGN KEY (`vehicle_maintenance_type_id`) REFERENCES `vehicle_maintenance_type` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 -- Data exporting was unselected.
 -- Dumping structure for table vehicles_reservation_db.vehicle_maintenance_type

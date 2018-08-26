@@ -13,5 +13,7 @@ public interface UserRepository extends JpaRepository<User, Integer>, UserReposi
     User getByUsernameAndCompanyId(String username, Integer companyId);
     User getByCompanyIdAndRoleIdAndActiveAndDeleted(Integer companyId, Integer roleId, byte active, byte deleted);
     User getByToken(String token);
+    List<User> getByCompanyIdAndDeletedAndActiveAndMailStatusId(Integer companyId, Byte deleted, Byte active, Integer statusId);
+    List<User> getByCompanyIdAndDeletedAndActiveAndMailStatusIdAndLocationId(Integer companyId, Byte deleted, Byte active, Integer statusId, Integer locationId);
     Integer countAllByCompanyIdAndEmail(Integer companyId, String email);
 }
