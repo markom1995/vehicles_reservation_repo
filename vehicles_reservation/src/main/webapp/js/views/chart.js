@@ -15,10 +15,40 @@ var chartView = {
                     },
                     {},
                     {
+                        id: "selectFilter",
+                        view: "select",
+                        label: "Način prikazivanja izvještaja:",
+                        labelWidth: 200,
+                        width: 400,
+                        value: 1,
+                        editable: false,
+                        options: [
+                            {
+                                id: 1,
+                                value: "Sedmični"
+                            },
+                            {
+                                id: 2,
+                                value: "Mjesečni"
+                            },
+                            {
+                                id: 3,
+                                value: "Godišnji"
+                            }
+                        ],
+                        on: {
+                            onChange: function (id) {
+
+                            }
+                        }
+                    },
+                    {
                         id: "datePickerFilter",
                         view: "daterangepicker",
-                        name: "dateRangePicker",
+                        name: "datePickerFilter",
                         label: "Od-Do:",
+                        width: 300,
+                        labelWidth: 65,
                         suggest: {
                             view: "daterangesuggest",
                             body: {
@@ -30,84 +60,92 @@ var chartView = {
                         on: {
                             onChange: function (dates) {
                                 if (dates.start != null && dates.end != null) {
-                                    $$("loggerTable").filterByAll();
-                                    var startingDate = new Date(dates.start);
-                                    var endingDate = new Date(dates.end.getFullYear(), dates.end.getMonth(), dates.end.getDate() + 1);
+                                    var myFormat = webix.Date.dateToStr("%d.%m.%Y");
+                                    var startDate = myFormat(new Date(dates.start));
+                                    var endDate = myFormat(new Date(dates.end));
 
-                                    $$("loggerTable").filter(function (obj) {
-                                        var dateOfObj = new Date(obj.created);
-                                        if (dateOfObj >= startingDate && dateOfObj <= endingDate) {
-                                            return true;
-                                        }
-
-                                        return false;
-                                    });
-
-                                    $$("datePickerFilter").getPopup().hide();
-                                }
-                            }
-                        }
-                    },
-                    {
-                        id: "richSelectFilter",
-                        view: "richselect",
-                        label: "Prikaži:",
-                        value: 1,
-                        editable: false,
-                        options: [
-                            {
-                                id: 1,
-                                value: "Sve"
-                            },
-                            {
-                                id: 2,
-                                value: "Prošla 24h"
-                            },
-                            {
-                                id: 3,
-                                value: "Prošla sedmica"
-                            }
-                        ],
-                        on: {
-                            onChange: function (id) {
-                                var customFilterForDate = function (days) {
-                                    var today = new Date();
-                                    var startDate;
-                                    var tempDay = today.getDate() - days;
-                                    if (tempDay > 0 && today.getMonth() > 1) {
-                                        startDate = new Date(today.getFullYear(), today.getMonth(), tempDay);
-                                    } else if (tempDay < 0 && today.getMonth() > 1) {
-                                        startDate = new Date(today.getFullYear(), today.getMonth() - 1, tempDay);
-                                    } else if (tempDay < 0 && today.getMonth() == 1) {
-                                        startDate = new Date(today.getFullYear() - 1, 12, tempDay);
+                                    $$("vehicleMaintenancesChart").clearAll();
+                                    var selectFilter = $$("selectFilter").getValue();
+                                    if(selectFilter == 1){
+                                        $$("vehicleMaintenancesChart").load(function () {
+                                            return webix.ajax().header({"Content-type": "application/x-www-form-urlencoded"})
+                                                .post("hub/vehicleMaintenance/chart/week", "startDate=" + startDate + "&endDate=" + endDate).then(function (data) {
+                                                    return data.json();
+                                                }).fail(function (error) {
+                                                    util.messages.showErrorMessage(error.responseText);
+                                                });
+                                        });
+                                    }
+                                    else if(selectFilter == 2){
+                                        $$("vehicleMaintenancesChart").load(function () {
+                                            return webix.ajax().header({"Content-type": "application/x-www-form-urlencoded"})
+                                                .post("hub/vehicleMaintenance/chart/month", "startDate=" + startDate + "&endDate=" + endDate).then(function (data) {
+                                                    return data.json();
+                                                }).fail(function (error) {
+                                                    util.messages.showErrorMessage(error.responseText);
+                                                });
+                                        });
+                                    }
+                                    else{
+                                        $$("vehicleMaintenancesChart").load(function () {
+                                            return webix.ajax().header({"Content-type": "application/x-www-form-urlencoded"})
+                                                .post("hub/vehicleMaintenance/chart/year", "startDate=" + startDate + "&endDate=" + endDate).then(function (data) {
+                                                    return data.json();
+                                                }).fail(function (error) {
+                                                    util.messages.showErrorMessage(error.responseText);
+                                                });
+                                        });
                                     }
 
-                                    $$("loggerTable").filter(function (obj) {
-                                        var dateOfObj = new Date(obj.created);
-                                        if (dateOfObj >= startDate) {
-                                            return true;
-                                        }
-
-                                        return false;
-                                    })
-                                }
-                                switch (id) {
-                                    case 1:
-                                        $$("loggerTable").filterByAll();
-                                        break;
-                                    case 2:
-                                        customFilterForDate(1);
-                                        break;
-                                    case 3:
-                                        customFilterForDate(7);
-                                        break;
+                                    $$("datePickerFilter").getPopup().hide();
                                 }
                             }
                         }
                     }
                 ]
             },
-            {}
+            {
+                view: "scrollview",
+                scroll: "x",
+                body: {
+                    view: "chart",
+                    id: "vehicleMaintenancesChart",
+                    type: "bar",
+                    scale:"logarithmic",
+                    gradient: "rising",
+                    xAxis: {
+                        title: "Troškovi",
+                        template: "'#timeUnit#",
+                        lines: false
+                    },
+                    yAxis: {
+                        title: "Novac"
+                    },
+                    padding: {
+                        left: 50,
+                        right: 10,
+                        top: 50
+                    },
+                    series: [
+                        {
+                            value: "#serviceCost#",
+                            label: "#serviceCost#KM",
+                            color: "#58dccd",
+                        },
+                        {
+                            value: "#fuelCost#",
+                            label: "#fuelCost#KM",
+                            color: "#a7ee70",
+                        },
+                        {
+                            value: "#otherCost#",
+                            label: "#otherCost#KM",
+                            color: "#36abee",
+                        }
+                    ],
+                    data: []
+                }
+            }
         ]
     },
 

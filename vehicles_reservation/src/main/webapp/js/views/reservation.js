@@ -954,7 +954,7 @@ var reservationView = {
     finishMaintenance: function(){
         if ($$("addVehicleMaintenanceForm").validate()) {
             var formatDate = $$("addVehicleMaintenanceForm").getValues().date.split(" ")[0];
-            vehicleMaintenances.push({
+                vehicleMaintenances.push({
                 id: null,
                 vehicleMaintenanceTypeId: $$("addVehicleMaintenanceForm").getValues().vehicleMaintenanceTypeName,
                 description: $$("addVehicleMaintenanceForm").getValues().description,
