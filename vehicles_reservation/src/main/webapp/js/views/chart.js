@@ -66,17 +66,18 @@ var chartView = {
 
                                     $$("vehicleMaintenancesChart").clearAll();
                                     var selectFilter = $$("selectFilter").getValue();
-                                    if(selectFilter == 1){
+                                    if (selectFilter == 1) {
                                         $$("vehicleMaintenancesChart").load(function () {
                                             return webix.ajax().header({"Content-type": "application/x-www-form-urlencoded"})
-                                                .post("hub/vehicleMaintenance/chart/week", "startDate=" + startDate + "&endDate=" + endDate).then(function (data) {
+                                                .post("hub/vehicleMaintenance/chart/week", "startDate=" + startDate + "&endDate=" + endDate).then(function (data) {;
                                                     return data.json();
                                                 }).fail(function (error) {
                                                     util.messages.showErrorMessage(error.responseText);
                                                 });
                                         });
+                                        $$('vehicleMaintenancesChart').config.xAxis.title = "Troškovi po sedmicama";
                                     }
-                                    else if(selectFilter == 2){
+                                    else if (selectFilter == 2) {
                                         $$("vehicleMaintenancesChart").load(function () {
                                             return webix.ajax().header({"Content-type": "application/x-www-form-urlencoded"})
                                                 .post("hub/vehicleMaintenance/chart/month", "startDate=" + startDate + "&endDate=" + endDate).then(function (data) {
@@ -85,8 +86,9 @@ var chartView = {
                                                     util.messages.showErrorMessage(error.responseText);
                                                 });
                                         });
+                                        $$('vehicleMaintenancesChart').config.xAxis.title = "Troškovi po mjesecima";
                                     }
-                                    else{
+                                    else {
                                         $$("vehicleMaintenancesChart").load(function () {
                                             return webix.ajax().header({"Content-type": "application/x-www-form-urlencoded"})
                                                 .post("hub/vehicleMaintenance/chart/year", "startDate=" + startDate + "&endDate=" + endDate).then(function (data) {
@@ -95,8 +97,10 @@ var chartView = {
                                                     util.messages.showErrorMessage(error.responseText);
                                                 });
                                         });
+                                        $$('vehicleMaintenancesChart').config.xAxis.title = "Troškovi po godinama";
                                     }
 
+                                    $$('vehicleMaintenancesChart').refresh();
                                     $$("datePickerFilter").getPopup().hide();
                                 }
                             }
@@ -106,20 +110,25 @@ var chartView = {
             },
             {
                 view: "scrollview",
+                id: "scrollview",
                 scroll: "x",
                 body: {
                     view: "chart",
                     id: "vehicleMaintenancesChart",
                     type: "bar",
-                    scale:"logarithmic",
+                    scale: "logarithmic",
                     gradient: "rising",
+                    width: 1000,
                     xAxis: {
-                        title: "Troškovi",
-                        template: "'#timeUnit#",
+                        title: "Troškovi po vremenskoj jedinici",
+                        template: "#timeUnit#",
                         lines: false
                     },
                     yAxis: {
-                        title: "Novac"
+                        title: "Novac",
+                        template: function (value) {
+                            return value + "KM"
+                        }
                     },
                     padding: {
                         left: 50,
@@ -143,6 +152,17 @@ var chartView = {
                             color: "#36abee",
                         }
                     ],
+                    legend: {
+                        values: [
+                            {text: "Servis vozila", color: "#58dccd"},
+                            {text: "Potrošnja goriva", color: "#a7ee70"},
+                            {text: "Ostali troškovi", color: "#36abee"}
+                        ],
+                        valign: "middle",
+                        align: "right",
+                        width: 120,
+                        layout: "y"
+                    },
                     data: []
                 }
             }

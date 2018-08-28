@@ -13,12 +13,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.IsoFields;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -155,7 +157,9 @@ public class VehicleMaintenanceController extends GenericHasCompanyIdAndDeletabl
     List<VehicleMaintenanceChart> getWeekVehicleMaintenanceChart(@RequestParam("startDate") @DateTimeFormat(pattern = "dd.MM.yyyy") LocalDate startDate, @RequestParam("endDate") @DateTimeFormat(pattern = "dd.MM.yyyy") LocalDate endDate) throws BadRequestException {
         List<VehicleMaintenanceChart> vehicleMaintenancesChart = new ArrayList<>();
         List<VehicleMaintenance> vehicleMaintenances = vehicleMaintenanceRepository.getAllByCompanyIdAndDeleted(userBean.getUser().getCompanyId(), (byte)0);
-        WeekFields weekFields = WeekFields.of(Locale.getDefault());
+        WeekFields weekFields = WeekFields.of(Locale.FRANCE);
+
+        System.out.println(startDate.get(weekFields.weekOfWeekBasedYear()));
 
         if(vehicleMaintenances != null && !vehicleMaintenances.isEmpty()){
             if(startDate.getYear() == endDate.getYear()){

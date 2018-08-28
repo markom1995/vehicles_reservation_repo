@@ -79,6 +79,10 @@ var reservationView = {
                             $$("reservationContextMenu").clearAll();
                             $$("reservationContextMenu").define("data", contextMenuData);
                             $$("reservationContextMenu").refresh();
+
+                            if (selectedItem.status === "Završena rezervacija") {
+                                $$("reservationContextMenu").hide();
+                            }
                         }
                     },
                 },
@@ -88,6 +92,10 @@ var reservationView = {
                     width: 1320
                 },
                 template: function (obj) {
+                    console.log( obj.name + " " + obj.startTime + " " + obj.endTime);
+                    var myFormat = webix.Date.dateToStr("%d.%m.%Y %H:%i");
+                    var startTime = myFormat(obj.startTime);
+                    var endTime = myFormat(obj.endTime);
                     var startKm;
                     var endKm;
                     if (obj.startKm == null) {
@@ -103,7 +111,7 @@ var reservationView = {
                         endKm = obj.endKm + "km";
                     }
                     return (obj.status === "Rezervisano" ? "<div style='height: 13px'></div><div style='border: solid 5px green; border-radius: 15px 50px; overflow: hidden'>" +
-                        "<div style='font-size: larger;display: inline; font-weight: bolder; margin-left: 10px'>" + obj.name + "</div><div style='font-size: larger;font-weight: bolder; float: right; margin-right: 20px''>" + obj.startTime + " - " + obj.endTime + "</div><br/>" +
+                        "<div style='font-size: larger;display: inline; font-weight: bolder; margin-left: 10px'>" + obj.name + "</div><div style='font-size: larger;font-weight: bolder; float: right; margin-right: 20px''>" + startTime + " - " + endTime + "</div><br/>" +
                         "<div style='overflow: hidden'><div style='display: inline-block'><div style='height: 50px;'></div><div style='margin-left: 15px; height: 1px'>Početna i krajnja kilometraža: " + startKm + " - " + endKm + "</div><br/>" +
                         "<div style='margin-left: 15px'>Pravac puta: " + obj.direction + "</div></div><div style='display: inline-block; float: right'>" +
                         "<div style='display: inline;float: right;'><span style='display: inline;float: left;'>" +
@@ -116,7 +124,7 @@ var reservationView = {
                         "<span style='display:inline; float: right; margin-right: 20px'><div align='center'><img src='data:image/png;base64, " + obj.photo + "' alt='Nema slike' width='200' height='200' align='center'/></div></span></div></div></div>" +
                         "<div style='font-size: larger;display: inline; font-weight: bolder; margin-left: 25px'>Rezervisao: " + obj.firstName + " " + obj.lastName + " - " + obj.username + "</div>" +
                         "</div>" : obj.status === "Rezervacija u toku" ? "<div style='height: 13px'></div><div style='border: solid 5px yellow; border-radius: 15px 50px; overflow: hidden'>" +
-                        "<div style='font-size: larger;display: inline; font-weight: bolder; margin-left: 10px'>" + obj.name + "</div><div style='font-size: larger;font-weight: bolder; float: right; margin-right: 20px''>" + obj.startTime + " - " + obj.endTime + "</div><br/>" +
+                        "<div style='font-size: larger;display: inline; font-weight: bolder; margin-left: 10px'>" + obj.name + "</div><div style='font-size: larger;font-weight: bolder; float: right; margin-right: 20px''>" + startTime + " - " + endTime + "</div><br/>" +
                         "<div style='overflow: hidden'><div style='display: inline-block'><div style='height: 50px;'></div><div style='margin-left: 15px; height: 1px'>Početna i krajnja kilometraža: " + startKm + " - " + endKm + "</div><br/>" +
                         "<div style='margin-left: 15px'>Pravac puta: " + obj.direction + "</div></div><div style='display: inline-block; float: right'>" +
                         "<div style='display: inline;float: right;'><span style='display: inline;float: left;'>" +
@@ -129,7 +137,7 @@ var reservationView = {
                         "<span style='display:inline; float: right; margin-right: 20px'><div align='center'><img src='data:image/png;base64, " + obj.photo + "' alt='Nema slike' width='200' height='200' align='center'/></div></span></div></div></div>" +
                         "<div style='font-size: larger;display: inline; font-weight: bolder; margin-left: 25px'>Rezervisao: " + obj.firstName + " " + obj.lastName + " - " + obj.username + "</div>" +
                         "</div>" : "<div style='height: 13px'></div><div style='border: solid 5px red; border-radius: 15px 50px; overflow: hidden'>" +
-                        "<div style='font-size: larger;display: inline; font-weight: bolder; margin-left: 10px'>" + obj.name + "</div><div style='font-size: larger;font-weight: bolder; float: right; margin-right: 20px''>" + obj.startTime + " - " + obj.endTime + "</div><br/>" +
+                        "<div style='font-size: larger;display: inline; font-weight: bolder; margin-left: 10px'>" + obj.name + "</div><div style='font-size: larger;font-weight: bolder; float: right; margin-right: 20px''>" + startTime + " - " + endTime + "</div><br/>" +
                         "<div style='overflow: hidden'><div style='display: inline-block'><div style='height: 50px;'></div><div style='margin-left: 15px; height: 1px'>Početna i krajnja kilometraža: " + startKm + " - " + endKm + "</div><br/>" +
                         "<div style='margin-left: 15px'>Pravac puta: " + obj.direction + "</div></div><div style='display: inline-block; float: right'>" +
                         "<div style='display: inline;float: right;'><span style='display: inline;float: left;'>" +
@@ -382,6 +390,7 @@ var reservationView = {
                                             var startTime = webix.i18n.parseFormatStr($$("startTime").getValue()) + ":00";
                                             var endTime = webix.i18n.parseFormatStr(newValue) + ":00";
                                             reservationView.loadFreeVehicle(startTime, endTime);
+                                            $$("vehicleId").callEvent("OnChange", firstFreeVehicle);
                                         }
                                     }
                                 },
@@ -591,9 +600,9 @@ var reservationView = {
                             view: "form",
                             id: "startTripForm",
                             borderless: true,
-                            width: 400,
+                            width: 470,
                             elementsConfig: {
-                                labelWidth: 200,
+                                labelWidth: 170,
                                 bottomPadding: 18
                             },
                             elements: [
@@ -616,7 +625,7 @@ var reservationView = {
                                             type: "form",
                                             click: "reservationView.startTrip",
                                             hotkey: "enter",
-                                            width: 170
+                                            width: 250
                                         }
                                     ]
                                 }
@@ -709,9 +718,9 @@ var reservationView = {
                             view: "form",
                             id: "finishTripForm",
                             borderless: true,
-                            width: 450,
+                            width: 540,
                             elementsConfig: {
-                                labelWidth: 200,
+                                labelWidth: 170,
                                 bottomPadding: 18
                             },
                             elements: [
@@ -733,7 +742,7 @@ var reservationView = {
                                             type: "form",
                                             click: "reservationView.finishTrip",
                                             hotkey: "enter",
-                                            width: 170
+                                            width: 275
                                         },
                                         {},
                                         {
@@ -755,6 +764,11 @@ var reservationView = {
 
                                     if (!webix.rules.isNumber(value)) {
                                         $$('finishTripForm').elements.endKm.config.invalidMessage = 'Krajnja kilometraža nije u ispravnom formatu.';
+                                        return false;
+                                    }
+
+                                    if(value <= selectedReservation.startKm){
+                                        $$('finishTripForm').elements.endKm.config.invalidMessage = 'Krajnja kilometraža mora biti veca od početne kilometraže.';
                                         return false;
                                     }
 
@@ -880,12 +894,12 @@ var reservationView = {
                             label: "Datum:",
                             stringResult: true,
                             type: "date",
-                            format: "%d/%m/%y",
+                            format: "%d/%m/%Y",
                             suggest: {
                                 type: "calendar",
                                 body: {
                                     type: "date",
-                                    calendarDate: "%d/%m/%y",
+                                    calendarDate: "%d/%m/%Y",
                                     maxDate: new Date(),
                                 }
                             },
@@ -929,6 +943,20 @@ var reservationView = {
 
                             if (!regex.test(value)) {
                                 $$('addVehicleMaintenanceForm').elements.price.config.invalidMessage = 'Cijena nije u ispravnom formatu.';
+                                return false;
+                            }
+
+                            return true;
+                        },
+                        "date": function (value) {
+                            var myFormat = webix.Date.strToDate("%d.%m.%Y %H:%i");
+                            var startDate = myFormat(selectedReservation.startTime);
+                            var endDate = myFormat(selectedReservation.endTime);
+                            myFormat = webix.Date.strToDate("%Y.%m.%d %H:%i");
+                            var date = myFormat(value);
+                            console.log(startDate + " " + endDate + " " + date);
+                            if (!(startDate.getDate() <= date.getDate() && date.getDate() < endDate.getDate())) {
+                                $$('addVehicleMaintenanceForm').elements.date.config.invalidMessage = 'Datum nije u opsegu datuma rezervacije.';
                                 return false;
                             }
 

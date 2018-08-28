@@ -46,7 +46,7 @@ public class Reservation implements Deletable, HasCompanyId {
 
     @Basic
     @Column(name = "start_time", nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm",timezone="Europe/Belgrade")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy HH:mm",timezone="Europe/Belgrade")
     public Timestamp getStartTime() {
         return startTime;
     }
@@ -57,7 +57,7 @@ public class Reservation implements Deletable, HasCompanyId {
 
     @Basic
     @Column(name = "end_time", nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss",timezone="Europe/Belgrade")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy HH:mm",timezone="Europe/Belgrade")
     public Timestamp getEndTime() {
         return endTime;
     }
