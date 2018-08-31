@@ -5,24 +5,38 @@ import ba.telegroup.vehicles_reservation.common.exceptions.BadRequestException;
 import ba.telegroup.vehicles_reservation.controller.genericController.GenericHasCompanyIdAndDeletableController;
 import ba.telegroup.vehicles_reservation.model.VehicleMaintenance;
 import ba.telegroup.vehicles_reservation.repository.VehicleMaintenanceRepository;
+import ba.telegroup.vehicles_reservation.util.FileInformation;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.export.JRCsvExporter;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
+import net.sf.jasperreports.export.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.DayOfWeek;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.sql.Date;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.IsoFields;
 import java.time.temporal.WeekFields;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 @RequestMapping(value = "/hub/vehicleMaintenance")
 @Controller
@@ -30,14 +44,22 @@ import java.util.Locale;
 public class VehicleMaintenanceController extends GenericHasCompanyIdAndDeletableController<VehicleMaintenance, Integer> {
 
     private final VehicleMaintenanceRepository vehicleMaintenanceRepository;
+    private final JdbcTemplate jdbcTemplate;
 
     @Value("${badRequest.noVehicleMaintenance}")
     private String badRequestVehicleMaintenance;
 
+    @Value("${badRequest.badFileFormat}")
+    private String badRequestBadFileFormat;
+
+    @Value("${badRequest.problemWithDownloadFile}")
+    private String badRequestProblemWithDownloadFile;
+
     @Autowired
-    public VehicleMaintenanceController(VehicleMaintenanceRepository vehicleMaintenanceRepository){
+    public VehicleMaintenanceController(VehicleMaintenanceRepository vehicleMaintenanceRepository, JdbcTemplate jdbcTemplate){
         super(vehicleMaintenanceRepository);
         this.vehicleMaintenanceRepository = vehicleMaintenanceRepository;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
@@ -212,6 +234,154 @@ public class VehicleMaintenanceController extends GenericHasCompanyIdAndDeletabl
         }
         else{
             throw new BadRequestException(badRequestVehicleMaintenance);
+        }
+    }
+
+    @RequestMapping(value = "/report/all/month", method = RequestMethod.POST)
+    public @ResponseBody
+    FileInformation getMonthVehicleMaintenanceReport(@RequestParam("startDate") @DateTimeFormat(pattern = "dd.MM.yyyy") LocalDate startDate, @RequestParam("endDate") @DateTimeFormat(pattern = "dd.MM.yyyy") LocalDate endDate, @RequestParam("format") String format) throws BadRequestException {
+        try {
+            HashMap parameters = new HashMap();
+            parameters.put("TitleDetails", "Za period " + startDate + " - " + endDate);
+            parameters.put("StartDate", Date.valueOf(startDate));
+            parameters.put("EndDate", Date.valueOf(endDate));
+            parameters.put("CompanyId", userBean.getUser().getCompanyId());
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(getClass().getResource("/reports/Vehicle_Maintenance_All.jasper").getPath(), parameters, jdbcTemplate.getDataSource().getConnection());
+            String fileName = "";
+            if("PDF".equals(format)){
+                fileName = "Izvjestaj_" + startDate + "_" + endDate + ".pdf";
+                pdfExporterJR(jasperPrint, fileName);
+            }
+            else if("XLS".equals(format)){
+                fileName = "Izvjestaj_" + startDate + "_" + endDate + ".xls";
+                xlsExporterJR(jasperPrint, fileName);
+            }
+            else if("CSV".equals(format)){
+                fileName = "Izvjestaj_" + startDate + "_" + endDate + ".csv";
+                csvExporterJR(jasperPrint, fileName);
+            }
+            else{
+                throw new BadRequestException(badRequestBadFileFormat);
+            }
+
+            FileInformation fileInformation = new FileInformation();
+            fileInformation.setName(fileName);
+            fileInformation.setContent(Files.readAllBytes(new File(fileName).toPath()));
+            Files.delete(new File(fileName).toPath());
+
+            return fileInformation;
+        } catch (JRException e) {
+            e.printStackTrace();
+            throw new BadRequestException(badRequestProblemWithDownloadFile);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new BadRequestException(badRequestProblemWithDownloadFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new BadRequestException(badRequestProblemWithDownloadFile);
+        }
+    }
+
+    @RequestMapping(value = "/report/vehicle/month", method = RequestMethod.POST)
+    public @ResponseBody
+    FileInformation getMonthVehicleMaintenanceReport(@RequestParam("startDate") @DateTimeFormat(pattern = "dd.MM.yyyy") LocalDate startDate, @RequestParam("endDate") @DateTimeFormat(pattern = "dd.MM.yyyy") LocalDate endDate, @RequestParam("format") String format, @RequestParam("vehicleId") Integer vehicleId) throws BadRequestException {
+        try {
+            HashMap parameters = new HashMap();
+            parameters.put("TitleDetails", "Za period " + startDate + " - " + endDate);
+            parameters.put("StartDate", Date.valueOf(startDate));
+            parameters.put("EndDate", Date.valueOf(endDate));
+            parameters.put("CompanyId", userBean.getUser().getCompanyId());
+            parameters.put("VehicleId", vehicleId);
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(getClass().getResource("/reports/Vehicle_Maintenance_One_Vehicle.jasper").getPath(), parameters, jdbcTemplate.getDataSource().getConnection());
+            String fileName = "";
+            if("PDF".equals(format)){
+                fileName = "Izvjestaj_" + startDate + "_" + endDate + ".pdf";
+                pdfExporterJR(jasperPrint, fileName);
+            }
+            else if("XLS".equals(format)){
+                fileName = "Izvjestaj_" + startDate + "_" + endDate + ".xls";
+                xlsExporterJR(jasperPrint, fileName);
+            }
+            else if("CSV".equals(format)){
+                fileName = "Izvjestaj_" + startDate + "_" + endDate + ".csv";
+                csvExporterJR(jasperPrint, fileName);
+            }
+            else{
+                throw new BadRequestException(badRequestBadFileFormat);
+            }
+
+            FileInformation fileInformation = new FileInformation();
+            fileInformation.setName(fileName);
+            fileInformation.setContent(Files.readAllBytes(new File(fileName).toPath()));
+            Files.delete(new File(fileName).toPath());
+
+            return fileInformation;
+        } catch (JRException e) {
+            e.printStackTrace();
+            throw new BadRequestException(badRequestProblemWithDownloadFile);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new BadRequestException(badRequestProblemWithDownloadFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new BadRequestException(badRequestProblemWithDownloadFile);
+        }
+    }
+
+    private void pdfExporterJR(JasperPrint jasperPrint, String fileName){
+        try {
+            JRPdfExporter exporter = new JRPdfExporter();
+
+            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(fileName));
+
+            SimplePdfReportConfiguration reportConfig = new SimplePdfReportConfiguration();
+            reportConfig.setSizePageToContent(true);
+            reportConfig.setForceLineBreakPolicy(false);
+
+            SimplePdfExporterConfiguration exportConfig = new SimplePdfExporterConfiguration();
+            exportConfig.setMetadataAuthor(userBean.getUser().getUsername());
+            exportConfig.setEncrypted(true);
+            exportConfig.setAllowedPermissionsHint("PRINTING");
+
+            exporter.setConfiguration(reportConfig);
+            exporter.setConfiguration(exportConfig);
+
+            exporter.exportReport();
+        } catch (JRException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void xlsExporterJR(JasperPrint jasperPrint, String fileName){
+        try {
+            JRXlsxExporter exporter = new JRXlsxExporter();
+
+            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(fileName));
+
+            SimpleXlsxReportConfiguration reportConfig = new SimpleXlsxReportConfiguration();
+            reportConfig.setSheetNames(new String[] {"Troškovi održavanja vozila"});
+
+            exporter.setConfiguration(reportConfig);
+            exporter.exportReport();
+        } catch (JRException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void csvExporterJR(JasperPrint jasperPrint, String fileName){
+        try {
+            JRCsvExporter exporter = new JRCsvExporter();
+
+            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            exporter.setExporterOutput(new SimpleWriterExporterOutput(fileName));
+
+            exporter.exportReport();
+        } catch (JRException e) {
+            e.printStackTrace();
         }
     }
 }

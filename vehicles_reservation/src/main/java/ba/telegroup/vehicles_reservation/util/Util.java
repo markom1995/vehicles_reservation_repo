@@ -1,6 +1,16 @@
 package ba.telegroup.vehicles_reservation.util;
 
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.util.JRSaver;
+import org.springframework.beans.factory.annotation.Value;
+
+import javax.annotation.Resource;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -37,4 +47,12 @@ public class Util {
 
         return stringBuilder.toString();
     }
+
+    /*public void compileJRTemplate() throws JRException {
+        if(!Files.exists(Paths.get("classpath:reports/Vehicle_Maintenance_All.jasper"))){
+            InputStream vehicleMaintenanceAllJR = getClass().getResourceAsStream("classpath:reports/Vehicle_Maintenance_All.jrxml");
+            JasperReport jasperReport = JasperCompileManager.compileReport(vehicleMaintenanceAllJR);
+            JRSaver.saveObject(jasperReport, "classpath:reports/Vehicle_Maintenance_All.jasper");
+        }
+    }*/
 }

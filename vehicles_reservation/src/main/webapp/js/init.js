@@ -7,7 +7,7 @@ var scriptsToLoad = [
     {
         "section": "extensions",
         "path": "webix/extensions/",
-        "files": ["sidebar/sidebar"]
+        "files": ["sidebar/sidebar", "FileSaver"]
     },
     {
         "section": "common",

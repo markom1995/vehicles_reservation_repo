@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Vehicle_Maintenance_All_Subreport_Vehicle" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="daf8eff6-b90b-4d2f-b09c-d155ddc30fb2">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<style name="Table_TH" mode="Opaque" backcolor="#F58220">
+		<box>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="SubDatasetOneVehicleTable" uuid="cd994c3f-5585-4eef-a684-4ed89e7981a4">
+		<parameter name="VehicleIdTable" class="java.lang.Integer"/>
+		<parameter name="MonthTable" class="java.lang.String"/>
+		<parameter name="YearTable" class="java.lang.String"/>
+		<parameter name="CompanyIdTable" class="java.lang.Integer"/>
+		<queryString>
+			<![CDATA[SELECT vm.description as description, vmt.name as vehicleMaintenanceTypeName, vm.price as price, vm.date as date FROM vehicle_maintenance vm JOIN vehicle_maintenance_type vmt ON vm.vehicle_maintenance_type_id=vmt.id WHERE vm.deleted=0 AND vm.company_id=$P{CompanyIdTable} AND vm.vehicle_id=$P{VehicleIdTable} AND MONTH(date)=$P{MonthTable} AND YEAR(date)=$P{YearTable}]]>
+		</queryString>
+		<field name="description" class="java.lang.String">
+			<property name="net.sf.jasperreports.sql.field.column.name" value="description"/>
+		</field>
+		<field name="vehicleMaintenanceTypeName" class="java.lang.String">
+			<property name="net.sf.jasperreports.sql.field.column.label" value="vehicleMaintenanceTypeName"/>
+		</field>
+		<field name="price" class="java.lang.Double">
+			<property name="net.sf.jasperreports.sql.field.column.name" value="price"/>
+		</field>
+		<field name="date" class="java.util.Date">
+			<property name="net.sf.jasperreports.sql.field.column.name" value="date"/>
+		</field>
+	</subDataset>
+	<subDataset name="SubDatasetOneVehicleChart" uuid="119b7f0e-01ef-4e2b-b628-d76f51e83768">
+		<parameter name="VehicleIdChart" class="java.lang.Integer"/>
+		<parameter name="MonthChart" class="java.lang.String"/>
+		<parameter name="YearChart" class="java.lang.String"/>
+		<parameter name="CompanyIdChart" class="java.lang.Integer"/>
+		<queryString>
+			<![CDATA[SELECT vmt.name as serie, CONCAT(MONTH(date), '/', YEAR(date)) as category, SUM(vm.price) as value FROM vehicle_maintenance vm JOIN vehicle_maintenance_type vmt ON vm.vehicle_maintenance_type_id=vmt.id WHERE vm.company_id=$P{CompanyIdChart} AND vm.deleted=0 AND vm.vehicle_id=$P{VehicleIdChart} AND MONTH(date)=$P{MonthChart} AND YEAR(date)=$P{YearChart} GROUP BY vm.vehicle_maintenance_type_id]]>
+		</queryString>
+		<field name="serie" class="java.lang.String">
+			<property name="net.sf.jasperreports.sql.field.column.label" value="serie"/>
+		</field>
+		<field name="category" class="java.lang.String">
+			<property name="net.sf.jasperreports.sql.field.column.label" value="category"/>
+		</field>
+		<field name="value" class="java.lang.Double">
+			<property name="net.sf.jasperreports.sql.field.column.label" value="value"/>
+		</field>
+	</subDataset>
+	<parameter name="MonthSubreport" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="CompanyIdSubreport" class="java.lang.Integer" isForPrompting="false"/>
+	<parameter name="MonthPSubreport" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{MonthSubreport}.split("/")[0]]]></defaultValueExpression>
+	</parameter>
+	<parameter name="YearPSubreport" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{MonthSubreport}.split("/")[1]]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT DISTINCT CONCAT(v.license_plate, ' - ', vman.name, ' ', vmod.name) as vehicleName, v.id as vehicleId FROM vehicle_maintenance vm JOIN vehicle_maintenance_type vmt ON vm.vehicle_maintenance_type_id=vmt.id JOIN vehicle v ON vm.vehicle_id=v.id JOIN vehicle_model vmod ON v.vehicle_model_id=vmod.id JOIN vehicle_manufacturer vman ON vmod.vehicle_manufacturer_id=vman.id WHERE vm.company_id=$P{CompanyIdSubreport} AND vm.deleted=0 AND MONTH(date)=$P{MonthPSubreport} AND YEAR(date)=$P{YearPSubreport}]]>
+	</queryString>
+	<field name="vehicleName" class="java.lang.String">
+		<property name="net.sf.jasperreports.sql.field.column.name" value="vehicleName"/>
+	</field>
+	<field name="vehicleId" class="java.lang.Integer">
+		<property name="net.sf.jasperreports.sql.field.column.label" value="vehicleId"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="42">
+			<frame>
+				<reportElement x="5" y="5" width="540" height="30" uuid="3f158a7f-cfcc-4105-bde0-d0418d752ee7"/>
+				<textField>
+					<reportElement x="0" y="0" width="540" height="30" uuid="976df1a0-485f-4de0-9469-6c1c2f5af71f"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="DejaVu Sans" size="16" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{vehicleName}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="271" splitType="Stretch">
+			<componentElement>
+				<reportElement x="0" y="10" width="555" height="60" uuid="7f2934f9-4cc3-479f-8945-65ded3b69d80">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
+					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
+					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
+				</reportElement>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="SubDatasetOneVehicleTable" uuid="664b2443-e77b-4922-8127-cc3a732decff">
+						<datasetParameter name="CompanyIdTable">
+							<datasetParameterExpression><![CDATA[$P{CompanyIdSubreport}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="VehicleIdTable">
+							<datasetParameterExpression><![CDATA[$F{vehicleId}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="MonthTable">
+							<datasetParameterExpression><![CDATA[$P{MonthPSubreport}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="YearTable">
+							<datasetParameterExpression><![CDATA[$P{YearPSubreport}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="280" uuid="286b9805-becb-4c0f-974e-32deb809c060">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+						<jr:tableHeader style="Table_TH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="280" height="30" forecolor="#FFFFFF" uuid="4ec707a7-8008-41be-8831-cf2dc10f0519"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="DejaVu Sans" size="12"/>
+								</textElement>
+								<text><![CDATA[Opis]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:detailCell style="Table_TD" height="30">
+							<textField>
+								<reportElement x="0" y="0" width="280" height="30" uuid="f786a7f6-adc1-43c2-b88e-d42da1da38e8"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="DejaVu Sans" size="10"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="11c7d8f4-9f61-4f59-b407-0728e9ae7af8">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+						<jr:tableHeader style="Table_TH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" forecolor="#FFFFFF" uuid="d3cccf4e-800e-490b-8678-83d43b14b4c0"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="DejaVu Sans" size="12"/>
+								</textElement>
+								<text><![CDATA[Vrsta troška]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:detailCell style="Table_TD" height="30">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="30" uuid="16667f42-d240-4207-9b6a-cc60e2e67168"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="DejaVu Sans" size="10"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{vehicleMaintenanceTypeName}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="c7900c71-5b03-4078-9f9f-224f6a469654">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
+						<jr:tableHeader style="Table_TH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="90" height="30" forecolor="#FFFFFF" uuid="e554e2b1-3e76-4ed4-a461-b91458e52a72"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="DejaVu Sans" size="12"/>
+								</textElement>
+								<text><![CDATA[Cijena]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:detailCell style="Table_TD" height="30">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="30" uuid="19718e91-fffc-4eeb-a519-90991bd41889"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="DejaVu Sans" size="10"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{price}.toString() + "KM"]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="95" uuid="6704adea-f880-4639-a5b0-fcad6089123e">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
+						<jr:tableHeader style="Table_TH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="95" height="30" forecolor="#FFFFFF" uuid="f7f283d2-9941-44c2-be0c-912ceb077ead"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="DejaVu Sans" size="12"/>
+								</textElement>
+								<text><![CDATA[Datum]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:detailCell style="Table_TD" height="30">
+							<textField>
+								<reportElement x="0" y="0" width="95" height="30" uuid="3437cd01-086e-4cee-bfcd-1afa24b6cb6d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="DejaVu Sans" size="10"/>
+								</textElement>
+								<textFieldExpression><![CDATA[new SimpleDateFormat("dd.MM.yyyy").format($F{date})]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+			<barChart>
+				<chart>
+					<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="120" y="80" width="337" height="182" uuid="872065a2-4643-43b2-8279-cb7afce99ae1"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset>
+						<datasetRun subDataset="SubDatasetOneVehicleChart" uuid="aeec40f9-671f-43a8-af02-5b2d3e694515">
+							<datasetParameter name="CompanyIdChart">
+								<datasetParameterExpression><![CDATA[$P{CompanyIdSubreport}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="VehicleIdChart">
+								<datasetParameterExpression><![CDATA[$F{vehicleId}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="MonthChart">
+								<datasetParameterExpression><![CDATA[$P{MonthPSubreport}]]></datasetParameterExpression>
+							</datasetParameter>
+							<datasetParameter name="YearChart">
+								<datasetParameterExpression><![CDATA[$P{YearPSubreport}]]></datasetParameterExpression>
+							</datasetParameter>
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+					<categorySeries>
+						<seriesExpression><![CDATA[$F{serie}]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{category}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{value}]]></valueExpression>
+						<labelExpression><![CDATA[$F{value}.toString() +"KM"]]></labelExpression>
+					</categorySeries>
+				</categoryDataset>
+				<barPlot isShowLabels="true">
+					<plot foregroundAlpha="0.96"/>
+					<itemLabel/>
+					<categoryAxisFormat>
+						<axisFormat/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat/>
+					</valueAxisFormat>
+				</barPlot>
+			</barChart>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="6" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="6" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="8" splitType="Stretch"/>
+	</summary>
+</jasperReport>
