@@ -190,12 +190,16 @@ var showApp = function () {
         switch (userData.roleId) {
             case 1:
                 localMenuData = webix.copy(menuSuperAdmin);
+                $$("requestBtn").hide();
                 break;
             case 2:
                 localMenuData = webix.copy(menuAdmin);
+                setInterval(function(){ webix.message("Alert") }, 60000);
+                $$("requestBtn").show();
                 break;
             case 3:
                 localMenuData = webix.copy(menuUser);
+                $$("requestBtn").hide();
                 break;
         }
     }

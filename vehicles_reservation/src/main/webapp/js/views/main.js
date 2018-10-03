@@ -25,11 +25,23 @@ var mainLayout = {
                         {},
                         {},
                         {
+                            view: "button",
+                            id: "requestBtn",
+                            width: 43,
+                            badge: 5,
+                            type: "icon",
+                            icon: "bell",
+                            align: "right",
+                            click: "showRequestDialog();",
+                            hidden: true
+                        },
+                        {
                             id: "userInfo",
                             view: "label",
                             align: "right",
                             labelPosition: "top",
                             css: "custom_menu_alignment_style",
+                            width: 115,
                             label: ""
                         },
                         {
@@ -126,17 +138,63 @@ var mainLayout = {
     ]
 };
 
-function clickProfile(){
+var requestDialog = {
+    view: "popup",
+        id: "requestDialog",
+        modal: true,
+        position: "center",
+        body: {
+        id: "requestInside",
+            rows: [
+            {
+                view: "toolbar",
+                cols: [
+                    {
+                        view: "label",
+                        label: "<span class='webix_icon fa-bell'></span> Odobravanje zahtjeva",
+                        width: 400
+                    },
+                    {},
+                    {
+                        hotkey: 'esc',
+                        view: "icon",
+                        icon: "close",
+                        align: "right",
+                        click: "util.dismissDialog('requestDialog');"
+                    }
+                ]
+            },
+            {
+                view: "form",
+                id: "requestForm",
+                width: 700,
+                elementsConfig: {
+                    labelWidth: 325,
+                    bottomPadding: 18
+                },
+                elements: []
+            }
+        ]
+    }
+};
+
+function showRequestDialog() {
+    if (util.popupIsntAlreadyOpened("requestDialog")) {
+        webix.ui(webix.copy(requestDialog)).show();
+    }
+};
+
+function clickProfile() {
     webix.ui(webix.copy(profileView.changeProfileDialog));
-    $$("profileForm").load("hub/user/"+userData.id).then(function () {
+    $$("profileForm").load("hub/user/" + userData.id).then(function () {
         $$("photo").setValues({
-            src:"data:image/png;base64,"+userData.photo
+            src: "data:image/png;base64," + userData.photo
         });
         $$("changeProfileDialog").show();
     });
 };
 
-function clickPassword(){
+function clickPassword() {
     webix.ui(webix.copy(profileView.changePasswordDialog));
 
     setTimeout(function () {
@@ -144,7 +202,7 @@ function clickPassword(){
     }, 0);
 };
 
-function clickNotificationSettings(){
+function clickNotificationSettings() {
     webix.ui(webix.copy(profileView.notificationSettingsDialog));
 
     setTimeout(function () {
@@ -162,7 +220,7 @@ function logout() {
             util.messages.showLogoutMessage();
             connection.reload();
         }
-        else{
+        else {
             util.messages.showLogoutErrorMessage();
         }
     });

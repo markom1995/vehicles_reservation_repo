@@ -187,10 +187,18 @@ public class UserController extends GenericHasCompanyIdAndDeletableController<Us
                 newUser.setTokenTime(new Timestamp(System.currentTimeMillis()));
                 newUser.setCompanyId(user.getCompanyId());
                 newUser.setRoleId(user.getRoleId());
+                if(user.getRoleId().equals(Integer.valueOf(3))){
+                    newUser.setRequest((byte) 1);
+                }
+                else{
+                    newUser.setRequest((byte) 0);
+                }
                 if(userRepository.saveAndFlush(newUser) != null){
                     entityManager.refresh(newUser);
                     logCreateAction(newUser);
-                    notification.sendRegistrationLink(user.getEmail().trim(), randomToken);
+                    if(user.getRoleId().equals(Integer.valueOf(1)) || user.getRoleId().equals(Integer.valueOf(2))){
+                        notification.sendRegistrationLink(user.getEmail().trim(), randomToken);
+                    }
 
                     return newUser;
                 }

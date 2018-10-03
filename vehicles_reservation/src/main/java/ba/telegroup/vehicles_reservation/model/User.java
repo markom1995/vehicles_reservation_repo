@@ -22,6 +22,7 @@ import java.util.Date;
                         @ColumnResult(name="photo"),
                         @ColumnResult(name="active"),
                         @ColumnResult(name="deleted"),
+                        @ColumnResult(name="request"),
                         @ColumnResult(name="token"),
                         @ColumnResult(name="token_time", type = Date.class),
                         @ColumnResult(name="mail_status_id"),
@@ -43,6 +44,7 @@ public class User implements Deletable, HasCompanyId {
     private byte[] photo;
     private Byte active;
     private Byte deleted;
+    private Byte request;
     private String token;
     private Timestamp tokenTime;
     private Integer mailStatusId;
@@ -51,7 +53,7 @@ public class User implements Deletable, HasCompanyId {
     private Integer roleId;
 
     public User() {}
-    public User(Integer id, String email, String username, String password, String first_name, String last_name, byte[] photo, Byte active, Byte deleted, String token, Date token_time, Integer mailStatusId, Integer locationId, Integer company_id, Integer role_id) {
+    public User(Integer id, String email, String username, String password, String first_name, String last_name, byte[] photo, Byte active, Byte deleted, Byte request, String token, Date token_time, Integer mailStatusId, Integer locationId, Integer company_id, Integer role_id) {
         this.id = id;
         this.email = email;
         this.username = username;
@@ -61,6 +63,7 @@ public class User implements Deletable, HasCompanyId {
         this.photo = photo;
         this.active = active;
         this.deleted = deleted;
+        this.request = request;
         this.token = token;
         setTokenTime(token_time==null ? null:new Timestamp(token_time.getTime()));
         this.mailStatusId = mailStatusId;
@@ -158,6 +161,16 @@ public class User implements Deletable, HasCompanyId {
 
     public void setDeleted(Byte deleted) {
         this.deleted = deleted;
+    }
+
+    @Basic
+    @Column(name = "request", nullable = false)
+    public Byte getRequest() {
+        return request;
+    }
+
+    public void setRequest(Byte request) {
+        this.request = request;
     }
 
     @Basic
