@@ -1,3 +1,13 @@
+webix.protoUI({
+    name: "activeList"
+}, webix.ui.list, webix.ActiveContent);
+
+var requests = [];
+var firstLocationsRequest = null;
+var locationsRequest = [];
+var userId = null;
+var listItemId = null;
+
 var mainLayout = {
     id: "app",
     width: "auto",
@@ -28,7 +38,7 @@ var mainLayout = {
                             view: "button",
                             id: "requestBtn",
                             width: 43,
-                            badge: 5,
+                            badge: 0,
                             type: "icon",
                             icon: "bell",
                             align: "right",
@@ -140,19 +150,19 @@ var mainLayout = {
 
 var requestDialog = {
     view: "popup",
-        id: "requestDialog",
-        modal: true,
-        position: "center",
-        body: {
+    id: "requestDialog",
+    modal: true,
+    position: "center",
+    body: {
         id: "requestInside",
-            rows: [
+        rows: [
             {
                 view: "toolbar",
                 cols: [
                     {
                         view: "label",
                         label: "<span class='webix_icon fa-bell'></span> Odobravanje zahtjeva",
-                        width: 400
+                        width: 800
                     },
                     {},
                     {
@@ -165,22 +175,191 @@ var requestDialog = {
                 ]
             },
             {
-                view: "form",
-                id: "requestForm",
-                width: 700,
-                elementsConfig: {
-                    labelWidth: 325,
-                    bottomPadding: 18
+                view: "activeList",
+                id: "requestList",
+                width: 350,
+                autoheight: true,
+                select: true,
+                data: requests,
+                activeContent: {
+                    acceptBtn: {
+                        id: "acceptBtn",
+                        view: "button",
+                        label: "Potvrdi",
+                        width: 80,
+                        click: acceptRequest
+                    },
+                    rejectBtn: {
+                        id: "rejectBtn",
+                        view: "button",
+                        label: "Odbij",
+                        width: 80,
+                        click: rejectRequest
+                    }
                 },
-                elements: []
+                template: "<div style='float:left; font-weight: bold; font-size: 18px'>#firstName# #lastName#</div><br>" +
+                    "<div style='float:left;'>Email adresa: #email#</div><br>" +
+                    "<div style='float:left;'>Korisničko ime: #username#</div>" +
+                    "<div class='request_buttons'>{common.rejectBtn()}</div><div class='request_buttons'>{common.acceptBtn()}</div>",
+                type: {
+                    height: 120
+                }
             }
         ]
     }
 };
 
+var locationChoserDialog = {
+    view: "popup",
+    id: "locationChoserDialog",
+    modal: true,
+    position: "center",
+    body: {
+        id: "locationChoserInside",
+        rows: [
+            {
+                view: "toolbar",
+                cols: [
+                    {
+                        view: "label",
+                        label: "<span class='webix_icon fa-map'></span> Odabir lokacije",
+                        width: 400
+                    },
+                    {},
+                    {
+                        hotkey: 'esc',
+                        view: "icon",
+                        icon: "close",
+                        align: "right",
+                        click: "util.dismissDialog('locationChoserDialog');"
+                    }
+                ]
+            },
+            {
+                cols: [
+                    {
+                        view: "form",
+                        id: "locationChoserForm",
+                        borderless: true,
+                        width: 500,
+                        elementsConfig: {
+                            labelWidth: 100,
+                            bottomPadding: 18
+                        },
+                        elements: [
+                            {
+                                id: "location",
+                                name: "location",
+                                view: "select",
+                                value: firstLocationsRequest,
+                                label: "Lokacija:",
+                                options: locationsRequest
+                            },
+                            {
+                                margin: 5,
+                                cols: [
+                                    {},
+                                    {
+                                        id: "chooseLocation",
+                                        view: "button",
+                                        value: "Odaberite lokaciju",
+                                        type: "form",
+                                        click: "chooseLocation",
+                                        hotkey: "enter",
+                                        width: 170
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+};
+
+function chooseLocation(){
+    var locationId = $$("locationChoserForm").getValues().location;
+
+    webix.ajax().headers({
+        "Content-type": "application/x-www-form-urlencoded"
+    }).post("hub/user/acceptRequest", "userId=" + userId + "&locationId=" + locationId).then(function (data) {
+        if (data.text() === "Success") {
+            util.messages.showMessage("Uspješna aktivacija korisničkog naloga.")
+        }
+        else{
+            util.messages.showErrorMessage("Neuspješna aktivacija korisničkog naloga.")
+        }
+
+        util.dismissDialog('locationChoserDialog');
+        $$("requestList").remove(listItemId);
+        startTimerForRequest();
+        if($$("requestList").count() == 0){
+            util.dismissDialog('requestDialog');
+        }
+    }).fail(function (error) {
+        util.messages.showErrorMessage(error.responseText);
+    });
+}
+
+function rejectRequest(id, e){
+    listItemId = $$("requestList").locate(e);
+    userId = $$("requestList").getItem(listItemId).id;
+
+    webix.ajax().headers({
+        "Content-type": "application/x-www-form-urlencoded"
+    }).post("hub/user/rejectRequest", "userId=" + userId).then(function (data) {
+        if (data.text() === "Success") {
+            util.messages.showMessage("Uspješno odbijen zahtjev za aktivaciju korisničkog naloga.")
+        }
+        else{
+            util.messages.showErrorMessage("Neuspješno odbijen zahtjev za aktivaciju korisničkog naloga.")
+        }
+
+        $$("requestList").remove(listItemId);
+        startTimerForRequest();
+        if($$("requestList").count() == 0){
+            util.dismissDialog('requestDialog');
+        }
+    }).fail(function (error) {
+        util.messages.showErrorMessage(error.responseText);
+    });
+};
+
+function acceptRequest(id, e){
+    listItemId = $$("requestList").locate(e);
+    userId = $$("requestList").getItem(listItemId).id;
+
+    if (util.popupIsntAlreadyOpened("locationChoserDialog")) {
+        webix.ui(webix.copy(locationChoserDialog)).show();
+    }
+};
+
+function loadLocations() {
+    webix.ajax().get("hub/location").then(function (data) {
+        locationsRequest.length = 0;
+        var locationsTemp = data.json();
+        firstLocationsRequest = locationsTemp[0].id;
+        locationsTemp.forEach(function (obj) {
+            locationsRequest.push({
+                id: obj.id,
+                value: obj.name + " - " + obj.address
+            });
+        });
+    }).fail(function (error) {
+        util.messages.showErrorMessage(error.responseText);
+    });
+};
+
 function showRequestDialog() {
+    loadLocations();
     if (util.popupIsntAlreadyOpened("requestDialog")) {
-        webix.ui(webix.copy(requestDialog)).show();
+        webix.ui(webix.copy(requestDialog));
+        $$("requestList").load("hub/user/allRequests").then(function (data) {
+            if(data.json().length != 0){
+                $$("requestDialog").show();
+            }
+        });
     }
 };
 

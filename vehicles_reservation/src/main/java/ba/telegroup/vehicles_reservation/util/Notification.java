@@ -129,4 +129,33 @@ public class Notification {
         }
     }
 
+    @Async
+    public void sendActivationNotification(String recipientMail) throws BadRequestException {
+        Properties properties = new Properties();
+        properties.put("mail.smtp.host", mailHost);
+        properties.put("mail.smtp.port", mailPort);
+        properties.put("mail.smtp.auth", mailAuth);
+        properties.put("mail.smtp.socketFactory.port", mailSocketFactoryPort);
+        properties.put("mail.smtp.socketFactory.class", mailSocketFactoryClass);
+
+        Session session = Session.getDefaultInstance(properties, new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(mailSender, mailPassword);
+            }
+        });
+
+        try {
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(mailSender, "Vehicle Reservation System"));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientMail));
+            message.setSubject("Obavještenje");
+            message.setText("Vaš nalog je odobren od strane administratora.");
+
+            Transport.send(message);
+
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            throw new BadRequestException("Recipient mail not found.");
+        }
+    }
+
 }

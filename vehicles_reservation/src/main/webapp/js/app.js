@@ -35,6 +35,9 @@ var menuActions = function (id) {
         case "chart":
             chartView.selectPanel();
             break;
+        case "users":
+            usersView.selectPanel();
+            break;
     }
 };
 
@@ -81,6 +84,11 @@ var menuAdmin = [
         id: "logger",
         value: "Loger korisničkih akcija",
         icon: "history"
+    },
+    {
+        id: "users",
+        value: "Korisnici",
+        icon: "user"
     }
 ];
 
@@ -179,12 +187,30 @@ var showLogin = function () {
     panel = $$("login");
 };
 
+var startTimerForRequest = function () {
+    webix.ajax().get("hub/user/numberOfRequests").then(function (data) {
+        numberOfRequests = data.text();
+        if(numberOfRequests == 0){
+            $$("requestBtn").config.badge = null;
+        }
+        else{
+            $$("requestBtn").config.badge = numberOfRequests;
+        }
+
+        $$("requestBtn").refresh();
+    }).fail(function (error) {
+        util.messages.showErrorMessage("Neuspješno dobavljanje broja zahtjeva");
+    });
+};
+
 var showApp = function () {
     var main = webix.copy(mainLayout);
     webix.ui(main, panel);
     panel = $$("app");
-    if (companyData != null)
+    if (companyData != null) {
         document.getElementById("appLogo").src = "data:image/jpg;base64," + companyData.logo;
+    }
+
     var localMenuData = null;
     if (userData != null) {
         switch (userData.roleId) {
@@ -194,8 +220,10 @@ var showApp = function () {
                 break;
             case 2:
                 localMenuData = webix.copy(menuAdmin);
-                setInterval(function(){ webix.message("Alert") }, 60000);
+                setInterval(startTimerForRequest, 30000);
                 $$("requestBtn").show();
+                $$("requestBtn").show();
+                startTimerForRequest();
                 break;
             case 3:
                 localMenuData = webix.copy(menuUser);
@@ -339,19 +367,19 @@ var generatePassword = function () {
     }
 };
 
-var preloadDependencies = function(){
+var preloadDependencies = function () {
     webix.ajax().get("hub/vehicleMaintenanceType").then(function (data) {
 
         var vehicleMaintenancesTypeTemp = data.json();
         firstVehicleMaintenancesType = vehicleMaintenancesTypeTemp[0].id;
         vehicleMaintenancesTypeTemp.forEach(function (obj) {
-           vehicleMaintenancesType.push({
-               id: obj.id,
-               value: obj.name
-           });
+            vehicleMaintenancesType.push({
+                id: obj.id,
+                value: obj.name
+            });
         });
     }).fail(function (error) {
-       util.messages.showErrorMessage("Neuspješno dobavljanje vrsta troškova");
+        util.messages.showErrorMessage("Neuspješno dobavljanje vrsta troškova");
     });
 };
 

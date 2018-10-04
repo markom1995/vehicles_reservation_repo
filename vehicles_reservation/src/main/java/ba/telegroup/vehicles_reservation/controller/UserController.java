@@ -5,9 +5,11 @@ import ba.telegroup.vehicles_reservation.common.exceptions.ForbiddenException;
 import ba.telegroup.vehicles_reservation.controller.genericController.GenericController;
 import ba.telegroup.vehicles_reservation.controller.genericController.GenericHasCompanyIdAndDeletableController;
 import ba.telegroup.vehicles_reservation.model.Company;
+import ba.telegroup.vehicles_reservation.model.Location;
 import ba.telegroup.vehicles_reservation.model.User;
 import ba.telegroup.vehicles_reservation.model.modelCustom.UserRole;
 import ba.telegroup.vehicles_reservation.repository.CompanyRepository;
+import ba.telegroup.vehicles_reservation.repository.LocationRepository;
 import ba.telegroup.vehicles_reservation.repository.UserRepository;
 import ba.telegroup.vehicles_reservation.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,7 @@ public class UserController extends GenericHasCompanyIdAndDeletableController<Us
 
     private final UserRepository userRepository;
     private final CompanyRepository companyRepository;
+    private final LocationRepository locationRepository;
     private final Notification notification;
 
     @PersistenceContext
@@ -49,6 +52,12 @@ public class UserController extends GenericHasCompanyIdAndDeletableController<Us
 
     @Value("${badRequest.noUser}")
     private String badRequestNoUser;
+
+    @Value("${badRequest.noLocation}")
+    private String badRequestNoLocation;
+
+    @Value("${badRequest.acceptRequestBadRole}")
+    private String badRequestAcceptRequestBadRole;
 
     @Value("${badRequest.insert}")
     private String badRequestInsert;
@@ -96,10 +105,11 @@ public class UserController extends GenericHasCompanyIdAndDeletableController<Us
     private String badRequestEmailExists;
 
     @Autowired
-    public UserController(UserRepository userRepository, CompanyRepository companyRepository, Notification notification){
+    public UserController(UserRepository userRepository, CompanyRepository companyRepository, LocationRepository locationRepository, Notification notification){
         super(userRepository);
         this.userRepository = userRepository;
         this.companyRepository = companyRepository;
+        this.locationRepository = locationRepository;
         this.notification = notification;
     }
 
@@ -183,22 +193,15 @@ public class UserController extends GenericHasCompanyIdAndDeletableController<Us
                 newUser.setPhoto(null);
                 newUser.setActive((byte) 0);
                 newUser.setDeleted((byte) 0);
-                newUser.setToken(randomToken);
-                newUser.setTokenTime(new Timestamp(System.currentTimeMillis()));
                 newUser.setCompanyId(user.getCompanyId());
                 newUser.setRoleId(user.getRoleId());
-                if(user.getRoleId().equals(Integer.valueOf(3))){
-                    newUser.setRequest((byte) 1);
-                }
-                else{
-                    newUser.setRequest((byte) 0);
-                }
+                newUser.setToken(randomToken);
+                newUser.setTokenTime(new Timestamp(System.currentTimeMillis()));
+                newUser.setRequest((byte) 0);
                 if(userRepository.saveAndFlush(newUser) != null){
                     entityManager.refresh(newUser);
                     logCreateAction(newUser);
-                    if(user.getRoleId().equals(Integer.valueOf(1)) || user.getRoleId().equals(Integer.valueOf(2))){
-                        notification.sendRegistrationLink(user.getEmail().trim(), randomToken);
-                    }
+                    notification.sendRegistrationLink(user.getEmail().trim(), randomToken);
 
                     return newUser;
                 }
@@ -207,6 +210,79 @@ public class UserController extends GenericHasCompanyIdAndDeletableController<Us
             throw new BadRequestException(badRequestValidateEmail);
         }
         throw new BadRequestException(badRequestEmailExists);
+    }
+
+    @Transactional
+    @RequestMapping(value = "/acceptRequest", method = RequestMethod.POST)
+    public @ResponseBody
+    String acceptRequest(@RequestParam("userId") Integer userId, @RequestParam("locationId") Integer locationId) throws BadRequestException {
+        User user = userRepository.findById(userId).orElse(null);
+        if(user != null){
+            Location location = locationRepository.findById(locationId).orElse(null);
+            if(location != null){
+                if(user.getRoleId() != null && user.getRoleId().equals(Integer.valueOf(3)) && user.getRequest().equals(Byte.valueOf((byte) 1))){
+                    User oldObject = user;
+                    user.setLocationId(locationId);
+                    user.setRequest((byte) 0);
+                    user.setActive((byte) 1);
+                    if (userRepository.saveAndFlush(user) != null) {
+                        logUpdateAction(user, oldObject);
+                        notification.sendActivationNotification(user.getEmail().trim());
+
+                        return "Success";
+                    }
+                    else{
+                        throw new BadRequestException(badRequestUpdate);
+                    }
+                }
+                throw new BadRequestException(badRequestAcceptRequestBadRole);
+            }
+            throw new BadRequestException(badRequestNoLocation);
+        }
+        throw new BadRequestException(badRequestNoUser);
+    }
+
+    @Transactional
+    @RequestMapping(value = "/rejectRequest", method = RequestMethod.POST)
+    public @ResponseBody
+    String rejectRequest(@RequestParam("userId") Integer userId) throws BadRequestException {
+        User user = userRepository.findById(userId).orElse(null);
+        if(user != null){
+            if(user.getRoleId() != null && user.getRoleId().equals(Integer.valueOf(3)) && user.getRequest().equals(Byte.valueOf((byte) 1))){
+                User oldObject = user;
+                user.setRequest((byte) 0);
+                user.setDeleted((byte) 1);
+                if (userRepository.saveAndFlush(user) != null) {
+                    logUpdateAction(user, oldObject);
+
+                    return "Success";
+                }
+                else{
+                    throw new BadRequestException(badRequestUpdate);
+                }
+            }
+            throw new BadRequestException(badRequestAcceptRequestBadRole);
+        }
+        throw new BadRequestException(badRequestNoUser);
+    }
+
+    @Transactional
+    @RequestMapping(value = "/numberOfRequests", method = RequestMethod.GET)
+    public @ResponseBody
+    Integer countAllRequests() {
+        return userRepository.countAllByCompanyIdAndRequest(userBean.getUser().getCompanyId(), (byte) 1);
+    }
+
+    @Transactional
+    @RequestMapping(value = "/allRequests", method = RequestMethod.GET)
+    public @ResponseBody
+    List<User> getAllRequests() {
+        List<User> users = cloner.deepClone(userRepository.getAllByCompanyIdAndRequest(userBean.getUser().getCompanyId(), (byte) 1));
+        for(User user : users){
+            user.setPassword(null);
+        }
+
+        return users;
     }
 
     @RequestMapping(value = "/registration/{token}", method = RequestMethod.GET)
@@ -302,7 +378,12 @@ public class UserController extends GenericHasCompanyIdAndDeletableController<Us
                                 user.setFirstName(newUser.getFirstName());
                                 user.setLastName(newUser.getLastName());
                                 user.setPhoto(newUser.getPhoto());
-                                user.setActive((byte) 1);
+                                if(user.getRoleId().equals(Integer.valueOf(3))){
+                                    user.setRequest((byte) 1);
+                                }
+                                else{
+                                    user.setActive((byte) 1);
+                                }
 
                                 if(userRepository.saveAndFlush(user) != null){
                                     return "Success";

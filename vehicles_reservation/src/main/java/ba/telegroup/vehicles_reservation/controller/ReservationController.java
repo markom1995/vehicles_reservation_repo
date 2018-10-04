@@ -123,7 +123,7 @@ public class ReservationController extends GenericHasCompanyIdAndDeletableContro
     String delete(@PathVariable Integer id) throws BadRequestException {
         try {
             Reservation reservation = reservationRepository.findById(id).orElse(null);
-            reservationRepository.deleteById(id);
+            reservation.setDeleted((byte) 1);
             logDeleteAction(reservation);
 
             VehicleLocationVehicleModelVehicleManufacturer vehicle = vehicleRepository.getExtendedById(reservation.getVehicleId());

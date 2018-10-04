@@ -164,3 +164,9 @@
     color: #fff;
     font-size: 15px;
 }
+.request_buttons {
+    padding-left: 10px;
+    height: 60px;
+    padding-top:10px;
+    float:right;
+}

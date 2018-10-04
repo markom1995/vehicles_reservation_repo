@@ -2,10 +2,12 @@ package ba.telegroup.vehicles_reservation.controller;
 
 import ba.telegroup.vehicles_reservation.common.exceptions.BadRequestException;
 import ba.telegroup.vehicles_reservation.controller.genericController.GenericHasCompanyIdAndDeletableController;
+import ba.telegroup.vehicles_reservation.model.Reservation;
 import ba.telegroup.vehicles_reservation.model.Vehicle;
 import ba.telegroup.vehicles_reservation.model.VehicleManufacturer;
 import ba.telegroup.vehicles_reservation.model.VehicleModel;
 import ba.telegroup.vehicles_reservation.model.modelCustom.VehicleLocationVehicleModelVehicleManufacturer;
+import ba.telegroup.vehicles_reservation.repository.ReservationRepository;
 import ba.telegroup.vehicles_reservation.repository.VehicleManufacturerRepository;
 import ba.telegroup.vehicles_reservation.repository.VehicleModelRepository;
 import ba.telegroup.vehicles_reservation.repository.VehicleRepository;
@@ -29,6 +31,8 @@ public class VehicleController extends GenericHasCompanyIdAndDeletableController
     private final VehicleRepository vehicleRepository;
     private final VehicleManufacturerRepository vehicleManufacturerRepository;
     private final VehicleModelRepository vehicleModelRepository;
+    private final ReservationRepository reservationRepository;
+    private final ReservationController reservationController;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -43,11 +47,13 @@ public class VehicleController extends GenericHasCompanyIdAndDeletableController
     private String badRequestNoVehicle;
 
     @Autowired
-    public VehicleController(VehicleRepository vehicleRepository, VehicleManufacturerRepository vehicleManufacturerRepository, VehicleModelRepository vehicleModelRepository){
+    public VehicleController(VehicleRepository vehicleRepository, VehicleManufacturerRepository vehicleManufacturerRepository, VehicleModelRepository vehicleModelRepository, ReservationRepository reservationRepository, ReservationController reservationController){
         super(vehicleRepository);
         this.vehicleRepository = vehicleRepository;
         this.vehicleManufacturerRepository = vehicleManufacturerRepository;
         this.vehicleModelRepository = vehicleModelRepository;
+        this.reservationRepository = reservationRepository;
+        this.reservationController = reservationController;
     }
 
     @Override
@@ -56,6 +62,27 @@ public class VehicleController extends GenericHasCompanyIdAndDeletableController
     public @ResponseBody
     List getAll(){
         return vehicleRepository.getAllExtendedByCompanyIdAndDeleted(userBean.getUser().getCompanyId(), (byte)0);
+    }
+
+    @Override
+    @Transactional
+    @RequestMapping(value = {"/{id}"}, method = RequestMethod.DELETE)
+    public @ResponseBody
+    String delete(@PathVariable Integer id) throws BadRequestException{
+        Vehicle vehicle = vehicleRepository.findById(id).orElse(null);
+        if(vehicle != null){
+            List<Reservation> reservations = reservationRepository.getAllByCompanyIdAndVehicleIdAndReservationStatusId(userBean.getUser().getCompanyId(), id, Integer.valueOf(1));
+            if(reservations != null && !reservations.isEmpty()){
+                for(Reservation reservation : reservations){
+                    reservationController.delete(reservation.getId());
+                }
+            }
+            vehicle.setDeleted((byte) 1);
+            logDeleteAction(vehicle);
+
+            return "Success";
+        }
+        throw new BadRequestException(badRequestNoVehicle);
     }
 
     @Transactional

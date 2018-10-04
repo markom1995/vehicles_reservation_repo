@@ -158,11 +158,11 @@ var userView = {
                             options: [
                                 {
                                     value: "Administrator",
-                                    id: 1
+                                    id: 2
                                 },
                                 {
                                     value: "Korisnik",
-                                    id: 2
+                                    id: 3
                                 }
                             ]
                         },
