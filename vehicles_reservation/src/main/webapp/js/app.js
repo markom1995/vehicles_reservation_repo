@@ -190,10 +190,10 @@ var showLogin = function () {
 var startTimerForRequest = function () {
     webix.ajax().get("hub/user/numberOfRequests").then(function (data) {
         numberOfRequests = data.text();
-        if(numberOfRequests == 0){
+        if (numberOfRequests == 0) {
             $$("requestBtn").config.badge = null;
         }
-        else{
+        else {
             $$("requestBtn").config.badge = numberOfRequests;
         }
 
@@ -369,7 +369,6 @@ var generatePassword = function () {
 
 var preloadDependencies = function () {
     webix.ajax().get("hub/vehicleMaintenanceType").then(function (data) {
-
         var vehicleMaintenancesTypeTemp = data.json();
         firstVehicleMaintenancesType = vehicleMaintenancesTypeTemp[0].id;
         vehicleMaintenancesTypeTemp.forEach(function (obj) {

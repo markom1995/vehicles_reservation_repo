@@ -389,8 +389,6 @@ var vehicleMaintenanceView = {
                                     }).fail(function (error) {
                                         util.messages.showErrorMessage("Neuspješno brisanje troška.");
                                     });
-
-
                                 }
                             };
                             webix.confirm(delBox);

@@ -7,6 +7,7 @@ import ba.telegroup.vehicles_reservation.controller.genericController.GenericHas
 import ba.telegroup.vehicles_reservation.model.Company;
 import ba.telegroup.vehicles_reservation.model.Location;
 import ba.telegroup.vehicles_reservation.model.User;
+import ba.telegroup.vehicles_reservation.model.modelCustom.UserLocation;
 import ba.telegroup.vehicles_reservation.model.modelCustom.UserRole;
 import ba.telegroup.vehicles_reservation.repository.CompanyRepository;
 import ba.telegroup.vehicles_reservation.repository.LocationRepository;
@@ -145,6 +146,12 @@ public class UserController extends GenericHasCompanyIdAndDeletableController<Us
     public @ResponseBody
     List<UserRole> getByCompanyIdAndDeleted(@PathVariable Integer companyId) throws BadRequestException {
         return userRepository.getByCompanyIdAndDeletedAndActive(companyId, (byte)0, (byte)1);
+    }
+
+    @RequestMapping(value = "/custom", method = RequestMethod.GET)
+    public @ResponseBody
+    List<UserLocation> getAllExtendedUserLocationByCompanyIdAndDeletedAndActive() throws BadRequestException {
+        return userRepository.getAllExtendedUserLocationByCompanyIdAndDeletedAndActive(userBean.getUser().getCompanyId(), (byte)0, (byte)1);
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -349,7 +356,7 @@ public class UserController extends GenericHasCompanyIdAndDeletableController<Us
     public @ResponseBody
     String deactivate(@PathVariable Integer id) throws BadRequestException {
         User user = userRepository.findById(id).orElse(null);
-        if(user != null && userBean.getUser().getRoleId().equals(superAdmin) && !user.getRoleId().equals(superAdmin)){
+        if(user != null){
             user.setActive((byte)0);
             if(userRepository.saveAndFlush(user) != null){
                 return "Success";
@@ -422,6 +429,30 @@ public class UserController extends GenericHasCompanyIdAndDeletableController<Us
         else{
             throw new BadRequestException(badRequestNoUser);
         }
+    }
+
+    @Transactional
+    @RequestMapping(value = "/updateLocation", method = RequestMethod.POST)
+    public @ResponseBody
+    String updateLocation(@RequestParam("userId") Integer userId, @RequestParam("locationId") Integer locationId) throws BadRequestException {
+        User user = userRepository.findById(userId).orElse(null);
+        if(user != null){
+            Location location = locationRepository.findById(locationId).orElse(null);
+            if(location != null){
+                User oldObject = user;
+                user.setLocationId(locationId);
+                if (userRepository.saveAndFlush(user) != null) {
+                    logUpdateAction(user, oldObject);
+
+                    return "Success";
+                }
+                else{
+                    throw new BadRequestException(badRequestUpdate);
+                }
+            }
+            throw new BadRequestException(badRequestNoLocation);
+        }
+        throw new BadRequestException(badRequestNoUser);
     }
 
     @RequestMapping(value = {"/state"}, method = RequestMethod.GET)

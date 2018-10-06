@@ -6,4 +6,6 @@ import ba.telegroup.vehicles_reservation.repository.repositoryCustom.VehicleRepo
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface VehicleRepository extends JpaRepository<Vehicle, Integer>, HasCompanyIdAndDeletableRepository, VehicleRepositoryCustom {
+
+    Integer countAllByCompanyIdAndLocationId(Integer companyId, Integer locationId);
 }

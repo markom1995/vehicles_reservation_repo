@@ -308,7 +308,17 @@ var locationView = {
 
                             delBox.callback = function (result) {
                                 if (result == 1) {
-                                    $$("locationTable").remove(context.id.row);
+                                    webix.ajax().del("hub/location/" + newItem.id).then(function (data) {
+                                        if(data.text() === "Success"){
+                                            util.messages.showMessage("Uspješno brisanje lokacije.");
+                                            $$("locationTable").remove(context.id.row);
+                                        }
+                                        else{
+                                            util.messages.showErrorMessage("Neuspješno brisanje lokacije.");
+                                        }
+                                    }).fail(function (error) {
+                                        util.messages.showErrorMessage(error.responseText);
+                                    });
                                 }
                             };
                             webix.confirm(delBox);
