@@ -86,7 +86,7 @@
 					<textField>
 						<reportElement x="0" y="0" width="555" height="29" forecolor="#FFFFFF" uuid="dc223144-cf27-4990-8e58-39242da72173"/>
 						<textElement textAlignment="Center" verticalAlignment="Middle">
-							<font fontName="DejaVu Sans" size="14"/>
+							<font fontName="Arial" size="14"/>
 						</textElement>
 						<textFieldExpression><![CDATA[$F{month}]]></textFieldExpression>
 					</textField>
@@ -107,14 +107,14 @@
 				<textField>
 					<reportElement x="180" y="60" width="364" height="20" forecolor="#FFFFFF" uuid="4d5ba530-a0ea-4f71-bf65-a60ac3bb1b85"/>
 					<textElement textAlignment="Right" verticalAlignment="Bottom">
-						<font fontName="DejaVu Sans" size="12"/>
+						<font fontName="Arial" size="12"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$P{TitleDetails}]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement x="10" y="10" width="536" height="30" forecolor="#FFFFFF" uuid="36199daa-9527-4b50-9b4c-1bef8289a41b"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font fontName="DejaVu Sans" size="16"/>
+						<font fontName="Arial" size="16"/>
 					</textElement>
 					<textFieldExpression><![CDATA["Mjesečni izvještaj za troškove vozila " + $F{vehicleName}]]></textFieldExpression>
 				</textField>
@@ -158,7 +158,7 @@
 							<staticText>
 								<reportElement x="0" y="0" width="280" height="30" forecolor="#FFFFFF" uuid="e27b2f42-05c5-487d-a4e9-0d1719dd8e9d"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="DejaVu Sans" size="12"/>
+									<font fontName="Arial" size="12"/>
 								</textElement>
 								<text><![CDATA[Opis]]></text>
 							</staticText>
@@ -167,7 +167,7 @@
 							<textField>
 								<reportElement x="0" y="0" width="280" height="30" uuid="6ff454d5-af7c-4d51-9e0c-b3d3dbf235f1"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="DejaVu Sans" size="10"/>
+									<font fontName="Arial" size="10"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
 							</textField>
@@ -179,7 +179,7 @@
 							<staticText>
 								<reportElement x="0" y="0" width="90" height="30" forecolor="#FFFFFF" uuid="656ff3da-ed0c-4479-bb0a-297e4655bc5c"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="DejaVu Sans" size="12"/>
+									<font fontName="Arial" size="12"/>
 								</textElement>
 								<text><![CDATA[Vrsta troška]]></text>
 							</staticText>
@@ -188,7 +188,7 @@
 							<textField>
 								<reportElement x="0" y="0" width="90" height="30" uuid="086b4eda-9121-4cfb-a5b5-65fd8e6e205b"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="DejaVu Sans" size="10"/>
+									<font fontName="Arial" size="10"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{vehicleMaintenanceTypeName}]]></textFieldExpression>
 							</textField>
@@ -200,7 +200,7 @@
 							<staticText>
 								<reportElement x="0" y="0" width="90" height="30" forecolor="#FFFFFF" uuid="e6f0443e-7777-430a-a315-b5e51dadf3c1"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="DejaVu Sans" size="12"/>
+									<font fontName="Arial" size="12"/>
 								</textElement>
 								<text><![CDATA[Cijena]]></text>
 							</staticText>
@@ -209,7 +209,7 @@
 							<textField>
 								<reportElement x="0" y="0" width="90" height="30" uuid="1518d302-7443-45c1-991d-46b9b71de2fe"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="DejaVu Sans" size="10"/>
+									<font fontName="Arial" size="10"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{price}.toString() + "KM"]]></textFieldExpression>
 							</textField>
@@ -221,7 +221,7 @@
 							<staticText>
 								<reportElement x="0" y="0" width="95" height="30" forecolor="#FFFFFF" uuid="360afd0d-b509-46d8-8b88-3b1774ffdd4e"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="DejaVu Sans" size="12"/>
+									<font fontName="Arial" size="12"/>
 								</textElement>
 								<text><![CDATA[Datum]]></text>
 							</staticText>
@@ -230,7 +230,7 @@
 							<textField>
 								<reportElement x="0" y="0" width="95" height="30" uuid="11c2c73c-b35e-45f0-88e2-98b7b2969aae"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="DejaVu Sans" size="10"/>
+									<font fontName="Arial" size="10"/>
 								</textElement>
 								<textFieldExpression><![CDATA[new SimpleDateFormat("dd.MM.yyyy").format($F{date})]]></textFieldExpression>
 							</textField>
@@ -272,12 +272,28 @@
 				</categoryDataset>
 				<barPlot isShowLabels="true">
 					<plot foregroundAlpha="0.96"/>
-					<itemLabel/>
+					<itemLabel>
+						<font fontName="Arial"/>
+					</itemLabel>
 					<categoryAxisFormat>
-						<axisFormat/>
+						<axisFormat>
+							<labelFont>
+								<font fontName="Arial"/>
+							</labelFont>
+							<tickLabelFont>
+								<font fontName="Arial"/>
+							</tickLabelFont>
+						</axisFormat>
 					</categoryAxisFormat>
 					<valueAxisFormat>
-						<axisFormat/>
+						<axisFormat>
+							<labelFont>
+								<font fontName="Arial"/>
+							</labelFont>
+							<tickLabelFont>
+								<font fontName="Arial"/>
+							</tickLabelFont>
+						</axisFormat>
 					</valueAxisFormat>
 				</barPlot>
 			</barChart>
@@ -293,13 +309,15 @@
 				<textField>
 					<reportElement x="0" y="0" width="310" height="18" uuid="5301dff9-af87-4297-a4e3-7dc5fb264d1a"/>
 					<textElement verticalAlignment="Middle">
-						<font fontName="DejaVu Sans"/>
+						<font fontName="Arial"/>
 					</textElement>
 					<textFieldExpression><![CDATA[new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date())]]></textFieldExpression>
 				</textField>
 				<textField evaluationTime="Auto">
 					<reportElement x="330" y="0" width="225" height="18" uuid="0a5c41bb-0679-4367-bece-d02847a56d66"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial"/>
+					</textElement>
 					<textFieldExpression><![CDATA["Stranica " + $V{REPORT_PAGE} + " od " + $V{PAGE_NUMBER}]]></textFieldExpression>
 				</textField>
 			</frame>

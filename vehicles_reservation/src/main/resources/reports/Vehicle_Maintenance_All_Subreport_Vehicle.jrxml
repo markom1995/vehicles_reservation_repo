@@ -86,7 +86,7 @@
 				<textField>
 					<reportElement x="0" y="0" width="540" height="30" uuid="976df1a0-485f-4de0-9469-6c1c2f5af71f"/>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font fontName="DejaVu Sans" size="16" isBold="true"/>
+						<font fontName="Arial" size="16" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{vehicleName}]]></textFieldExpression>
 				</textField>
@@ -124,7 +124,7 @@
 							<staticText>
 								<reportElement x="0" y="0" width="280" height="30" forecolor="#FFFFFF" uuid="4ec707a7-8008-41be-8831-cf2dc10f0519"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="DejaVu Sans" size="12"/>
+									<font fontName="Arial" size="12"/>
 								</textElement>
 								<text><![CDATA[Opis]]></text>
 							</staticText>
@@ -133,7 +133,7 @@
 							<textField>
 								<reportElement x="0" y="0" width="280" height="30" uuid="f786a7f6-adc1-43c2-b88e-d42da1da38e8"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="DejaVu Sans" size="10"/>
+									<font fontName="Arial" size="10"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
 							</textField>
@@ -145,7 +145,7 @@
 							<staticText>
 								<reportElement x="0" y="0" width="90" height="30" forecolor="#FFFFFF" uuid="d3cccf4e-800e-490b-8678-83d43b14b4c0"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="DejaVu Sans" size="12"/>
+									<font fontName="Arial" size="12"/>
 								</textElement>
 								<text><![CDATA[Vrsta troška]]></text>
 							</staticText>
@@ -154,7 +154,7 @@
 							<textField>
 								<reportElement x="0" y="0" width="90" height="30" uuid="16667f42-d240-4207-9b6a-cc60e2e67168"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="DejaVu Sans" size="10"/>
+									<font fontName="Arial" size="10"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{vehicleMaintenanceTypeName}]]></textFieldExpression>
 							</textField>
@@ -166,7 +166,7 @@
 							<staticText>
 								<reportElement x="0" y="0" width="90" height="30" forecolor="#FFFFFF" uuid="e554e2b1-3e76-4ed4-a461-b91458e52a72"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="DejaVu Sans" size="12"/>
+									<font fontName="Arial" size="12"/>
 								</textElement>
 								<text><![CDATA[Cijena]]></text>
 							</staticText>
@@ -175,7 +175,7 @@
 							<textField>
 								<reportElement x="0" y="0" width="90" height="30" uuid="19718e91-fffc-4eeb-a519-90991bd41889"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="DejaVu Sans" size="10"/>
+									<font fontName="Arial" size="10"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{price}.toString() + "KM"]]></textFieldExpression>
 							</textField>
@@ -187,7 +187,7 @@
 							<staticText>
 								<reportElement x="0" y="0" width="95" height="30" forecolor="#FFFFFF" uuid="f7f283d2-9941-44c2-be0c-912ceb077ead"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="DejaVu Sans" size="12"/>
+									<font fontName="Arial" size="12"/>
 								</textElement>
 								<text><![CDATA[Datum]]></text>
 							</staticText>
@@ -196,7 +196,7 @@
 							<textField>
 								<reportElement x="0" y="0" width="95" height="30" uuid="3437cd01-086e-4cee-bfcd-1afa24b6cb6d"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="DejaVu Sans" size="10"/>
+									<font fontName="Arial" size="10"/>
 								</textElement>
 								<textFieldExpression><![CDATA[new SimpleDateFormat("dd.MM.yyyy").format($F{date})]]></textFieldExpression>
 							</textField>
@@ -238,12 +238,28 @@
 				</categoryDataset>
 				<barPlot isShowLabels="true">
 					<plot foregroundAlpha="0.96"/>
-					<itemLabel/>
+					<itemLabel>
+						<font fontName="Serif"/>
+					</itemLabel>
 					<categoryAxisFormat>
-						<axisFormat/>
+						<axisFormat>
+							<labelFont>
+								<font fontName="Arial"/>
+							</labelFont>
+							<tickLabelFont>
+								<font fontName="Arial"/>
+							</tickLabelFont>
+						</axisFormat>
 					</categoryAxisFormat>
 					<valueAxisFormat>
-						<axisFormat/>
+						<axisFormat>
+							<labelFont>
+								<font fontName="Arial"/>
+							</labelFont>
+							<tickLabelFont>
+								<font fontName="Arial"/>
+							</tickLabelFont>
+						</axisFormat>
 					</valueAxisFormat>
 				</barPlot>
 			</barChart>

@@ -240,47 +240,50 @@ public class VehicleMaintenanceController extends GenericHasCompanyIdAndDeletabl
     @RequestMapping(value = "/report/all/month", method = RequestMethod.POST)
     public @ResponseBody
     FileInformation getMonthVehicleMaintenanceReport(@RequestParam("startDate") @DateTimeFormat(pattern = "dd.MM.yyyy") LocalDate startDate, @RequestParam("endDate") @DateTimeFormat(pattern = "dd.MM.yyyy") LocalDate endDate, @RequestParam("format") String format) throws BadRequestException {
-        try {
-            HashMap parameters = new HashMap();
-            parameters.put("TitleDetails", "Za period " + startDate + " - " + endDate);
-            parameters.put("StartDate", Date.valueOf(startDate));
-            parameters.put("EndDate", Date.valueOf(endDate));
-            parameters.put("CompanyId", userBean.getUser().getCompanyId());
+        if(startDate != null && endDate != null){
+            try {
+                HashMap parameters = new HashMap();
+                parameters.put("TitleDetails", "Za period " + startDate + " - " + endDate);
+                parameters.put("StartDate", Date.valueOf(startDate));
+                parameters.put("EndDate", Date.valueOf(endDate));
+                parameters.put("CompanyId", userBean.getUser().getCompanyId());
 
-            JasperPrint jasperPrint = JasperFillManager.fillReport(getClass().getResource("/reports/Vehicle_Maintenance_All.jasper").getPath(), parameters, jdbcTemplate.getDataSource().getConnection());
-            String fileName = "";
-            if("PDF".equals(format)){
-                fileName = "Izvjestaj_" + startDate + "_" + endDate + ".pdf";
-                pdfExporterJR(jasperPrint, fileName);
-            }
-            else if("XLS".equals(format)){
-                fileName = "Izvjestaj_" + startDate + "_" + endDate + ".xls";
-                xlsExporterJR(jasperPrint, fileName);
-            }
-            else if("CSV".equals(format)){
-                fileName = "Izvjestaj_" + startDate + "_" + endDate + ".csv";
-                csvExporterJR(jasperPrint, fileName);
-            }
-            else{
-                throw new BadRequestException(badRequestBadFileFormat);
-            }
+                JasperPrint jasperPrint = JasperFillManager.fillReport(getClass().getResource("/reports/Vehicle_Maintenance_All.jasper").getPath(), parameters, jdbcTemplate.getDataSource().getConnection());
+                String fileName = "";
+                if("PDF".equals(format)){
+                    fileName = "Izvjestaj_" + startDate + "_" + endDate + ".pdf";
+                    pdfExporterJR(jasperPrint, fileName);
+                }
+                else if("XLS".equals(format)){
+                    fileName = "Izvjestaj_" + startDate + "_" + endDate + ".xls";
+                    xlsExporterJR(jasperPrint, fileName);
+                }
+                else if("CSV".equals(format)){
+                    fileName = "Izvjestaj_" + startDate + "_" + endDate + ".csv";
+                    csvExporterJR(jasperPrint, fileName);
+                }
+                else{
+                    throw new BadRequestException(badRequestBadFileFormat);
+                }
 
-            FileInformation fileInformation = new FileInformation();
-            fileInformation.setName(fileName);
-            fileInformation.setContent(Files.readAllBytes(new File(fileName).toPath()));
-            Files.delete(new File(fileName).toPath());
+                FileInformation fileInformation = new FileInformation();
+                fileInformation.setName(fileName);
+                fileInformation.setContent(Files.readAllBytes(new File(fileName).toPath()));
+                Files.delete(new File(fileName).toPath());
 
-            return fileInformation;
-        } catch (JRException e) {
-            e.printStackTrace();
-            throw new BadRequestException(badRequestProblemWithDownloadFile);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new BadRequestException(badRequestProblemWithDownloadFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new BadRequestException(badRequestProblemWithDownloadFile);
+                return fileInformation;
+            } catch (JRException e) {
+                e.printStackTrace();
+                throw new BadRequestException(badRequestProblemWithDownloadFile);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw new BadRequestException(badRequestProblemWithDownloadFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new BadRequestException(badRequestProblemWithDownloadFile);
+            }
         }
+        throw new BadRequestException(badRequestProblemWithDownloadFile);
     }
 
     @RequestMapping(value = "/report/vehicle/month", method = RequestMethod.POST)
