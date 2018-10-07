@@ -4,6 +4,10 @@ import ba.telegroup.vehicles_reservation.common.interfaces.Deletable;
 import ba.telegroup.vehicles_reservation.common.interfaces.HasCompanyId;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Date;
@@ -36,20 +40,43 @@ import java.util.Date;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User implements Deletable, HasCompanyId {
     private Integer id;
+
+    @NotNull
+    @Size(min = 1, max = 128, message = "Email adresa korisnika mora sadr&#x017E;ati najmanje 1 karakter, a najvi&#x0161;e 128 karaktera.")
+    @Email
     private String email;
+
+    @Size(min = 4, max = 128, message = "Korisni&#x010D;ko ime mora sadr&#x017E;ati najmanje 4 karaktera, a najvi&#x0161;e 128 karaktera.")
     private String username;
+
+    @Size(max = 128, message = "Korisni&#x010D;ko ime mora sadr&#x017E;ati najvi&#x0161;e 128 karaktera.")
+    @Pattern(regexp = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}", message = "Lozinka nije odgovaraju&#x0107;e ja&#x010D;ine. Koristite lozinku od osam ili vi&#x0161;e karaktera koja sadr&#x017E;i velika i mala slova, cifre i specijalne karaktere.")
     private String password;
+
+    @Size(min = 1, max = 128, message = "Ime korisnika mora sadr&#x017E;ati najmanje 1 karakter, a najvi&#x0161;e 128 karaktera.")
     private String firstName;
+
+    @Size(min = 1, max = 128, message = "Prezime korisnika mora sadr&#x017E;ati najmanje 1 karakter, a najvi&#x0161;e 128 karaktera.")
     private String lastName;
+
     private byte[] photo;
+
     private Byte active;
+
     private Byte deleted;
+
     private Byte request;
+
     private String token;
+
     private Timestamp tokenTime;
+
     private Integer mailStatusId;
+
     private Integer locationId;
+
     private Integer companyId;
+
     private Integer roleId;
 
     public User() {}

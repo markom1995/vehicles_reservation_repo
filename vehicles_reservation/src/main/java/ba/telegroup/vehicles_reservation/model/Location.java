@@ -4,16 +4,32 @@ import ba.telegroup.vehicles_reservation.common.interfaces.Deletable;
 import ba.telegroup.vehicles_reservation.common.interfaces.HasCompanyId;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 public class Location implements Deletable, HasCompanyId {
     private Integer id;
+
+    @NotNull(message = "Naziv lokacije je obavezno unijeti.")
+    @Size(min = 1, max = 128, message = "Naziv lokacije mora sadr&#x017E;ati najmanje 1 karakter, a najvi&#x0161;e 128 karaktera.")
     private String name;
+
+    @NotNull(message = "Adresu lokacije je obavezno unijeti.")
+    @Size(min = 1, max = 128, message = "Adresa lokacije mora sadr&#x017E;ati najmanje 1 karakter, a najvi&#x0161;e 128 karaktera.")
     private String address;
+
+    @NotNull(message = "Geografsku du&#x017E;inu je obavezno unijeti.")
     private Double longitude;
+
+    @NotNull(message = "Geografsku &#x0161;irinu je obavezno unijeti.")
     private Double latitude;
+
+    @Size(min = 1, message = "Opis lokacije mora sadr&#x017E;ati najmanje 1 karakter.")
     private String description;
+
     private Byte deleted;
+
     private Integer companyId;
 
     @Id

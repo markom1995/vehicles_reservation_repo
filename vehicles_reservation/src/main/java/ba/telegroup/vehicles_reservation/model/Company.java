@@ -3,12 +3,20 @@ package ba.telegroup.vehicles_reservation.model;
 import ba.telegroup.vehicles_reservation.common.interfaces.Deletable;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 public class Company implements Deletable {
     private Integer id;
+
+    @NotNull(message = "Naziv kompanije je obavezno unijeti.")
+    @Size(min = 1, max = 128, message = "Naziv kompanije mora sadr&#x017E;ati najmanje 1 karakter, a najvi&#x0161;e 128 karaktera.")
     private String name;
+
+    @NotNull(message = "Logo kompanije je obavezno unijeti.")
     private byte[] logo;
+
     private Byte deleted;
 
     @Id

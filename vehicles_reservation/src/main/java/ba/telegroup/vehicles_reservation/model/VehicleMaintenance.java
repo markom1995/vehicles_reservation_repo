@@ -4,18 +4,30 @@ import ba.telegroup.vehicles_reservation.common.interfaces.Deletable;
 import ba.telegroup.vehicles_reservation.common.interfaces.HasCompanyId;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.sql.Date;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 public class VehicleMaintenance implements Deletable, HasCompanyId {
     private Integer id;
+
     private Integer vehicleMaintenanceTypeId;
+
+    @Size(min = 1, message = "Opis tro&#x0161;ka za vozilo mora sadr&#x017E;ati najmanje 1 karakter.")
     private String description;
+
+    @NotNull(message = "Cijenu tro&#x0161;ka za vozilo je obavezno unijeti.")
     private Double price;
+
+    @NotNull(message = "Datum tro&#x0161;ka za vozilo je obavezno unijeti.")
     private Date date;
+
     private Byte deleted;
+
     private Integer vehicleId;
+
     private Integer companyId;
 
     @Id

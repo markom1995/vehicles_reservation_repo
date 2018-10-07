@@ -81,38 +81,41 @@ public class ReservationController extends GenericHasCompanyIdAndDeletableContro
     @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody
     Reservation insert(@RequestBody Reservation reservation) throws BadRequestException {
-        Reservation newReservation = null;
-        if ((newReservation = reservationRepository.saveAndFlush(reservation)) != null) {
-            entityManager.refresh(newReservation);
-            logCreateAction(reservation);
+        if(reservation.getStartTime().before(reservation.getEndTime())){
+            Reservation newReservation = null;
+            if ((newReservation = reservationRepository.saveAndFlush(reservation)) != null) {
+                entityManager.refresh(newReservation);
+                logCreateAction(reservation);
 
-            VehicleLocationVehicleModelVehicleManufacturer vehicle = vehicleRepository.getExtendedById(newReservation.getVehicleId());
-            if(vehicle != null){
-                Location location = locationRepository.findById(vehicle.getLocationId()).orElse(null);
-                if(location != null){
-                    List<User> usersForNotification = new ArrayList<>();
-                    List<User> companyUsersNotification = userRepository.getByCompanyIdAndDeletedAndActiveAndMailStatusId(userBean.getUser().getCompanyId(), (byte)0, (byte)1, 2);
-                    List<User> locationUserNotification = userRepository.getByCompanyIdAndDeletedAndActiveAndMailStatusIdAndLocationId(userBean.getUser().getCompanyId(), (byte)0, (byte)1, 1, location.getId());
-                    usersForNotification.addAll(companyUsersNotification);
-                    usersForNotification.addAll(locationUserNotification);
+                VehicleLocationVehicleModelVehicleManufacturer vehicle = vehicleRepository.getExtendedById(newReservation.getVehicleId());
+                if(vehicle != null){
+                    Location location = locationRepository.findById(vehicle.getLocationId()).orElse(null);
+                    if(location != null){
+                        List<User> usersForNotification = new ArrayList<>();
+                        List<User> companyUsersNotification = userRepository.getByCompanyIdAndDeletedAndActiveAndMailStatusId(userBean.getUser().getCompanyId(), (byte)0, (byte)1, 2);
+                        List<User> locationUserNotification = userRepository.getByCompanyIdAndDeletedAndActiveAndMailStatusIdAndLocationId(userBean.getUser().getCompanyId(), (byte)0, (byte)1, 1, location.getId());
+                        usersForNotification.addAll(companyUsersNotification);
+                        usersForNotification.addAll(locationUserNotification);
 
-                    DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-                    String vehicleDetails = vehicle.getLicensePlate() + " - " + vehicle.getManufacturerName() + " " + vehicle.getModelName();
-                    String time = dateFormat.format(newReservation.getStartTime()) + " - " + dateFormat.format(newReservation.getEndTime());
+                        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                        String vehicleDetails = vehicle.getLicensePlate() + " - " + vehicle.getManufacturerName() + " " + vehicle.getModelName();
+                        String time = dateFormat.format(newReservation.getStartTime()) + " - " + dateFormat.format(newReservation.getEndTime());
 
-                    for(User user : usersForNotification){
-                        notification.notify(user.getEmail(), vehicleDetails, newReservation.getName(), newReservation.getDirection(), time, true);
+                        for(User user : usersForNotification){
+                            notification.notify(user.getEmail(), vehicleDetails, newReservation.getName(), newReservation.getDirection(), time, true);
+                        }
+
+                        return newReservation;
                     }
-
-                    return newReservation;
+                    else{
+                        throw new BadRequestException(badRequestInsert);
+                    }
                 }
                 else{
                     throw new BadRequestException(badRequestInsert);
                 }
             }
-            else{
-                throw new BadRequestException(badRequestInsert);
-            }
+            throw new BadRequestException(badRequestInsert);
         }
         throw new BadRequestException(badRequestInsert);
     }
@@ -163,7 +166,7 @@ public class ReservationController extends GenericHasCompanyIdAndDeletableContro
     public @ResponseBody
     String finishTripWithMaintenances(@PathVariable Integer id, @PathVariable Integer endKm, @RequestBody List<VehicleMaintenance> vehicleMaintenances) throws BadRequestException {
         Reservation reservation = reservationRepository.findById(id).orElse(null);
-        if(reservation != null){
+        if(reservation != null && reservation.getStartKm().compareTo(endKm) < 0){
             Reservation oldObject = reservation;
             reservation.setEndKm(endKm);
             reservation.setReservationStatusId(3);
@@ -171,9 +174,14 @@ public class ReservationController extends GenericHasCompanyIdAndDeletableContro
                 logUpdateAction(reservation, oldObject);
 
                 for(VehicleMaintenance vehicleMaintenance : vehicleMaintenances){
-                    if(vehicleMaintenanceRepository.saveAndFlush(vehicleMaintenance) != null){
-                        entityManager.refresh(vehicleMaintenance);
-                        logSpecificAction("create", "Kreiran je novi entitet: " + vehicleMaintenance, "VehicleMaintenance");
+                    if(vehicleMaintenance.getDate().getTime() >= reservation.getStartTime().getTime() && vehicleMaintenance.getDate().getTime() <= reservation.getEndTime().getTime()){
+                        if(vehicleMaintenanceRepository.saveAndFlush(vehicleMaintenance) != null){
+                            entityManager.refresh(vehicleMaintenance);
+                            logSpecificAction("create", "Kreiran je novi entitet: " + vehicleMaintenance, "VehicleMaintenance");
+                        }
+                        else{
+                            throw new BadRequestException(badRequestUpdate);
+                        }
                     }
                     else{
                         throw new BadRequestException(badRequestUpdate);

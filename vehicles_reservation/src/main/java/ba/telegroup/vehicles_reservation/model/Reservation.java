@@ -5,22 +5,46 @@ import ba.telegroup.vehicles_reservation.common.interfaces.HasCompanyId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 import java.sql.Timestamp;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Reservation implements Deletable, HasCompanyId {
     private Integer id;
+
+    @NotNull(message = "Naziv rezervacije je obavezno unijeti.")
+    @Size(min = 1, max = 128, message = "Naziv rezervacije mora sadr&#x017E;ati najmanje 1 karakter, a najvi&#x0161;e 128 karaktera.")
     private String name;
+
+    @NotNull(message = "Datum po&#x010D;etka rezervacije je obavezno unijeti.")
     private Timestamp startTime;
+
+    @NotNull(message = "Datum kraja rezervacije  je obavezno unijeti.")
     private Timestamp endTime;
+
+    @Positive(message = "Po&#x010D;etna kilometra&#x010D;a mora biti pozitivan broj.")
+    @Max(2147483647)
     private Integer startKm;
+
+    @Positive(message = "Po&#x010D;etna kilometra&#x010D;a mora biti pozitivan broj.")
+    @Max(2147483647)
     private Integer endKm;
+
+    @Size(min = 1, message = "Opis rezervacije mora sadr&#x017E;ati najmanje 1 karakter.")
     private String direction;
+
     private Integer reservationStatusId;
+
     private Byte deleted;
+
     private Integer userId;
+
     private Integer vehicleId;
+
     private Integer companyId;
 
     @Id

@@ -4,6 +4,10 @@ import ba.telegroup.vehicles_reservation.common.interfaces.Deletable;
 import ba.telegroup.vehicles_reservation.common.interfaces.HasCompanyId;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -11,14 +15,32 @@ import java.util.Date;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Vehicle implements Deletable, HasCompanyId {
     private Integer id;
+
+    @NotNull(message = "Broj registarske tablice vozila je obavezno unijeti.")
+    @Size(min = 1, max = 128, message = "Broj registarske tablice vozila mora sadr&#x017E;ati najmanje 1 karakter, a najvi&#x0161;e 128 karaktera.")
     private String licensePlate;
+
     private Integer vehicleModelId;
+
+    @NotNull(message = "Godinu vozila je obavezno unijeti.")
+    @Positive(message = "Godina vozila mora biti pozitivan broj.")
+    @Max(2147483647)
     private Integer year;
+
+    @NotNull(message = "Ja&#x010D;inu vozila je obavezno unijeti.")
+    @Size(min = 1, max = 128, message = "Ja&#x010D;ina vozila mora sadr&#x017E;ati najmanje 1 karakter, a najvi&#x0161;e 128 karaktera.")
     private String engine;
+
+    @NotNull(message = "Vrstu goriva vozila je obavezno unijeti.")
+    @Size(min = 1, max = 128, message = "Vrsta goriva vozila mora sadr&#x017E;ati najmanje 1 karakter, a najvi&#x0161;e 128 karaktera.")
     private String fuel;
+
     private byte[] photo;
+
     private Byte deleted;
+
     private Integer locationId;
+
     private Integer companyId;
 
     @Id

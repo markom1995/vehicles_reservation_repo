@@ -1,6 +1,8 @@
 package ba.telegroup.vehicles_reservation.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 @SqlResultSetMapping(
@@ -17,7 +19,11 @@ import java.util.Date;
 @Entity
 public class VehicleModel {
     private Integer id;
+
+    @NotNull(message = "Naziv modela vozila je obavezno unijeti.")
+    @Size(min = 1, max = 128, message = "Naziv modela vozila mora sadr&#x017E;ati najmanje 1 karakter, a najvi&#x0161;e 128 karaktera.")
     private String name;
+
     private Integer vehicleManufacturerId;
 
     public VehicleModel() {

@@ -3,12 +3,18 @@ package ba.telegroup.vehicles_reservation.model;
 import ba.telegroup.vehicles_reservation.common.interfaces.HasCompanyId;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "vehicle_manufacturer", schema = "vehicles_reservation_db", catalog = "")
 public class VehicleManufacturer implements HasCompanyId {
     private Integer id;
+
+    @NotNull(message = "Naziv proizvodja&#x010D;a vozila je obavezno unijeti.")
+    @Size(min = 1, max = 128, message = "Naziv proizvodja&#x010D;a vozila mora sadr&#x017E;ati najmanje 1 karakter, a najvi&#x0161;e 128 karaktera.")
     private String name;
+
     private Integer companyId;
 
     @Id
