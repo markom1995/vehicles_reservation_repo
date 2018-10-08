@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 
-@WebFilter("/*")
+@WebFilter("/hub/*")
 public class HubAccessFilter implements Filter {
 
     private WebApplicationContext springContext;
@@ -22,6 +22,10 @@ public class HubAccessFilter implements Filter {
 
         UserBean userBean = (UserBean) springContext.getBean("userBean");
 
+        if(!userBean.getLoggedIn()){
+            response.sendError(401);
+            return;
+        }
 
         chain.doFilter(req, res);
     }
