@@ -120,24 +120,15 @@ public class UserController extends GenericHasCompanyIdAndDeletableController<Us
     public @ResponseBody
     String update(@PathVariable Integer id, @RequestBody User user) throws BadRequestException {
         if(userBean.getUser().getId().equals(id)){
-            if (Validator.stringMaxLength(user.getFirstName(), 128)) {
-                if (Validator.stringMaxLength(user.getLastName(), 128)) {
-                    if(Validator.binaryMaxLength(user.getPhoto(), longblobLength)){
-                        User userTemp = userRepository.findById(id).orElse(null);
-                        User oldUser = cloner.deepClone(userRepository.findById(id).orElse(null));
+            User userTemp = userRepository.findById(id).orElse(null);
+            User oldUser = cloner.deepClone(userRepository.findById(id).orElse(null));
 
-                        userTemp.setFirstName(user.getFirstName());
-                        userTemp.setLastName(user.getLastName());
-                        userTemp.setPhoto(user.getPhoto());
-                        logUpdateAction(user, oldUser);
+            userTemp.setFirstName(user.getFirstName());
+            userTemp.setLastName(user.getLastName());
+            userTemp.setPhoto(user.getPhoto());
+            logUpdateAction(user, oldUser);
 
-                        return "Success";
-                    }
-                    throw new BadRequestException(badRequestBinaryLength.replace("{tekst}", "slike"));
-                }
-                throw new BadRequestException(badRequestStringMaxLength.replace("{tekst}", "prezimena").replace("{broj}", String.valueOf(128)));
-            }
-            throw new BadRequestException(badRequestStringMaxLength.replace("{tekst}", "imena").replace("{broj}", String.valueOf(128)));
+            return "Success";
         }
         throw new BadRequestException(badRequestUpdate);
     }
@@ -189,32 +180,29 @@ public class UserController extends GenericHasCompanyIdAndDeletableController<Us
     public @ResponseBody
     User insert(@RequestBody User user) throws BadRequestException {
         if(userRepository.countAllByCompanyIdAndEmail(user.getCompanyId(), user.getEmail()).compareTo(Integer.valueOf(0)) == 0){
-            if(Validator.validateEmail(user.getEmail())){
-                String randomToken = Util.randomString(randomStringLength);
-                User newUser = new User();
-                newUser.setEmail(user.getEmail());
-                newUser.setUsername(null);
-                newUser.setPassword(null);
-                newUser.setFirstName(null);
-                newUser.setLastName(null);
-                newUser.setPhoto(null);
-                newUser.setActive((byte) 0);
-                newUser.setDeleted((byte) 0);
-                newUser.setCompanyId(user.getCompanyId());
-                newUser.setRoleId(user.getRoleId());
-                newUser.setToken(randomToken);
-                newUser.setTokenTime(new Timestamp(System.currentTimeMillis()));
-                newUser.setRequest((byte) 0);
-                if(userRepository.saveAndFlush(newUser) != null){
-                    entityManager.refresh(newUser);
-                    logCreateAction(newUser);
-                    notification.sendRegistrationLink(user.getEmail().trim(), randomToken);
+            String randomToken = Util.randomString(randomStringLength);
+            User newUser = new User();
+            newUser.setEmail(user.getEmail());
+            newUser.setUsername(null);
+            newUser.setPassword(null);
+            newUser.setFirstName(null);
+            newUser.setLastName(null);
+            newUser.setPhoto(null);
+            newUser.setActive((byte) 0);
+            newUser.setDeleted((byte) 0);
+            newUser.setCompanyId(user.getCompanyId());
+            newUser.setRoleId(user.getRoleId());
+            newUser.setToken(randomToken);
+            newUser.setTokenTime(new Timestamp(System.currentTimeMillis()));
+            newUser.setRequest((byte) 0);
+            if(userRepository.saveAndFlush(newUser) != null){
+                entityManager.refresh(newUser);
+                logCreateAction(newUser);
+                notification.sendRegistrationLink(user.getEmail().trim(), randomToken);
 
-                    return newUser;
-                }
-                throw new BadRequestException(badRequestInsert);
+                return newUser;
             }
-            throw new BadRequestException(badRequestValidateEmail);
+            throw new BadRequestException(badRequestInsert);
         }
         throw new BadRequestException(badRequestEmailExists);
     }
@@ -372,40 +360,25 @@ public class UserController extends GenericHasCompanyIdAndDeletableController<Us
     String registration(@RequestBody User newUser) throws BadRequestException {
         User userWithUsername = userRepository.getByUsernameAndCompanyId(newUser.getUsername(), newUser.getCompanyId());
         if(userWithUsername == null) {
-            if (Validator.stringMaxLength(newUser.getUsername(), 128)) {
-                if(Validator.passwordChecking(newUser.getPassword())){
-                    if (Validator.stringMaxLength(newUser.getFirstName(), 128)) {
-                        if (Validator.stringMaxLength(newUser.getLastName(), 128)) {
-                            if(Validator.binaryMaxLength(newUser.getPhoto(), longblobLength)){
-                                User user = entityManager.find(User.class, newUser.getId());
-                                user.setUsername(newUser.getUsername());
-                                user.setPassword(Util.hashPassword(newUser.getPassword()));
-                                user.setToken(null);
-                                user.setTokenTime(null);
-                                user.setFirstName(newUser.getFirstName());
-                                user.setLastName(newUser.getLastName());
-                                user.setPhoto(newUser.getPhoto());
-                                if(user.getRoleId().equals(Integer.valueOf(3))){
-                                    user.setRequest((byte) 1);
-                                }
-                                else{
-                                    user.setActive((byte) 1);
-                                }
-
-                                if(userRepository.saveAndFlush(user) != null){
-                                    return "Success";
-                                }
-                                throw new BadRequestException(badRequestRegistration);
-                            }
-                            throw new BadRequestException(badRequestBinaryLength.replace("{tekst}", "slike"));
-                        }
-                        throw new BadRequestException(badRequestStringMaxLength.replace("{tekst}", "prezimena").replace("{broj}", String.valueOf(128)));
-                    }
-                    throw new BadRequestException(badRequestStringMaxLength.replace("{tekst}", "imena").replace("{broj}", String.valueOf(128)));
-                }
-                throw new BadRequestException(badRequestPasswordStrength);
+            User user = entityManager.find(User.class, newUser.getId());
+            user.setUsername(newUser.getUsername());
+            user.setPassword(Util.hashPassword(newUser.getPassword()));
+            user.setToken(null);
+            user.setTokenTime(null);
+            user.setFirstName(newUser.getFirstName());
+            user.setLastName(newUser.getLastName());
+            user.setPhoto(newUser.getPhoto());
+            if(user.getRoleId().equals(Integer.valueOf(3))){
+                user.setRequest((byte) 1);
             }
-            throw new BadRequestException(badRequestStringMaxLength.replace("{tekst}", "username-a").replace("{broj}", String.valueOf(128)));
+            else{
+                user.setActive((byte) 1);
+            }
+
+            if(userRepository.saveAndFlush(user) != null){
+                return "Success";
+            }
+            throw new BadRequestException(badRequestRegistration);
         }
         throw new BadRequestException(badRequestUsernameExists);
     }
